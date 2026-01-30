@@ -411,7 +411,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.dataRecordingIsOn = true;
           this.dataRecordingStatus = (this.dataRecordingStatus === 2) ? TopologyStatus.On : TopologyStatus.Activated;
           if (res.uptimeSecs) {
-            let seconds = res.upTimeSec;
+            let seconds = res.uptimeSecs;
             const days = Math.floor(seconds / (3600 * 24));
             seconds -= days * 3600 * 24;
             const hrs = Math.floor(seconds / 3600);
