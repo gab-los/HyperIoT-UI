@@ -1,0 +1,56 @@
+<div id="container-field-value-picker" hyt-dialog>
+
+    <div class="dialog-header" hyt-dialog-header>
+        <span i18n="@@HYT_mqtt_select_field_value">Select field value</span>
+        <span class="hyt-icon icon-hyt_cancelC" (click)="close()"></span>
+    </div>
+
+    <div class="dialog-body" hyt-dialog-content>
+
+        <p class="target-info">
+            <ng-container i18n="@@HYT_mqtt_value_for_field">Value for field</ng-container>
+            <strong> {{ data.targetFieldName }}</strong>
+            <span class="field-type">{{ data.targetType }}</span>
+        </p>
+
+        <hyt-select
+            name="fieldValuePacket"
+            i18n-label="@@HYT_packet"
+            label="Packet"
+            [groups]="packetGroups"
+            [isSearchable]="true"
+            (changeFn)="packetChanged($event.value)"
+            class="packet-select">
+        </hyt-select>
+
+        <div *ngIf="packetFields.length > 0" class="field-list">
+            <div *ngFor="let field of packetFields"
+                class="field-item"
+                [class.selected]="field === selectedField"
+                [class.disabled]="!isCompatible(field)"
+                [matTooltip]="isCompatible(field) ? '' : 'Not compatible with ' + data.targetType"
+                (click)="selectField(field)"
+                (dblclick)="selectField(field); selectedField && confirm()">
+                <mat-icon>{{ field === selectedField ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+                <span class="field-name">{{ field.fieldPath }}</span>
+                <span class="field-type">{{ field.type }}</span>
+            </div>
+        </div>
+
+        <p *ngIf="selectedField" class="placeholder-preview">{{ selectedField.displayPlaceholder }}</p>
+
+    </div>
+
+    <div class="dialog-footer" hyt-dialog-footer>
+
+        <hyt-button [color]="'hyt-base-default-white'" (click)="close()">
+            <ng-container i18n="@@HYT_cancel">Cancel</ng-container>
+        </hyt-button>
+
+        <hyt-button [color]="'hyt-base-total-green'" [isDisabled]="!selectedField" (click)="confirm()">
+            <ng-container i18n="@@HYT_insert">Insert</ng-container>
+        </hyt-button>
+
+    </div>
+
+</div>

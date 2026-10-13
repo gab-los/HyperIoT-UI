@@ -65,6 +65,7 @@ import { StatisticInputErrorComponent } from './project-forms/project-statistics
 import { HPacketFieldFilterPipe } from './hPacketFieldFilter.pipe';
 import { EventComponentContainerComponent } from './project-forms/project-events-form/event-component-container/event-component-container.component';
 import { EventMqttCommandComponent } from './project-forms/project-events-form/event-mqtt-command/event-mqtt-command.component';
+import { FieldValuePickerDialogComponent } from './project-forms/project-events-form/event-mqtt-command/field-value-picker-dialog/field-value-picker-dialog.component';
 import { WidgetsModule } from 'widgets';
 import { ProjectAlarmsFormComponent } from './project-forms/project-alarms-form/project-alarms-form.component';
 import { AlarmEventsTableComponent } from './project-forms/project-alarms-form/alarm-events-table/alarm-events-table.component';
@@ -128,6 +129,7 @@ import { ComputeFieldRuleComponent } from './project-forms/packet-enrichment-for
         HPacketFieldFilterPipe,
         EventComponentContainerComponent,
         EventMqttCommandComponent,
+        FieldValuePickerDialogComponent,
         AlarmEventsTableComponent,
         ComputeFieldRuleComponent,
     ],

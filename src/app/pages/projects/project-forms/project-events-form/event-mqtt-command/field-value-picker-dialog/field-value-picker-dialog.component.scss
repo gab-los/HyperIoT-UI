@@ -1,0 +1,114 @@
+#container-field-value-picker {
+
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  font-family: "EXO";
+
+  .dialog-header {
+
+    background-color: #2558a5;
+    position: relative;
+
+    span {
+
+      &.icon-hyt_cancelC {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        font-size: 1.3em;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #fff;
+
+        &:hover {
+          color: #002456;
+        }
+
+      }
+
+    }
+
+  }
+
+  .dialog-body {
+
+    padding: 20px 30px;
+
+    .target-info {
+      margin-bottom: 15px;
+    }
+
+    .packet-select {
+      display: block;
+      width: 100%;
+    }
+
+    .field-type {
+      margin-left: 8px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background-color: #e8eef7;
+      color: #2558a5;
+      font-size: 0.8em;
+    }
+
+    .field-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+
+      .field-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: #2558a5;
+        }
+
+        .field-name {
+          flex: 1;
+          word-break: break-all;
+        }
+
+        &:hover {
+          background-color: #f6f6f6;
+        }
+
+        &.selected {
+          background-color: #e8eef7;
+        }
+
+        &.disabled {
+          cursor: not-allowed;
+          color: #b5b5b5;
+
+          mat-icon {
+            color: #b5b5b5;
+          }
+        }
+      }
+    }
+
+    .placeholder-preview {
+      margin-top: 15px;
+      font-family: monospace;
+      color: #0956b6;
+      word-break: break-all;
+    }
+
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+}

@@ -58,21 +58,44 @@
 
     #container-mqtt-fields {
       display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      flex-wrap: wrap;
+      flex-direction: column;
+      padding: 0 10px;
 
       #mqtt-fields-description {
-        padding: 0px 10px;
         font-size: 0.9em;
         color: #757575;
         font-style: italic;
         margin-bottom: 14px;
       }
 
-      .mqtt-sigle-field {
-        width: 25%;
-        padding: 0px 10px 10px 10px;
+      .mqtt-single-field {
+        width: 100%;
+        max-width: 700px;
+      }
+
+      .mqtt-object-field {
+        margin: 5px 0 15px 0;
+        padding-left: 15px;
+        border-left: 2px solid #e8eef7;
+
+        .mqtt-object-field-name {
+          margin-bottom: 5px;
+          color: #2558a5;
+        }
+      }
+
+      .mqtt-field-type {
+        margin-left: 6px;
+        padding: 1px 6px;
+        border-radius: 3px;
+        background-color: #e8eef7;
+        color: #2558a5;
+        font-size: 0.8em;
+        white-space: nowrap;
+      }
+
+      hyt-selectable-text {
+        margin-top: 10px;
       }
     }
   }

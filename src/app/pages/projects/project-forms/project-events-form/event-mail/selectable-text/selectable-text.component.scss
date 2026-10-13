@@ -24,6 +24,11 @@
         &.inline {
           display: inline-block;
         }
+
+        &.disabled {
+          color: #b5b5b5;
+          cursor: not-allowed;
+        }
     
       }
     

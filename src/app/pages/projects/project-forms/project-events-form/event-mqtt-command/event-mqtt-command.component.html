@@ -1,6 +1,6 @@
 <div id="eventMqttCommand" class="form-group row">
 
-    <form class="eventMqttCommand-form col-12" [formGroup]="mqttFieldsFormGroup" autocomplete="on">
+    <form class="eventMqttCommand-form col-12" [formGroup]="mqttFieldsFormGroup" autocomplete="off">
 
        <!-- <div id="event-is-active" class="form-group row">
 
@@ -99,91 +99,70 @@
 
             <div id="event-is-active" class="fieldset-row-mqtt">
 
-                <div id="fevent-col-active" class="">
-        
-                    <div id="container-radio-events-active">
-            
-                        <hyt-radio-button 
-                        [form]="mqttFieldsFormGroup" 
-                        [options]="activeOptions" 
+                <div id="container-radio-events-active">
+                    <hyt-radio-button
+                        [form]="mqttFieldsFormGroup"
+                        [options]="activeOptions"
                         name="active"
                         (changeFn)="changeEventActive($event)">
-                        </hyt-radio-button>
-            
-                    </div>
-        
-                </div> <!-- Field Oputput -->
-        
-        
-            </div> <!-- END EVENT IS ACTIVE ROW -->
-    
-            <div id="mqtt-disabled-elements" *ngIf="mqttUrl && mqttTopic" class="fieldset-row-mqtt">
-    
-    
-                <div id="fpack-col-mqtt-url" class="mqtt-basis-50">
+                    </hyt-radio-button>
+                </div>
 
+            </div> <!-- END EVENT IS ACTIVE ROW -->
+
+            <div id="mqtt-disabled-elements" *ngIf="mqttUrl && mqttTopic" class="fieldset-row-mqtt">
+
+                <div id="fpack-col-mqtt-url" class="mqtt-basis-50">
                     <hyt-input-text
                         i18n-placeholder="@@HYT_mqtt_url"
                         placeholder="MQTT Url"
                         name="hpacket-mqttUrl"
                         disabled="true"
                         [fieldValue]="mqttUrl"
-                        class="width-100"
-                    >
+                        class="width-100">
                     </hyt-input-text>
-    
                 </div>
+
                 <div id="fpack-col-mqtt-topic" class="mqtt-basis-50">
-    
                     <hyt-input-text
                         i18n-placeholder="@@HYT_mqtt_topic"
                         placeholder="MQTT Topic"
                         name="hpacket-mqttTopic"
                         disabled="true"
                         [fieldValue]="mqttTopic"
-                        class="width-100"
-                    >
+                        class="width-100">
                     </hyt-input-text>
-    
                 </div>
-    
-            </div> <!-- END MQTT DISALBLED ELEMENTS ROW -->
-            
+
+            </div> <!-- END MQTT DISABLED ELEMENTS ROW -->
+
             <div id="event-packet" class="fieldset-row-mqtt">
-    
+
                 <div id="container-select-packet">
-    
-                    <hyt-select 
-                        [form]="mqttFieldsFormGroup" 
-                        [options]="packetOptions" 
-                        formControlName="packet" 
+                    <hyt-select
+                        [form]="mqttFieldsFormGroup"
+                        [options]="packetOptions"
+                        formControlName="packet"
                         name="packet"
-                        i18n-label="@@HYT_packet" 
-                        label="Packet" 
+                        i18n-label="@@HYT_packet"
+                        label="Packet"
                         (changeFn)="packetChanged($event.value)"
-                        style="width: 100%;"
-                    >
+                        style="width: 100%;">
                     </hyt-select>
-    
                 </div>
-                
+
             </div> <!-- END EVENT PACKET ROW -->
-            
-            <div *ngIf="currentOutputPacket !== undefined && currentOutputPacket !== null" id="container-mqtt-fields">
 
-                <div id="mqtt-fields-description">
-                    <!--@I18N@-->
+            <div *ngIf="currentOutputPacket" id="container-mqtt-fields">
+
+                <div id="mqtt-fields-description" i18n="@@HYT_mqtt_message_description">
+                    Set the value of each field of the message. Values can contain placeholders that are replaced when the event is triggered: select a field and click on a placeholder to insert it at the cursor position.
                 </div>
 
-                <ng-container *ngFor="let field of fieldsOptions">
+                <ng-container *ngTemplateOutlet="fieldsTemplate; context: { $implicit: messageFields }"></ng-container>
 
-                    <div class="mqtt-sigle-field">
-                        <hyt-input-text [form]="mqttFieldsFormGroup" formControlName="{{field.label}}" name="{{field.label}}" [fieldValue]="mqttFieldsFormGroup.get(field.label).value"
-                            i18n-placeholder="@@HYT_{{field.label}}" placeholder="{{field.label}}" hintMessage="Enter {{field.label}}" (change)="inputChanged($event.target,field.label)">
-                        </hyt-input-text>
-                    </div>
-                    
-                </ng-container>
+                <hyt-selectable-text [placeHolders]="placeholders" (clicked)="addPlaceholder($event)"></hyt-selectable-text>
+
             </div>
 
         </fieldset>
@@ -191,3 +170,30 @@
     </form>
 
 </div>
+
+<ng-template #fieldsTemplate let-nodes>
+    <ng-container *ngFor="let node of nodes">
+
+        <div *ngIf="node.children; else leafField" class="mqtt-object-field">
+            <div class="mqtt-object-field-name">
+                {{ node.field.name }} <span class="mqtt-field-type">{{ node.field.type }}</span>
+            </div>
+            <ng-container *ngTemplateOutlet="fieldsTemplate; context: { $implicit: node.children }"></ng-container>
+        </div>
+
+        <ng-template #leafField>
+            <div class="mqtt-single-field" [class.focused]="node === focusedNode">
+                <mat-form-field class="width-100">
+                    <mat-label>{{ node.field.name }}</mat-label>
+                    <input matInput #templateInput
+                        [formControl]="node.control"
+                        [name]="'mqtt-field-' + node.field.id"
+                        (focus)="onFieldFocus(node, templateInput)">
+                    <span matSuffix class="mqtt-field-type">{{ node.field.type }}</span>
+                    <mat-error *ngIf="node.control.errors?.template">{{ node.control.errors.template }}</mat-error>
+                </mat-form-field>
+            </div>
+        </ng-template>
+
+    </ng-container>
+</ng-template>
