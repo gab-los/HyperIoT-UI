@@ -1,6 +1,6 @@
 import { Directive, Host, Input, OnDestroy } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { MatSelect } from '@angular/material/select';
+import { MatLegacySelect as MatSelect } from '@angular/material/legacy-select';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 

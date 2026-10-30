@@ -8,7 +8,7 @@ import { DeleteConfirmDialogComponent } from 'src/app/components/dialogs/delete-
 import { EntitiesService } from 'src/app/services/entities/entities.service';
 import { DialogService } from 'components';
 import { ProjectsService } from 'src/app/services/projects.service';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatLegacyRadioChange as MatRadioChange } from '@angular/material/legacy-radio';
 
 export enum LoadingStatusEnum {
     Ready,

@@ -3,7 +3,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { AssetTag, AssetTagsService, HProject } from 'core';
 import { startWith, map } from 'rxjs/operators';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {MatLegacyChipInputEvent as MatChipInputEvent} from '@angular/material/legacy-chips';
 
 export enum TagStatus {
   Default = 0,

@@ -7,7 +7,7 @@ import { TimeAxisComponent } from './time-axis/time-axis.component';
 import { DashboardEventService } from '../services/dashboard-event.service';
 import { DataExport } from './models/data-export.model';
 import { DataExportComponent } from './data-export/data-export.component';
-import { MatSelectChange } from '@angular/material/select';
+import { MatLegacySelectChange as MatSelectChange } from '@angular/material/legacy-select';
 import { DefaultTimelineCustomRange, DefaultTimelineRange, DefaultTimelineRangeType, DefaultTimelineRangeTypeUtilsMap } from '../model/dashboardTimelineDefaultRange';
 import { CustomDefaultSelectionDialogComponent } from '../custom-default-selection-dialog/custom-default-selection-dialog.component';
 import { asyncScheduler, PartialObserver, Subscription } from 'rxjs';

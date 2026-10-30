@@ -41,9 +41,9 @@ import {
   switchMap
 } from 'rxjs';
 import { catchError, finalize, take, takeUntil, tap } from 'rxjs/operators';
-import { MatSelectChange } from "@angular/material/select";
+import { MatLegacySelectChange as MatSelectChange } from "@angular/material/legacy-select";
 import AreaViewTypeEnum = Area.AreaViewTypeEnum;
-import { MatTab, MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
+import { MatLegacyTab as MatTab, MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
 
 @Component({
   selector: 'hyt-areas-form',
