@@ -51,7 +51,7 @@ import { PlotlyModule } from 'angular-plotly.js';
 import { PromptComponent } from './components/prompt/prompt/prompt.component';
 import { PendingChangesDialogComponent } from './components/dialogs/pending-changes-dialog/pending-changes-dialog.component';
 import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
-import { MAT_LEGACY_DIALOG_DEFAULT_OPTIONS as MAT_DIALOG_DEFAULT_OPTIONS, MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { DashComponent } from './pages/dash/dash.component';
