@@ -35,7 +35,7 @@ import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/materia
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
-import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
+import { MatTableModule } from '@angular/material/table';
 import { MatBadgeModule } from '@angular/material/badge';
 
 import { StatisticsStepComponent } from './project-wizard/statistics-step/statistics-step.component';
@@ -75,10 +75,10 @@ import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-car
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatRippleModule} from '@angular/material/core';
-import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
+import { MatListModule } from '@angular/material/list';
 import { DynamicMapUserConfiguratorComponent } from './project-forms/areas-form/dynamic-map-user-configurator/dynamic-map-user-configurator.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatLegacySliderModule as MatSliderModule } from '@angular/material/legacy-slider';
+import { MatSliderModule } from '@angular/material/slider';
 import { ComputeFieldRuleComponent } from './project-forms/packet-enrichment-form/compute-field-rule/compute-field-rule.component';
 
 @NgModule({

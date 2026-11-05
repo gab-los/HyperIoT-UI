@@ -23,7 +23,7 @@ import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-car
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
+import { MatListModule } from '@angular/material/list';
 import {MatRippleModule} from '@angular/material/core';
 
 @NgModule({
