@@ -33,7 +33,7 @@ import { MatLegacySelectModule as MatSelectModule } from '@angular/material/lega
 import { MatRadioModule } from '@angular/material/radio';
 import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 
-import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -70,10 +70,10 @@ import { ProjectAlarmsFormComponent } from './project-forms/project-alarms-form/
 import { AlarmEventsTableComponent } from './project-forms/project-alarms-form/alarm-events-table/alarm-events-table.component';
 import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyTabsModule as MatTabsModule} from '@angular/material/legacy-tabs';
-import {MatLegacyProgressBarModule as MatProgressBarModule} from '@angular/material/legacy-progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-card';
-import {MatLegacyProgressSpinnerModule as MatProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
-import {MatLegacyMenuModule as MatMenuModule} from '@angular/material/legacy-menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
 import {MatRippleModule} from '@angular/material/core';
 import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
 import { DynamicMapUserConfiguratorComponent } from './project-forms/areas-form/dynamic-map-user-configurator/dynamic-map-user-configurator.component';

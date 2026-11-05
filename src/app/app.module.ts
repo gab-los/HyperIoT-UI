@@ -55,8 +55,8 @@ import { MAT_LEGACY_DIALOG_DEFAULT_OPTIONS as MAT_DIALOG_DEFAULT_OPTIONS, MatLeg
 import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
 import { MatLegacyCardModule as MatCardModule } from '@angular/material/legacy-card';
 import { DashComponent } from './pages/dash/dash.component';
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
-import {MatLegacyTooltipModule as MatTooltipModule} from '@angular/material/legacy-tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
 
 import { ScrollingModule } from '@angular/cdk/scrolling';

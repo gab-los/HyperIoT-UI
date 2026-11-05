@@ -20,9 +20,9 @@ import { InputFieldsFormComponent } from './algorithm-forms/input-fields-form/in
 import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyTabsModule as MatTabsModule} from '@angular/material/legacy-tabs';
 import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-card';
-import {MatLegacyProgressSpinnerModule as MatProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
-import {MatLegacyProgressBarModule as MatProgressBarModule} from '@angular/material/legacy-progress-bar';
-import {MatLegacyMenuModule as MatMenuModule} from '@angular/material/legacy-menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatMenuModule } from '@angular/material/menu';
 import {MatLegacyListModule as MatListModule} from '@angular/material/legacy-list';
 import {MatRippleModule} from '@angular/material/core';
 
