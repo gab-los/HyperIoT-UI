@@ -36,9 +36,16 @@ $container-max-widths: (
 @import "../../../node_modules/bootstrap/scss/reboot";
 
 // TEMPORARY FIXES for Angular Material components: overrides needed because the global
-// Bootstrap styles (reboot) conflict with the Material ones
-mat-checkbox label {
+// Bootstrap styles (reboot) conflict with the Material ones, or because the Material
+// defaults differ from the application ones
+mat-checkbox label,
+mat-radio-button label {
   margin-bottom: 0;
+}
+
+// Font of the Material (MDC) components, otherwise they fall back to Roboto
+:root {
+  --mdc-typography-font-family: 'Exo', sans-serif;
 }
 
 // @import "../../../node_modules/bootstrap/scss/type";
@@ -64,7 +71,6 @@ mat-checkbox label {
 @import "./components/inputs";
 @import "./components/buttons";
 @import "./components/cards";
-@import "./components/checks";
 
 /* Widget */
 @import "./widgets/generalWidget";
