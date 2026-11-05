@@ -43,7 +43,7 @@ import {
 import { catchError, finalize, take, takeUntil, tap } from 'rxjs/operators';
 import { MatLegacySelectChange as MatSelectChange } from "@angular/material/legacy-select";
 import AreaViewTypeEnum = Area.AreaViewTypeEnum;
-import { MatLegacyTab as MatTab, MatLegacyTabChangeEvent as MatTabChangeEvent, MatLegacyTabGroup as MatTabGroup } from "@angular/material/legacy-tabs";
+import { MatTab, MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 
 @Component({
   selector: 'hyt-areas-form',

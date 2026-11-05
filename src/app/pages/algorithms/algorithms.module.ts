@@ -18,8 +18,8 @@ import { AlgorithmJarFormComponent } from './algorithm-forms/algorithm-jar-form/
 import { AlgorithmWizardReportModalComponent } from './algorithm-wizard/algorithm-wizard-report-modal/algorithm-wizard-report-modal.component';
 import { InputFieldsFormComponent } from './algorithm-forms/input-fields-form/input-fields-form.component';
 import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyTabsModule as MatTabsModule} from '@angular/material/legacy-tabs';
-import {MatLegacyCardModule as MatCardModule} from '@angular/material/legacy-card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';

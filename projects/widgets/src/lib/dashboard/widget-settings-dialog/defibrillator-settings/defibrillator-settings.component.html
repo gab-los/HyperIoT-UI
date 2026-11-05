@@ -64,7 +64,7 @@
     </div> -->
   </div>
   <div class="fields-and-colors-select">
-    <mat-tab-group>
+    <mat-tab-group [mat-stretch-tabs]="false">
 
       <mat-tab label="Standard">
         <div class="area" *ngFor="let area of defibrillatorSettings.standard | keyvalue:noOrder; let iArea = index">
