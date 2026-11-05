@@ -17,13 +17,13 @@
   >
 
     <mat-select-trigger *ngIf="chips && isMultiple">
-      <mat-chip-list>
+      <mat-chip-set>
         <mat-chip *ngFor="let val of formControl.value"
           [removable]="true" (removed)="onChipRemoved(val)">
           {{ getChipLabel(val) }}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-      </mat-chip-list>
+      </mat-chip-set>
     </mat-select-trigger>
 
     <div *ngIf="isSearchable" class="search-filter">

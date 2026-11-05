@@ -128,23 +128,23 @@
               </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill">
-              <mat-label>
+            <div class="selected-packets">
+              <label class="selected-packets-label">
                 {{ countSelectedPackets(hPacketListSelected.length) }}
-              </mat-label>
-              <mat-chip-list class="mat-chip-list-wrapper">
+              </label>
+              <mat-chip-set class="mat-chip-list-wrapper">
                 <mat-chip
                   *ngFor="let hPacket of hPacketListSelected"
                   class="mat-chip-custom"
                   (removed)="removeHPacket(hPacket)"
                 >
                   {{ hPacket.name }}
-                  <button matChipRemove>
+                  <button matChipRemove type="button">
                     <mat-icon>cancel</mat-icon>
                   </button>
                 </mat-chip>
-              </mat-chip-list>
-            </mat-form-field>
+              </mat-chip-set>
+            </div>
           </div>
         </div>
 

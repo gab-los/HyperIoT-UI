@@ -25,7 +25,7 @@ import { DeviceSelectComponent } from './project-wizard/device-select/device-sel
 import { PacketSelectComponent } from './project-wizard/packet-select/packet-select.component';
 import { ShareProjectsComponent } from "./share-projects/share-projects.component";
 
-import { MatLegacyChipsModule as MatChipsModule } from '@angular/material/legacy-chips';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatLegacyAutocompleteModule as MatAutocompleteModule } from '@angular/material/legacy-autocomplete';
 import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
 import { MatIconModule } from '@angular/material/icon';

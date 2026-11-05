@@ -12,7 +12,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { EventComponentContainerComponent } from './event-component-container/event-component-container.component';
 import { EventComponentType } from './event-component-type.enum';
 import {MatLegacyAutocomplete as MatAutocomplete, MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent} from '@angular/material/legacy-autocomplete';
-import {MatLegacyChipInputEvent as MatChipInputEvent} from '@angular/material/legacy-chips';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
   selector: 'hyt-project-events-form',

@@ -6,15 +6,15 @@
 </div>
 <div *ngIf="tagStatus==1">
   <mat-form-field class="tag-list">
-    <mat-chip-list #chipList>
-      <mat-chip *ngFor="let tag of tags" [selectable]="true" [removable]="true" (removed)="remove(tag)">
+    <mat-chip-grid #chipList>
+      <mat-chip-row *ngFor="let tag of tags" [removable]="true" (removed)="remove(tag)">
         {{tag.name}}
         <mat-icon matChipRemove>cancel</mat-icon>
-      </mat-chip>
+      </mat-chip-row>
       <input placeholder="Tags" #tagInput [formControl]="tagCtrl" [matAutocomplete]="auto" [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="[13, 188]" [matChipInputAddOnBlur]="false"
         (matChipInputTokenEnd)="add($event)">
-    </mat-chip-list>
+    </mat-chip-grid>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
       <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
         {{tag.name}}
