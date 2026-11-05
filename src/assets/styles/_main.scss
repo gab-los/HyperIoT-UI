@@ -34,6 +34,13 @@ $container-max-widths: (
 
 // Optional
 @import "../../../node_modules/bootstrap/scss/reboot";
+
+// TEMPORARY FIXES for Angular Material components: overrides needed because the global
+// Bootstrap styles (reboot) conflict with the Material ones
+mat-checkbox label {
+  margin-bottom: 0;
+}
+
 // @import "../../../node_modules/bootstrap/scss/type";
 // @import "../../../node_modules/bootstrap/scss/images";
 // @import "../../../node_modules/bootstrap/scss/code";

@@ -33,10 +33,10 @@ export class HytCheckboxComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() {}
 
-  onClick() {
-    this.onChange(!this.value);
+  onClick(checked: boolean) {
+    this.onChange(checked);
     this.onTouched();
-    this.changeFn.emit(!this.value);
+    this.changeFn.emit(checked);
   }
 
   /**

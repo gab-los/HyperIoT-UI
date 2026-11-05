@@ -1,6 +1,6 @@
 import { Component, OnInit, forwardRef, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormControl, ControlValueAccessor } from '@angular/forms';
-import {MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS as MAT_CHECKBOX_DEFAULT_OPTIONS} from "@angular/material/legacy-checkbox";
+import {MAT_CHECKBOX_DEFAULT_OPTIONS} from "@angular/material/checkbox";
 
 /**
  * Custom provider for NG_VALUE_ACCESSOR

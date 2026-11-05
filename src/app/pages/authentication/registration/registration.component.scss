@@ -117,20 +117,13 @@
                 font-family: "Exo";
               }
 
-              &.mat-checkbox-layout {
-                span.mat-checkbox-label {
-                  font-size: .78em;
-                  font-family: "Exo";
+              // link inside the privacy checkbox label
+              a {
+                color: $primary-color-dark-unsaturated;
+                text-decoration: underline;
 
-                  a {
-                    color: $primary-color-dark-unsaturated;
-                    text-decoration: underline;
-
-                    &:hover {
-                      color: #105f99;
-                    }
-
-                  }
+                &:hover {
+                  color: #105f99;
                 }
               }
             }
@@ -375,16 +368,6 @@
                 font-size: 130%;
               }
 
-              label {
-                &.mat-checkbox-layout {
-                  span {
-                    &.mat-checkbox-label {
-                      font-size: .68em;
-                    }
-                  }
-                }
-              }
-
               .container-privacy-checkbox {
                 margin-top: 10px;
               }
@@ -466,13 +449,6 @@
               mat-checkbox {
                 label {
                   white-space: pre-wrap;
-                  &.mat-checkbox-layout {
-                    span {
-                      &.mat-checkbox-label {
-                        line-height: 20px;
-                      }
-                    }
-                  }
                 }
               }
 
