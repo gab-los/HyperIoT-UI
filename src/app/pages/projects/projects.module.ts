@@ -68,7 +68,7 @@ import { EventMqttCommandComponent } from './project-forms/project-events-form/e
 import { WidgetsModule } from 'widgets';
 import { ProjectAlarmsFormComponent } from './project-forms/project-alarms-form/project-alarms-form.component';
 import { AlarmEventsTableComponent } from './project-forms/project-alarms-form/alarm-events-table/alarm-events-table.component';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';

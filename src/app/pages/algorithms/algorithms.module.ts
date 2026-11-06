@@ -17,7 +17,7 @@ import { OutputFieldsFormComponent } from './algorithm-forms/output-fields-form/
 import { AlgorithmJarFormComponent } from './algorithm-forms/algorithm-jar-form/algorithm-jar-form.component';
 import { AlgorithmWizardReportModalComponent } from './algorithm-wizard/algorithm-wizard-report-modal/algorithm-wizard-report-modal.component';
 import { InputFieldsFormComponent } from './algorithm-forms/input-fields-form/input-fields-form.component';
-import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';

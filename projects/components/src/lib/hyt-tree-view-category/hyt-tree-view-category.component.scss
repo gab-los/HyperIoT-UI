@@ -21,17 +21,19 @@ mat-tree {
         min-height: 40px;
         
         button {
-          &.mat-icon-button {
+          &.mat-mdc-icon-button {
             width: 25px;
             height: 25px;
             line-height: 25px;
+            padding: 0;
+            vertical-align: middle;
 
             mat-icon {
               &.mat-icon {
                 width: 20px;
                 height: 20px;
                 line-height: 20px;
-                font-size: 1.4em;
+                font-size: 19.6px;
               }
             }
           }
@@ -122,17 +124,19 @@ mat-tree {
     li {
 
       button {
-        &.mat-icon-button {
+        &.mat-mdc-icon-button {
           width: 25px;
           height: 25px;
           line-height: 25px;
+          padding: 0;
+          vertical-align: middle;
 
           mat-icon {
             &.mat-icon {
               width: 20px;
               height: 20px;
               line-height: 20px;
-              font-size: 1.4em;
+              font-size: 19.6px;
             }
           }
         }
