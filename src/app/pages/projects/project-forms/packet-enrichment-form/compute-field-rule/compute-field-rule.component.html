@@ -38,14 +38,11 @@
 
               <button
                 *ngIf="count > 1"
-                matButton
-                class="mat-button"
+                mat-button
                 type="button"
                 (click)="deleteVariable(i)"
               >
-                <span class="mat-button-wrapper">
-                  <span class="hyt-icon icon-hyt_trash"></span>
-                </span>
+                <span class="hyt-icon icon-hyt_trash"></span>
               </button>
             </div>
           </div>
@@ -103,7 +100,7 @@
               (click)="deleteConstant(i)"
             >
               <span class="mat-button-wrapper">
-                <span class="hyt-icon icon-hyt_trash"></span>
+              <span class="hyt-icon icon-hyt_trash"></span>
               </span>
             </button>
           </div>
