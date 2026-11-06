@@ -5,12 +5,13 @@
     [ngClass]="{'errorPositionBottom': errorPosition=='bottom'}"
   >
 
+    <mat-label>{{ placeholder }}</mat-label>
+
     <input matInput #input 
       class="hyt-input form-control" 
       name="{{name}}" 
       id="{{id}}" 
       type="{{type}}"
-      placeholder="{{placeholder}}" 
       value="{{fieldValue}}"
       [attr.autocomplete]="autocomplete ? autocomplete : null"
       (focus)="onFocus()"

@@ -21,14 +21,16 @@
                 </div>
                 <div class="section-input">
                     <mat-form-field>
+                        <mat-label>Alias</mat-label>
                         <input matInput name="hpacketfield-custom-aliases-{{field}}" id="customAliasesLabel-{{field}}"
-                            type="text" placeholder="Alias" [(ngModel)]="fieldAliases[field]">
+                            type="text" [(ngModel)]="fieldAliases[field]">
                     </mat-form-field>
                 </div>
             </div>
             <mat-form-field class="target-input">
-                <input matInput i18n-placeholder="@@HYT_enter_target" (blur)="updateTargetValue($event.target.value)"
-                    [ngModelOptions]="{ standalone: true }" placeholder="Manually enter a target number" required
+                <mat-label i18n="@@HYT_enter_target">Manually enter a target number</mat-label>
+                <input matInput (blur)="updateTargetValue($event.target.value)"
+                    [ngModelOptions]="{ standalone: true }" required
                     type="number" name="targetValue" [(ngModel)]="targetValue">
             </mat-form-field>
 
@@ -44,8 +46,9 @@
                     </div>
                     <div class="section-input">
                         <mat-form-field>
+                            <mat-label>Alias</mat-label>
                             <input matInput name="hpacketfield-custom-aliases-{{field}}"
-                                id="customAliasesLabel-{{field}}" type="text" placeholder="Alias"
+                                id="customAliasesLabel-{{field}}" type="text"
                                 [(ngModel)]="fieldAliases[field]">
                         </mat-form-field>
                     </div>
@@ -59,8 +62,9 @@
                 </div>
                 <div class="section-input">
                     <mat-form-field>
+                        <mat-label>Alias</mat-label>
                         <input matInput name="hpacketfield-custom-aliases-{{field}}" id="customAliasesLabel-{{field}}"
-                            type="text" placeholder="Alias" [(ngModel)]="fieldAliases[field]">
+                            type="text" [(ngModel)]="fieldAliases[field]">
                     </mat-form-field>
                 </div>
             </div>
@@ -104,8 +108,9 @@
             </div>
             <div class="section-input">
                 <mat-form-field>
+                    <mat-label>Alias</mat-label>
                     <input matInput name="hpacketfield-custom-aliases-remaining" id="customAliasesLabel-remaining"
-                        type="text" placeholder="Alias" [(ngModel)]="fieldAliases['remaining']">
+                        type="text" [(ngModel)]="fieldAliases['remaining']">
                 </mat-form-field>
             </div>
         </div>

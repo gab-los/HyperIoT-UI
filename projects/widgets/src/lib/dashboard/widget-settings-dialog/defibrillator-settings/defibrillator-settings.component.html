@@ -3,7 +3,8 @@
     <div class="channel-settings">
       <div class="channel-settings-row channel-settings-type">
         <mat-form-field>
-          <mat-select placeholder="Select type" i18n-placeholder="@@HYT_widget_settings_select_packet"
+          <mat-label i18n="@@HYT_widget_settings_select_packet">Select type</mat-label>
+          <mat-select
             [(ngModel)]="channel.type" (ngModelChange)="onTypeChanged(channel)" [name]="key + '-type'" [disabled]="isFieldDisabled(key + '-type')">
             <mat-option *ngFor="let fieldType of fieldsTypeOptions" [value]="fieldType.value">
               {{fieldType.label}}

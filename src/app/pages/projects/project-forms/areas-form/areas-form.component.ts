@@ -41,7 +41,7 @@ import {
   switchMap
 } from 'rxjs';
 import { catchError, finalize, take, takeUntil, tap } from 'rxjs/operators';
-import { MatLegacySelectChange as MatSelectChange } from "@angular/material/legacy-select";
+import { MatSelectChange } from "@angular/material/select";
 import AreaViewTypeEnum = Area.AreaViewTypeEnum;
 import { MatTab, MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 

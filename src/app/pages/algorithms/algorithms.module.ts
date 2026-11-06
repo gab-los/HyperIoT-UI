@@ -9,8 +9,8 @@ import { AlgorithmInfoFormComponent } from './algorithm-forms/algorithm-info-for
 import { AlgorithmWizardComponent } from './algorithm-wizard/algorithm-wizard.component';
 
 import { MatChipsModule } from '@angular/material/chips';
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from '@angular/material/legacy-autocomplete';
-import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { OutputFieldsFormComponent } from './algorithm-forms/output-fields-form/output-fields-form.component';

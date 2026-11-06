@@ -8,8 +8,8 @@
   <div hyt-dialog-content class="icons-container">
     <div class="icon-search-container">
       <mat-form-field>
-        <input matInput [(ngModel)]="filterValue" (ngModelChange)="filterIconList()"
-          i18n-placeholder="@@HYT_search_icon" placeholder="Search icon">
+        <mat-label i18n="@@HYT_search_icon">Search icon</mat-label>
+        <input matInput [(ngModel)]="filterValue" (ngModelChange)="filterIconList()">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
         <hyt-button (click)="deselectIcon()">

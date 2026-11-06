@@ -356,20 +356,6 @@
               }
             }
 
-            span {
-              &.mat-form-field-label-wrapper {
-                label {
-                  font-family: "Exo";
-                }
-              }
-            }
-
-            mat-error {
-              &.mat-error.ng-star-inserted {
-                font-family: "Exo";
-              }
-            }
-
             .btn-group {
               display: flex;
               column-gap: 20px;

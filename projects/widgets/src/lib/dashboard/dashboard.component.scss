@@ -319,7 +319,7 @@
 
 mat-option {
 
-    &.mat-option {
+    &.mat-mdc-option {
 
         font-family: 'Exo';
 
@@ -689,14 +689,10 @@ mat-option {
         left: 50% !important;
         transform: translateX(-140px) !important;
 
-        .mat-select-panel-wrap {
-
-            .mat-select-panel {
-                min-width: 280px !important;
-                max-width: 280px;
-                font-size: .95em !important;
-            }
-
+        .mat-mdc-select-panel {
+            min-width: 280px !important;
+            max-width: 280px;
+            font-size: .95em !important;
         }
 
     }
@@ -709,14 +705,10 @@ mat-option {
         min-width: 250px !important;
         transform: translateX(-125px) !important;
 
-        .mat-select-panel-wrap {
-
-            .mat-select-panel {
-                min-width: 250px !important;
-                max-width: 250px;
-                font-size: .9em !important;
-            }
-
+        .mat-mdc-select-panel {
+            min-width: 250px !important;
+            max-width: 250px;
+            font-size: .9em !important;
         }
 
     }

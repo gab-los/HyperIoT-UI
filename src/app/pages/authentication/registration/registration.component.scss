@@ -112,9 +112,8 @@
             }
 
             label {
-              &.mat-form-field-label {
+              &.mdc-floating-label {
                 font-size: .9em;
-                font-family: "Exo";
               }
 
               // link inside the privacy checkbox label
@@ -454,14 +453,12 @@
 
               mat-form-field {
 
-                .mat-form-field-wrapper {
-                  .mat-form-field-subscript-wrapper {
-                    top: unset;
-                    font-size: 70%;
-                  }
+                .mat-mdc-form-field-subscript-wrapper {
+                  top: unset;
+                  font-size: 70%;
                 }
 
-                .mat-form-field-flex {
+                .mat-mdc-form-field-flex {
                   .multiError {
                     font-size: .85em;
                   }

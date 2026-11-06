@@ -11,7 +11,7 @@ import { TagStatus } from '../packet-enrichment-form/asset-tag/asset-tag.compone
 import { UntypedFormControl } from '@angular/forms';
 import { EventComponentContainerComponent } from './event-component-container/event-component-container.component';
 import { EventComponentType } from './event-component-type.enum';
-import {MatLegacyAutocomplete as MatAutocomplete, MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent} from '@angular/material/legacy-autocomplete';
+import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
