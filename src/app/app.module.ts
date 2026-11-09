@@ -68,7 +68,7 @@ import { NotificationDialogComponent } from './components/dialogs/notification-d
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
-import { GlobalErrorHandlerService } from '../../projects/core/src/lib/hyperiot-service/error-handler/global-error-handler.service';
+import { GlobalErrorHandlerService } from 'core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DataExportNotificationButtonComponent } from './components/topbar/data-export-notification-button/data-export-notification-button.component';
 import { DataExportNotificationDialogComponent } from './components/dialogs/data-export-notification-notification-dialog/data-export-notification-dialog.component';
