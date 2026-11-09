@@ -3,7 +3,8 @@
     <div class="channel-settings">
       <div class="channel-settings-row channel-settings-type">
         <mat-form-field>
-          <mat-select placeholder="Select type" i18n-placeholder="@@HYT_widget_settings_select_packet"
+          <mat-label i18n="@@HYT_widget_settings_select_packet">Select type</mat-label>
+          <mat-select
             [(ngModel)]="channel.type" (ngModelChange)="onTypeChanged(channel)" [name]="key + '-type'" [disabled]="isFieldDisabled(key + '-type')">
             <mat-option *ngFor="let fieldType of fieldsTypeOptions" [value]="fieldType.value">
               {{fieldType.label}}
@@ -64,7 +65,7 @@
     </div> -->
   </div>
   <div class="fields-and-colors-select">
-    <mat-tab-group>
+    <mat-tab-group [mat-stretch-tabs]="false">
 
       <mat-tab label="Standard">
         <div class="area" *ngFor="let area of defibrillatorSettings.standard | keyvalue:noOrder; let iArea = index">
@@ -82,7 +83,6 @@
                 </mat-panel-title>
                 <mat-panel-description *ngIf="channel.value.type">
                   <span class="type-label" [ngStyle]="{'color': channel.value.color}">{{ channel.value.type }}</span>
-                  <hyt-tag [color]="'#fff'" textColor="channel.value.color"></hyt-tag>
                 </mat-panel-description>
               </mat-expansion-panel-header>
 

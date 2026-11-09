@@ -2,7 +2,7 @@
   display: inline-block;
 }
 
-#hyt-date-picker-input .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+#hyt-date-picker-input .mat-form-field-can-float.mat-form-field-should-float .mdc-floating-label {
   display: none !important;
 }
 

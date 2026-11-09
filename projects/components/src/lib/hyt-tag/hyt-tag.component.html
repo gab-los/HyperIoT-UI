@@ -1,9 +1,7 @@
 <mat-chip
-    [selected]="selected"
-    [selectable]="selectable"
     (click)="click($event)"
-    [style.background-color]="color"
-    [style.color]="textColor"
+    [style.--mdc-chip-elevated-container-color]="color"
+    [style.--mdc-chip-label-text-color]="textColor || '#fff'"
 >
     {{value}}
     <span class="hyt-icon icon-hyt_pencil" *ngIf="editable" (click)="editedFn($event)"></span>

@@ -220,7 +220,7 @@ export class HytTreeViewEditableComponent implements OnInit {
     flatNode.data = node.data;
     flatNode.root = node.root;
     flatNode.level = level;
-    flatNode.expandable = !((node.children == null) || (node.children === []));
+    flatNode.expandable = !(node.children == null);
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;

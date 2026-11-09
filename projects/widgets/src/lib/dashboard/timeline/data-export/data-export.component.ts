@@ -15,7 +15,7 @@ import {
 } from 'core';
 import { BehaviorSubject, catchError, concatMap, filter, finalize, forkJoin, interval, Observable, of, Subject, Subscription, switchMap, takeWhile, tap, throwError } from 'rxjs';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { NgxMatDateAdapter, NgxMatDatetimePicker, } from '@angular-material-components/datetime-picker';
+import { NgxMatDateAdapter, NgxMatDatetimepicker, } from '@angular-material-components/datetime-picker';
 import { NgxMatMomentAdapter, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, NGX_MAT_MOMENT_FORMATS } from '@angular-material-components/moment-adapter';
 import moment, { Moment } from 'moment';
 import { HttpClient } from '@angular/common/http';
@@ -69,8 +69,8 @@ export class DataExportComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('selectPackets') selectPackets: HytSelectComponent;
 
-  @ViewChild('startTimePicker') startTimePicker: NgxMatDatetimePicker<any>;
-  @ViewChild('endTimePicker') endTimePicker: NgxMatDatetimePicker<any>;
+  @ViewChild('startTimePicker') startTimePicker: NgxMatDatetimepicker<any>;
+  @ViewChild('endTimePicker') endTimePicker: NgxMatDatetimepicker<any>;
 
   readonly hPacketFormatEnum = HPacket.FormatEnum;
 
@@ -199,44 +199,13 @@ export class DataExportComponent implements OnInit, AfterViewInit, OnDestroy {
     this.maxValuesSubscription$ = interval(100)
       .pipe(
         filter(() => this.startTimePicker.opened || this.endTimePicker.opened),
-        tap(() => this.maxValue$.next(moment())),
-        tap(() => {
-          const timeContainer: HTMLDivElement = document.querySelector('ngx-mat-datetime-content > div.time-container');
-          if (timeContainer) {
-            const errorDateContainer = document.getElementById('errorDateContainer')
-            const setDateButton: HTMLButtonElement = document.querySelector("ngx-mat-datetime-content > div.actions > button");
-            if (!this.startTimePicker.valid || !this.endTimePicker.valid) {
-              if (!errorDateContainer) {
-                const errorLabel: HTMLLabelElement = document.createElement('label');
-                errorLabel.id = 'errorLabel';
-                errorLabel.style.fontSize = '14px';
-                errorLabel.textContent = 'Error: The specified date is not applicable.';
-
-                const errorDateContainer: HTMLDivElement = document.createElement('div');
-                errorDateContainer.id = 'errorDateContainer';
-                errorDateContainer.style.display = 'block';
-                errorDateContainer.style.color = 'red';
-                errorDateContainer.append(errorLabel);
-
-                timeContainer.appendChild(errorDateContainer);
-                timeContainer.style.flexDirection = 'column';
-                timeContainer.style.alignItems = 'center';
-
-                setDateButton.disabled = true;
-                setDateButton.classList.add('mat-button-disabled');
-              }
-            } else {
-              if (errorDateContainer) {
-                errorDateContainer.remove();
-              }
-
-              if (setDateButton) {
-                setDateButton.disabled = false;
-                setDateButton.classList.remove('mat-button-disabled');
-              }
-            }
-          }
-        })
+        // "The specified date is not applicable" error message and disabling of the confirm button
+        // that used to be handled here have been removed in the Angular 15 upgrade. That logic relied on
+        // NgxMatDatetimePicker.valid and on the internal DOM of the picker popup (ngx-mat-datetime-content),
+        // both dropped in @angular-material-components/datetime-picker 15. The maximum date is still
+        // enforced through [max] on the inputs. This library will be removed in a future upgrade, as its
+        // support ends at Angular 16.
+        tap(() => this.maxValue$.next(moment()))
       ).subscribe();
   }
 

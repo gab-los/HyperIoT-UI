@@ -6,10 +6,16 @@
 
 .hyt-base-btn {
 
-    &.mat-raised-button {
+    &.mat-mdc-raised-button {
         -moz-box-shadow: none;
         -webkit-box-shadow: none;
         box-shadow: none;
+        // the MDC raised button sets its own shadow on hover, focus and active through these variables
+        --mdc-protected-button-container-elevation: none;
+        --mdc-protected-button-hover-container-elevation: none;
+        --mdc-protected-button-focus-container-elevation: none;
+        --mdc-protected-button-pressed-container-elevation: none;
+        --mdc-protected-button-disabled-container-elevation: none;
         font-size: 1em;
         border-radius: 0px;
         font-weight: bold;
@@ -174,7 +180,7 @@
 
             }
 
-            &.mat-raised-button {
+            &.mat-mdc-raised-button {
 
                 &:active {
 

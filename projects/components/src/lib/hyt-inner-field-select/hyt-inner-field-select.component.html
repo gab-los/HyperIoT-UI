@@ -1,5 +1,6 @@
 <mat-form-field>
-    <mat-select placeholder="Select Fields" [(ngModel)]="selectedFieldsIds" multiple>
+    <mat-label>Select Fields</mat-label>
+    <mat-select [(ngModel)]="selectedFieldsIds" multiple>
         <mat-option *ngFor="let field of fieldsOption" [value]="field.value">
             {{ field.label }}
         </mat-option>

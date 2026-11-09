@@ -73,8 +73,9 @@
                             </div>
                             <div class="section-input">
                                 <mat-form-field>
+                                    <mat-label>Alias</mat-label>
                                     <input matInput name="hpacketfield-custom-aliases-{{field.id}}" id="customAliasesLabel-{{field.id}}" type="text"
-                                        placeholder="Alias" [(ngModel)]="fieldAliases[field.id]">
+                                        [(ngModel)]="fieldAliases[field.id]">
                                 </mat-form-field>
                             </div>
                         </div>
@@ -85,8 +86,9 @@
                             </div>
                             <div class="section-input">
                                 <mat-form-field>
+                                    <mat-label>e.g. application/octet-stream</mat-label>
                                     <input matInput name="hpacketfield-custom-file-type-{{field.id}}" id="file-type-Label-{{field.id}}" type="text"
-                                        placeholder="e.g. application/octet-stream" [(ngModel)]="fieldFileMimeTypes[field.id]" [matAutocomplete]="auto"
+                                        [(ngModel)]="fieldFileMimeTypes[field.id]" [matAutocomplete]="auto"
                                         (ngModelChange)="filterMimeTypeList(field.id)">
                                     <mat-autocomplete #auto="matAutocomplete" (opened)="filterMimeTypeList(field.id)">
                                         <mat-option *ngFor="let option of filteredMIMETypesOptions" [value]="option">
@@ -202,14 +204,15 @@
                                     name="hpacketfield-line-color-{{field.id}}">
 
                                 <mat-form-field>
+                                    <mat-label i18n="@@HYT_type">Type</mat-label>
                                     <mat-select [(value)]="fieldLineSettings[field.id].type"
-                                        i18n-placeholder="@@HYT_type" placeholder="Type">
+                                       >
                                         <mat-select-trigger>
                                             <div class="line-option"
                                                 [ngClass]="fieldLineSettings[field.id].type"></div>
                                         </mat-select-trigger>
 
-                                        <mat-option *ngFor="let lineType of lineTypeOptions"
+                                        <mat-option *ngFor="let lineType of lineTypeOptions" class="line-type-option"
                                             [value]="lineType">
                                             <div class="line-option" [ngClass]="lineType"></div>
                                         </mat-option>
@@ -217,8 +220,9 @@
                                 </mat-form-field>
 
                                 <mat-form-field>
+                                    <mat-label i18n="@@HYT_Thickness">Thickness</mat-label>
                                     <input class="thickness" matInput type="number" [(ngModel)]="fieldLineSettings[field.id].thickness" min="1" max="5"
-                                        i18n-placeholder="@@HYT_Thickness" placeholder="Thickness" name="hpacketfield-line-thickness-{{field.id}}">
+                                        name="hpacketfield-line-thickness-{{field.id}}">
                                 </mat-form-field>
 
                             </div>

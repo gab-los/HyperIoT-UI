@@ -19,6 +19,18 @@ fieldset {
   min-height: 52px;
 }
 
+.selected-packets {
+  width: 100%;
+  margin-bottom: 1.25em;
+
+  .selected-packets-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
 .mat-chip-list-wrapper {
   width: 100%;
   min-height: 145px;
@@ -30,8 +42,9 @@ fieldset {
 }
 
 .mat-chip-custom {
-  background-color: var(--primary-color);
-  color: white;
+  --mdc-chip-elevated-container-color: var(--primary-color);
+  --mdc-chip-label-text-color: white;
+  --mdc-chip-with-trailing-icon-trailing-icon-color: white;
 
   .mat-icon {
     color: white;
@@ -44,7 +57,7 @@ fieldset {
       width: 100%;
     }
 
-    .mat-form-field-appearance-legacy .mat-form-field-infix {
+    .mat-mdc-form-field-infix {
       padding: 10px;
 
       label {
