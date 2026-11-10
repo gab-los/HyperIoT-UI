@@ -94,13 +94,13 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "hyperiot:build:production"
+              "buildTarget": "hyperiot:build:production"
             },
             "it": {
-              "browserTarget": "hyperiot:build:it"
+              "buildTarget": "hyperiot:build:it"
             },
             "development": {
-              "browserTarget": "hyperiot:build:development"
+              "buildTarget": "hyperiot:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -108,7 +108,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "hyperiot:build"
+            "buildTarget": "hyperiot:build"
           }
         },
         "test": {
