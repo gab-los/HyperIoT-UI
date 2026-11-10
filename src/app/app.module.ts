@@ -2,7 +2,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler } from '@angular/core';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 
 // modules
@@ -124,7 +124,6 @@ export function apiConfigFactory(): Configuration {
         RouterModule,
         BrowserModule,
         BrowserAnimationsModule,
-        HttpClientModule,
         MatIconModule,
         MatButtonModule,
         MatDialogModule,
@@ -175,6 +174,7 @@ export function apiConfigFactory(): Configuration {
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
         BrandingService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent]
