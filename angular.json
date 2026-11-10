@@ -35,6 +35,7 @@
             "styles": [
               "./node_modules/leaflet/dist/leaflet.css",
               "./node_modules/gridstack/dist/gridstack.min.css",
+              "./node_modules/@danielmoncada/angular-datetime-picker/assets/style/picker.min.css",
               "src/styles.scss"
             ],
             "scripts": [],
@@ -125,6 +126,7 @@
             "styles": [
               "./node_modules/leaflet/dist/leaflet.css",
               "./node_modules/gridstack/dist/gridstack.min.css",
+              "./node_modules/@danielmoncada/angular-datetime-picker/assets/style/picker.min.css",
               "src/styles.scss"
             ],
             "scripts": []

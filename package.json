@@ -21,8 +21,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-material-components/datetime-picker": "^16.0.1",
-    "@angular-material-components/moment-adapter": "^16.0.1",
     "@angular/animations": "16.2.12",
     "@angular/cdk": "16.2.14",
     "@angular/common": "16.2.12",
@@ -36,6 +34,8 @@
     "@angular/router": "16.2.12",
     "@angular/service-worker": "16.2.12",
     "@asymmetrik/ngx-leaflet": "16.0.1",
+    "@danielmoncada/angular-datetime-picker": "^16.1.0",
+    "@danielmoncada/angular-datetime-picker-moment-adapter": "^3.0.1",
     "@ngrx/effects": "^16.3.0",
     "@ngrx/entity": "^16.3.0",
     "@ngrx/store": "^16.3.0",

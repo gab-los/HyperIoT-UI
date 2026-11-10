@@ -12,6 +12,12 @@ fieldset {
   }
 }
 
+.invalid-range-error {
+  background-color: #ff00005c;
+  padding: 1em;
+  border-radius: 0.4em;
+}
+
 .packets-loading {
   display: flex;
   align-items: center;
