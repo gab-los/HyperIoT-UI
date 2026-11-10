@@ -155,6 +155,7 @@ export function apiConfigFactory(): Configuration {
             maxAge: 25,
             logOnly: environment.production,
             autoPause: true, // Pauses recording actions and state changes when the extension window is not open
+            connectInZone: true,
         }),
         EffectsModule.forRoot(HyperiotStore.Effects),
         MomentModule
