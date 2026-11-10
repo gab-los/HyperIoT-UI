@@ -22,7 +22,7 @@ import { environment } from "../environments/environment";
 import {HttpContext} from "@angular/common/http";
 import {CookieService} from "ngx-cookie-service";
 import { Store } from "@ngrx/store";
-import { concatLatestFrom } from "@ngrx/effects";
+import { concatLatestFrom } from '@ngrx/operators';
 
 @Component({
   selector: "hyt-root",
