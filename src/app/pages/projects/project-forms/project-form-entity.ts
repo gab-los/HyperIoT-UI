@@ -18,7 +18,8 @@ export enum LoadingStatusEnum {
 }
 
 @Component({
-    template: ''
+    template: '',
+    standalone: false
 })
 
 // tslint:disable-next-line:component-class-suffix

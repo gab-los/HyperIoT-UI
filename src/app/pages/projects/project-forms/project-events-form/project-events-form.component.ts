@@ -15,10 +15,11 @@ import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material
 import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
-  selector: 'hyt-project-events-form',
-  templateUrl: './project-events-form.component.html',
-  styleUrls: ['./project-events-form.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'hyt-project-events-form',
+    templateUrl: './project-events-form.component.html',
+    styleUrls: ['./project-events-form.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ProjectEventsFormComponent extends ProjectFormEntity implements OnInit, OnChanges, OnDestroy {
 

@@ -8,10 +8,11 @@ import { ProjectFormEntity, LoadingStatusEnum } from '../project-form-entity';
 import { Validators } from '@angular/forms';
 
 @Component({
-  selector: 'hyt-application-form',
-  templateUrl: './application-form.component.html',
-  styleUrls: ['./application-form.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'hyt-application-form',
+    templateUrl: './application-form.component.html',
+    styleUrls: ['./application-form.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ApplicationFormComponent extends ProjectFormEntity implements AfterViewInit, OnDestroy {
 

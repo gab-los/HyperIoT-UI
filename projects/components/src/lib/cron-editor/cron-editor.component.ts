@@ -5,9 +5,10 @@ import { Days, MonthWeeks, Months } from './enums';
 import Utils from './Utils';
 
 @Component({
-  selector: 'hyt-cron-editor',
-  templateUrl: './cron-editor.component.html',
-  styleUrls: ['./cron-editor.component.css']
+    selector: 'hyt-cron-editor',
+    templateUrl: './cron-editor.component.html',
+    styleUrls: ['./cron-editor.component.css'],
+    standalone: false
 })
 export class CronEditorComponent implements OnInit, OnChanges {
   @Input() public disabled: boolean;

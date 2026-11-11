@@ -107,11 +107,12 @@ export class NodeDatabase {
 }
 
 @Component({
-  selector: 'hyt-tree-view-editable',
-  templateUrl: './hyt-tree-view-editable.component.html',
-  styleUrls: ['./hyt-tree-view-editable.component.scss'],
-  providers: [NodeDatabase],
-  encapsulation: ViewEncapsulation.None
+    selector: 'hyt-tree-view-editable',
+    templateUrl: './hyt-tree-view-editable.component.html',
+    styleUrls: ['./hyt-tree-view-editable.component.scss'],
+    providers: [NodeDatabase],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class HytTreeViewEditableComponent implements OnInit {
 

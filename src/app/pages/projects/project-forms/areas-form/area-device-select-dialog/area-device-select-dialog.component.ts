@@ -5,10 +5,11 @@ import { LoadingStatusEnum } from '../../project-form-entity';
 import { AREA_ICONS_OPTIONS } from 'components';
 
 @Component({
-  selector: 'hyt-area-device-select-dialog',
-  templateUrl: './area-device-select-dialog.component.html',
-  styleUrls: ['./area-device-select-dialog.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'hyt-area-device-select-dialog',
+    templateUrl: './area-device-select-dialog.component.html',
+    styleUrls: ['./area-device-select-dialog.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AreaDeviceSelectDialogComponent implements OnInit {
   projectDevices = [] as HDevice[];

@@ -31,10 +31,11 @@ type ExportHPacketData = {
 };
 
 @Component({
-  selector: 'hyperiot-data-export',
-  templateUrl: './data-export.component.html',
-  styleUrls: ['./data-export.component.scss'],
-  providers: DATETIME_PICKER_PROVIDERS,
+    selector: 'hyperiot-data-export',
+    templateUrl: './data-export.component.html',
+    styleUrls: ['./data-export.component.scss'],
+    providers: DATETIME_PICKER_PROVIDERS,
+    standalone: false
 })
 export class DataExportComponent implements OnInit {
 

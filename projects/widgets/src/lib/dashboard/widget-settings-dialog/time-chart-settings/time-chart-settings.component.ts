@@ -14,7 +14,8 @@ import { PacketSelectComponent } from '../packet-select/packet-select.component'
     selector: 'hyperiot-time-chart-settings',
     templateUrl: './time-chart-settings.component.html',
     styleUrls: ['./time-chart-settings.component.scss'],
-    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+    standalone: false
 })
 export class TimeChartSettingsComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild(PacketSelectComponent, { static: true }) packetSelect: PacketSelectComponent;

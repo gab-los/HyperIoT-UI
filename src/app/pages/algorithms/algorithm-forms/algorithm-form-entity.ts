@@ -16,8 +16,9 @@ export enum LoadingStatusEnum {
     Error
 }
 @Component({
-  selector: 'hyt-algorithm-form-entity',
-  template: ''
+    selector: 'hyt-algorithm-form-entity',
+    template: '',
+    standalone: false
 })
 // tslint:disable-next-line:component-class-suffix
 export abstract class AlgorithmFormEntity implements OnInit, AfterViewInit {
