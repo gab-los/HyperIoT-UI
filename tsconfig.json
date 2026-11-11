@@ -18,15 +18,14 @@
       ]
     },
     "sourceMap": true,
+    "esModuleInterop": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
     "lib": [
       "es2018",
       "dom"
