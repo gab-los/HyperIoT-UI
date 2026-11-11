@@ -60,7 +60,7 @@ import { PlotlyModule } from 'angular-plotly.js';
 import { HytChartModalComponent } from './hyt-modal/hyt-chart-modal/hyt-chart-modal.component';
 import { MapComponent } from './hyt-map/map.component';
 import { LeafletMapComponent } from './hyt-map/components/leaflet-map/leaflet-map.component';
-import {LeafletModule} from "@asymmetrik/ngx-leaflet";
+import {LeafletModule} from "@bluehalo/ngx-leaflet";
 
 import { HytAlarmComponent } from './hyt-alarm/hyt-alarm.component';
 import { HytNoData } from './hyt-no-data/hyt-no-data.component';
