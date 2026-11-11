@@ -8,10 +8,11 @@ import { DATETIME_PICKER_PROVIDERS, timeRangeValidator } from '../datetime-picke
 
 
 @Component({
-  selector: 'hyperiot-custom-default-selection-dialog',
-  templateUrl: './custom-default-selection-dialog.component.html',
-  styleUrls: ['./custom-default-selection-dialog.component.css'],
-  providers: DATETIME_PICKER_PROVIDERS,
+    selector: 'hyperiot-custom-default-selection-dialog',
+    templateUrl: './custom-default-selection-dialog.component.html',
+    styleUrls: ['./custom-default-selection-dialog.component.css'],
+    providers: DATETIME_PICKER_PROVIDERS,
+    standalone: false
 })
 export class CustomDefaultSelectionDialogComponent implements OnInit {
 

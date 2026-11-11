@@ -31,10 +31,11 @@ import { ShareType } from "./models/shared.model";
 import { ShareProjectsComponent } from "./share-projects/share-projects.component";
 
 @Component({
-  selector: "hyt-projects",
-  templateUrl: "./projects.component.html",
-  styleUrls: ["./projects.component.scss"],
-  encapsulation: ViewEncapsulation.None,
+    selector: "hyt-projects",
+    templateUrl: "./projects.component.html",
+    styleUrls: ["./projects.component.scss"],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   PageStatus = PageStatus;

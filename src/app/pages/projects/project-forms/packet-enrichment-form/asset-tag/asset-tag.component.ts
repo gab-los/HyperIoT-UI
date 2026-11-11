@@ -12,9 +12,10 @@ export enum TagStatus {
 }
 
 @Component({
-  selector: 'hyt-asset-tag',
-  templateUrl: './asset-tag.component.html',
-  styleUrls: ['./asset-tag.component.scss']
+    selector: 'hyt-asset-tag',
+    templateUrl: './asset-tag.component.html',
+    styleUrls: ['./asset-tag.component.scss'],
+    standalone: false
 })
 export class AssetTagComponent implements OnInit {
 

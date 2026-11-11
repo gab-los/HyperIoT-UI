@@ -25,10 +25,11 @@ import { Store } from "@ngrx/store";
 import { concatLatestFrom } from '@ngrx/operators';
 
 @Component({
-  selector: "hyt-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"],
-  encapsulation: ViewEncapsulation.None,
+    selector: "hyt-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
   public environment = environment;

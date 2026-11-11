@@ -16,8 +16,9 @@ export enum LoadingStatusEnum {
     Error
 }
 @Component({
-  selector: 'hyt-algorithm-form-entity',
-  template: ''
+    selector: 'hyt-algorithm-form-entity',
+    template: '',
+    standalone: false
 })
 // tslint:disable-next-line:component-class-suffix
 export abstract class AlgorithmFormEntity implements OnInit, AfterViewInit {
@@ -119,7 +120,7 @@ export abstract class AlgorithmFormEntity implements OnInit, AfterViewInit {
 
     clone(entity?: any): any {
         console.log();
-        const cloned = { ...entity } || this.entity;
+        const cloned = { ...entity };
         cloned.id = 0;
         cloned.entityVersion = 1;
         cloned.name = `${cloned.name} (copy)`;
