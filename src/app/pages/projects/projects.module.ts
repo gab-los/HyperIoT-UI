@@ -5,7 +5,7 @@ import { ComponentsModule } from 'components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ColorPickerModule } from 'ngx-color-picker';
+import { ColorPickerDirective } from 'ngx-color-picker';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { GenericSummaryListComponent } from './project-detail/generic-summary-list/generic-summary-list.component';
 
@@ -132,7 +132,7 @@ import { ComputeFieldRuleComponent } from './project-forms/packet-enrichment-for
         ComputeFieldRuleComponent,
     ],
     imports: [
-        ColorPickerModule,
+        ColorPickerDirective,
         MatIconModule,
         MatButtonModule,
         MatTabsModule,

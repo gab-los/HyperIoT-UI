@@ -141,7 +141,7 @@ export class ApplicationFormComponent extends ProjectFormEntity implements After
     super.edit(d, readyCallback);
   }
   clone(entity?: HDevice): HDevice {
-    const device = { ...entity } || this.entity;
+    const device = { ...entity };
     device.id = 0;
     device.entityVersion = 1;
     device.deviceName = `${device.deviceName}Copy`;

@@ -49,7 +49,7 @@ import { WidgetValueMappingComponent } from './widget-settings-dialog/packet-sel
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { GaugeSettingsComponent } from './widget-settings-dialog/gauge-settings/gauge-settings.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ColorPickerModule } from 'ngx-color-picker';
+import { ColorPickerDirective } from 'ngx-color-picker';
 import { DataExportComponent } from './timeline/data-export/data-export.component';
 import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import { MatRadioModule } from '@angular/material/radio';
@@ -94,7 +94,7 @@ import { CustomDefaultSelectionDialogComponent } from './custom-default-selectio
     CustomDefaultSelectionDialogComponent,
   ],
   imports: [
-    ColorPickerModule,
+    ColorPickerDirective,
     CommonModule,
     ComponentsModule,
     DragDropModule,

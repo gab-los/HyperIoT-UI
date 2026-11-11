@@ -178,7 +178,7 @@ export class DeviceFormComponent extends ProjectFormEntity implements AfterViewI
   }
 
   clone(entity?: HDevice): HDevice {
-    const device = { ...entity } || this.entity;
+    const device = { ...entity };
     device.id = 0;
     device.entityVersion = 1;
     device.deviceName = `${device.deviceName}Copy`;
