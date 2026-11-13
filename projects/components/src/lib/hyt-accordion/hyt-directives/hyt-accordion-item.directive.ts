@@ -9,5 +9,5 @@ import { HytAccordionContent } from './hyt-accordion-content.directive';
     @Input() header = "";
     @Input() disabled = false;
     
-    @ContentChild(HytAccordionContent) content: HytAccordionContent;
+    @ContentChild(HytAccordionContent) content: HytAccordionContent & HTMLElement;
   }

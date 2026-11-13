@@ -12,7 +12,7 @@ import { AREA_ICONS_OPTIONS } from 'components';
     standalone: false
 })
 export class AreaDeviceSelectDialogComponent implements OnInit {
-  projectDevices = [] as HDevice[];
+  projectDevices = [] as (HDevice & { added?: boolean; area?: string })[];
   selectedDevice: HDevice;
   loadingStatus = LoadingStatusEnum.Ready;
   LoadingStatus = LoadingStatusEnum;

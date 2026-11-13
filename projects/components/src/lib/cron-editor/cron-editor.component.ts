@@ -58,7 +58,7 @@ export class CronEditorComponent implements OnInit, OnChanges {
     return Days[day];
   }
 
-  public monthWeekDisplay(monthWeekNumber: number): string {
+  public monthWeekDisplay(monthWeekNumber: string): string {
     return MonthWeeks[monthWeekNumber];
   }
 
