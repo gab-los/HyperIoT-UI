@@ -175,7 +175,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private logger: Logger;
 
-  private dataSourceByNavigationState: Dashboard.DashboardTypeEnum | undefined = this.router.getCurrentNavigation().extras.state?.dataSource;
+  private dataSourceByNavigationState: Dashboard.DashboardTypeEnum | undefined = this.router.currentNavigation().extras.state?.dataSource;
 
   constructor(
     private dashboardConfigService: DashboardConfigService,
