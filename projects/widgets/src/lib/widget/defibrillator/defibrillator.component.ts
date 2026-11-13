@@ -133,7 +133,11 @@ export class DefibrillatorComponent extends BaseTableComponent implements OnInit
     TEMP: { },
   }
 
-  graphs = {
+  graphs: {
+    summary: { [key: string]: { chart: any; source: string; index?: number } };
+    standard: { [key: string]: { chart: any; source: string; index?: number } };
+    derivations: { [key: string]: { chart: any; source: string; index?: number } };
+  } = {
     summary: {
       chart0: {
         chart: { },
