@@ -53,11 +53,13 @@
               <owl-date-time #endTimePicker [showSecondsTimer]="true"></owl-date-time>
             </mat-form-field>
           </div>
-          <div *ngIf="form.errors?.['timeRangeInvalid']" class="col-12 px-2 pb-2">
+          @if (form.errors?.['timeRangeInvalid']) {
+          <div class="col-12 px-2 pb-2">
             <div class="invalid-range-error" i18n="@@HYT_custom_default_selection_invalid_range">
               End time must be after start time
             </div>
           </div>
+          }
         </div>
 
         <div class="row">
@@ -92,31 +94,37 @@
                 [maxlength]="maxLength"
                 required
               />
+              @if (exportName.hasError('charNotAllowed')) {
               <mat-error
-                *ngIf="exportName.hasError('charNotAllowed')"
                 i18="@@HYT_invalid_characters"
               >
                 Invalid characters have been entered
               </mat-error>
+              }
+              @if (exportName.dirty && exportName.hasError('required')) {
               <mat-error
-                *ngIf="exportName.dirty && exportName.hasError('required')"
                 i18n="@@HYT_field_required"
               >
                 The field is required
               </mat-error>
+              }
             </mat-form-field>
           </div>
         </div>
 
         <div class="row">
           <div class="col-6 d-flex flex-column p-2">
-            <div *ngIf="loadingHPackets" class="packets-loading">
+            @if (loadingHPackets) {
+            <div class="packets-loading">
               <mat-spinner strokeWidth="3" diameter="24"></mat-spinner>
               <span i18n="@@HYT_loading_packets">Loading packets</span>
             </div>
-            <mat-error *ngIf="hPacketsLoadError" i18n="@@HYT_loading_packets_error">
+            }
+            @if (hPacketsLoadError) {
+            <mat-error i18n="@@HYT_loading_packets_error">
               Error loading packets
             </mat-error>
+            }
             <hyt-select
               [hidden]="loadingHPackets"
               #selectPackets
@@ -138,8 +146,8 @@
                 {{ countSelectedPackets(hPacketListSelected.length) }}
               </label>
               <mat-chip-set class="mat-chip-list-wrapper">
+                @for (hPacket of hPacketListSelected; track hPacket) {
                 <mat-chip
-                  *ngFor="let hPacket of hPacketListSelected"
                   class="mat-chip-custom"
                   (removed)="removeHPacket(hPacket)"
                 >
@@ -148,6 +156,7 @@
                     <mat-icon>cancel</mat-icon>
                   </button>
                 </mat-chip>
+                }
               </mat-chip-set>
             </div>
           </div>
@@ -165,11 +174,15 @@
         </div>
       </fieldset>
 
-      <div *ngIf="exportErrorList.length" class="py-2">
-        <mat-error *ngFor="let error of exportErrorList">
+      @if (exportErrorList.length) {
+      <div class="py-2">
+        @for (error of exportErrorList; track error) {
+        <mat-error>
           {{ exportDownloadError(error.hPacketId) }}
         </mat-error>
+        }
       </div>
+      }
     </form>
   </section>
 
@@ -196,9 +209,10 @@
     </hyt-button>
   </section>
 
+  @if (exportInProgress) {
   <img
-    *ngIf="exportInProgress"
     class="rocket cursor-progress"
     src="assets/images/rocket.svg"
   />
+  }
 </main>

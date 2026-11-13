@@ -48,9 +48,11 @@
 
             </div>
 
-            <div *ngIf="customRangeForm.errors?.['timeRangeInvalid'] && customRangeForm.touched" class="invalid-range-error" i18n="@@HYT_custom_default_selection_invalid_range">
+            @if (customRangeForm.errors?.['timeRangeInvalid'] && customRangeForm.touched) {
+            <div class="invalid-range-error" i18n="@@HYT_custom_default_selection_invalid_range">
                 End time must be after start time
             </div>
+            }
 
         </form>
 
