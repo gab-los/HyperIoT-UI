@@ -48,9 +48,9 @@ fieldset {
 }
 
 .mat-chip-custom {
-  --mdc-chip-elevated-container-color: var(--primary-color);
-  --mdc-chip-label-text-color: white;
-  --mdc-chip-with-trailing-icon-trailing-icon-color: white;
+  --mat-chip-elevated-container-color: var(--primary-color);
+  --mat-chip-label-text-color: white;
+  --mat-chip-with-trailing-icon-trailing-icon-color: white;
 
   .mat-icon {
     color: white;

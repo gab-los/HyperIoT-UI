@@ -170,7 +170,7 @@
           <mat-chip-grid #chipList>
             @for (tag of selectedTags; track tag) {
             <mat-chip-row [removable]="true" (removed)="remove()"
-              [style.--mdc-chip-elevated-container-color]="tag.color">
+              [style.--mat-chip-elevated-container-color]="tag.color">
               {{tag.name}}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip-row>
