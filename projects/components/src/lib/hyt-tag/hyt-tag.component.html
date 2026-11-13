@@ -4,6 +4,10 @@
     [style.--mdc-chip-label-text-color]="textColor || '#fff'"
 >
     {{value}}
-    <span class="hyt-icon icon-hyt_pencil" *ngIf="editable" (click)="editedFn($event)"></span>
-    <span class="hyt-icon icon-hyt_cancelC" *ngIf="removable" (click)="removedFn($event)"></span>
+    @if (editable) {
+    <span class="hyt-icon icon-hyt_pencil" (click)="editedFn($event)"></span>
+    }
+    @if (removable) {
+    <span class="hyt-icon icon-hyt_cancelC" (click)="removedFn($event)"></span>
+    }
 </mat-chip>
