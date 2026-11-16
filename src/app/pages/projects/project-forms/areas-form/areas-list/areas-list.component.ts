@@ -1,4 +1,3 @@
-
 /*
  *
  *  * Copyright 2019-2023 HyperIoT
@@ -18,18 +17,35 @@
  *
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewEncapsulation} from '@angular/core';
-import {Area, Area_Service, HProjectService, Logger, LoggerService} from 'core';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {PageStatus} from '../../../../../models/pageStatus';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  Area,
+  Area_Service,
+  HProjectService,
+  Logger,
+  LoggerService,
+} from "core";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { PageStatus } from "../../../../../models/pageStatus";
 
 @Component({
-    selector: 'hyt-areas-list',
-    templateUrl: './areas-list.component.html',
-    styleUrls: ['./areas-list.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-areas-list",
+  templateUrl: "./areas-list.component.html",
+  styleUrls: ["./areas-list.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AreasListComponent implements OnChanges, OnDestroy {
   /**
@@ -74,8 +90,8 @@ export class AreasListComponent implements OnChanges, OnDestroy {
    */
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
   /*
-  * logger service
-  */
+   * logger service
+   */
   private logger: Logger;
   constructor(
     private projectService: HProjectService,
@@ -84,25 +100,30 @@ export class AreasListComponent implements OnChanges, OnDestroy {
   ) {
     // Init Logger
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('AreaListComponent');
+    this.logger.registerClass("AreaListComponent");
   }
   ngOnChanges(changes: SimpleChanges) {
-    this.logger.debug('Changed input values', changes);
-    if(this.ngUnsubscribe){
+    this.logger.debug("Changed input values", changes);
+    if (this.ngUnsubscribe) {
       this.ngUnsubscribe.next();
       this.ngUnsubscribe.complete();
     }
-    if(this.subAreaList){
-      this.logger.debug('We are in a sub-area, we receive the list to be displayed as input', this.subAreaList);
+    if (this.subAreaList) {
+      this.logger.debug(
+        "We are in a sub-area, we receive the list to be displayed as input",
+        this.subAreaList
+      );
       this.areaList = this.subAreaList;
     } else {
-      this.logger.debug('We are in a main area, we start the search function for Areas');
+      this.logger.debug(
+        "We are in a main area, we start the search function for Areas"
+      );
       this.getAreasList();
     }
   }
   ngOnDestroy() {
-    if(this.ngUnsubscribe){
-      this.logger.debug('Closed all subscriptions of the component');
+    if (this.ngUnsubscribe) {
+      this.logger.debug("Closed all subscriptions of the component");
       this.ngUnsubscribe.next();
       this.ngUnsubscribe.complete();
     }
@@ -113,7 +134,7 @@ export class AreasListComponent implements OnChanges, OnDestroy {
    * @param area // Clicked Area
    */
   onAreaItemClick(area: Area) {
-    this.logger.debug('Area clicked', area)
+    this.logger.debug("Area clicked", area);
     this.itemSelected.emit(area);
   }
 
@@ -124,23 +145,24 @@ export class AreasListComponent implements OnChanges, OnDestroy {
   private getAreasList() {
     this.pageStatus = PageStatus.Loading;
     this.resetAreaCounter();
-    this.projectService.getHProjectAreaList(this.projectId).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe({
-      next: (list: Area[]) => {
-        this.areaList = list;
-        list.forEach((a) => {
-          this.countInnerArea(a);
-          this.countAreaDevice(a);
-        })
-        this.logger.debug('getAreasList values returned', list);
-        this.pageStatus = PageStatus.Ready;
-      },
-      error: (error) => {
-        this.logger.error('getAreasList error', error);
-        this.pageStatus = PageStatus.Error;
-      }
-    });
+    this.projectService
+      .getHProjectAreaList(this.projectId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (list: Area[]) => {
+          this.areaList = list;
+          list.forEach((a) => {
+            this.countInnerArea(a);
+            this.countAreaDevice(a);
+          });
+          this.logger.debug("getAreasList values returned", list);
+          this.pageStatus = PageStatus.Ready;
+        },
+        error: (error) => {
+          this.logger.error("getAreasList error", error);
+          this.pageStatus = PageStatus.Error;
+        },
+      });
   }
 
   /**
@@ -149,24 +171,26 @@ export class AreasListComponent implements OnChanges, OnDestroy {
    * @private
    */
   private countInnerArea(area: Area) {
-    this.areaService.findInnerAreas(area.id).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(
-      {
+    this.areaService
+      .findInnerAreas(area.id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
         next: (areaTree) => {
           const count = (list: Area[]): number => {
             let sum = list.length;
-            list.forEach((a) => { sum += count(a.innerArea); });
+            list.forEach((a) => {
+              sum += count(a.innerArea);
+            });
             return sum;
           };
-          this.innerAreaCount = area['innerCount'] = count(areaTree.innerArea);
-          this.logger.debug('Total inner areas', this.innerAreaCount);
+          this.innerAreaCount = area["innerCount"] = count(areaTree.innerArea);
+          this.logger.debug("Total inner areas", this.innerAreaCount);
         },
         error: (error) => {
-          this.logger.error('Find Inner Area Error', error);
+          this.logger.error("Find Inner Area Error", error);
           this.innerAreaCount = -1;
-        }
-      })
+        },
+      });
   }
 
   /**
@@ -175,18 +199,19 @@ export class AreasListComponent implements OnChanges, OnDestroy {
    * @private
    */
   private countAreaDevice(area: Area) {
-    this.areaService.getAreaDeviceDeepList(area.id).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe({
-      next: (deviceList) => {
-        this. deviceCount = area['deviceCount'] = deviceList.length;
-        this.logger.debug('Total Device in area', this.deviceCount);
-      },
-      error: (error) => {
-        this.logger.error('Count device in Area Error', error);
-        this.deviceCount = -1;
-      }
-    });
+    this.areaService
+      .getAreaDeviceDeepList(area.id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (deviceList) => {
+          this.deviceCount = area["deviceCount"] = deviceList.length;
+          this.logger.debug("Total Device in area", this.deviceCount);
+        },
+        error: (error) => {
+          this.logger.error("Count device in Area Error", error);
+          this.deviceCount = -1;
+        },
+      });
   }
 
   /**
@@ -203,14 +228,14 @@ export class AreasListComponent implements OnChanges, OnDestroy {
    * @param e
    */
   toggleClassCard(e): void {
-    const classElIsIn = e.target.classList.contains('mat-elevation-z2');
+    const classElIsIn = e.target.classList.contains("mat-elevation-z2");
     const cl = e.target.classList;
-    if(classElIsIn) {
-      cl.remove('mat-elevation-z2');
-      cl.add('mat-elevation-z8')
-    }else{
-      cl.remove('mat-elevation-z8');
-      cl.add('mat-elevation-z2')
+    if (classElIsIn) {
+      cl.remove("mat-elevation-z2");
+      cl.add("mat-elevation-z8");
+    } else {
+      cl.remove("mat-elevation-z8");
+      cl.add("mat-elevation-z2");
     }
   }
 }

@@ -6,6 +6,7 @@ import {
   EventEmitter,
   forwardRef,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   ControlValueAccessor,
@@ -47,12 +48,13 @@ export const CUSTOM_RADIO_CONTROL_VALUE_ACCESSOR: any = {
  * Wrapper for the radio buttons.
  */
 @Component({
-    selector: "hyt-radio-button",
-    templateUrl: "./hyt-radio-button.component.html",
-    styleUrls: ["./hyt-radio-button.component.scss"],
-    providers: [CUSTOM_RADIO_CONTROL_VALUE_ACCESSOR],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-radio-button",
+  templateUrl: "./hyt-radio-button.component.html",
+  styleUrls: ["./hyt-radio-button.component.scss"],
+  providers: [CUSTOM_RADIO_CONTROL_VALUE_ACCESSOR],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytRadioButtonComponent implements OnInit, ControlValueAccessor {
   /** The internal data */
@@ -115,7 +117,10 @@ export class HytRadioButtonComponent implements OnInit, ControlValueAccessor {
       validators.push(Validators.required);
     }
 
-    this.formControl = new UntypedFormControl("", Validators.compose(validators));
+    this.formControl = new UntypedFormControl(
+      "",
+      Validators.compose(validators)
+    );
 
     // set checked option
     for (const option of this.options) {

@@ -1,20 +1,29 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { SelectOption } from 'components';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { SelectOption } from "components";
 
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 
-import { PacketSelectComponent } from '../packet-select/packet-select.component';
+import { PacketSelectComponent } from "../packet-select/packet-select.component";
 
 @Component({
-    selector: 'hyperiot-gauge-settings',
-    templateUrl: './gauge-settings.component.html',
-    styleUrls: ['./gauge-settings.component.css'],
-    standalone: false
+  selector: "hyperiot-gauge-settings",
+  templateUrl: "./gauge-settings.component.html",
+  styleUrls: ["./gauge-settings.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class GaugeSettingsComponent implements OnInit, OnDestroy {
   subscription: any;
-  @ViewChild(PacketSelectComponent, { static: true }) packetSelect: PacketSelectComponent;
+  @ViewChild(PacketSelectComponent, { static: true })
+  packetSelect: PacketSelectComponent;
   @Input() modalApply: Observable<any>;
   @Input() widget;
   @Input() areaId;
@@ -22,22 +31,22 @@ export class GaugeSettingsComponent implements OnInit, OnDestroy {
   maxValue: number;
   selectedFields = [];
   private defaultConfig = {
-    textColor: '#275691',
-    bgColor: 'bright'
+    textColor: "#275691",
+    bgColor: "bright",
   };
 
   bgColorOptions: SelectOption[] = [
     {
-      value: 'bright',
-      label: $localize`:@@HYT_widget_settings_bg_color_bright:Bright`
+      value: "bright",
+      label: $localize`:@@HYT_widget_settings_bg_color_bright:Bright`,
     },
     {
-      value: 'dark',
-      label: $localize`:@@HYT_widget_settings_bg_color_dark:Dark`
-    }
+      value: "dark",
+      label: $localize`:@@HYT_widget_settings_bg_color_dark:Dark`,
+    },
   ];
 
-  constructor(public settingsForm: NgForm) { }
+  constructor(public settingsForm: NgForm) {}
 
   ngOnInit() {
     if (this.widget.config == null) {
@@ -46,7 +55,7 @@ export class GaugeSettingsComponent implements OnInit, OnDestroy {
     }
 
     this.subscription = this.modalApply.subscribe((event) => {
-      if (event === 'apply') {
+      if (event === "apply") {
         this.apply();
       }
     });
@@ -64,5 +73,4 @@ export class GaugeSettingsComponent implements OnInit, OnDestroy {
   onSelectedFieldsChange(fields) {
     this.selectedFields = fields;
   }
-
 }

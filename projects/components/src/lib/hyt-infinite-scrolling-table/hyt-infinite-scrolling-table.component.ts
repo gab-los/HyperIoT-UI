@@ -7,10 +7,11 @@ import {
   OnInit,
   Component,
   ViewEncapsulation,
-} from '@angular/core';
-import { FileHandlerService, HPacketField, HProjectService } from 'core';
-import { Subject } from 'rxjs';
-import moment from 'moment';
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { FileHandlerService, HPacketField, HProjectService } from "core";
+import { Subject } from "rxjs";
+import moment from "moment";
 
 export interface TableHeader {
   value: string;
@@ -24,18 +25,18 @@ enum TableStatus {
   LoadingChunkData = 0,
   ShowData = 1,
   DataEnd = 2,
-  LimitReached = 3
+  LimitReached = 3,
 }
 
 @Component({
-    selector: 'hyt-infinite-scrolling-table',
-    templateUrl: './hyt-infinite-scrolling-table.component.html',
-    styleUrls: ['./hyt-infinite-scrolling-table.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-infinite-scrolling-table",
+  templateUrl: "./hyt-infinite-scrolling-table.component.html",
+  styleUrls: ["./hyt-infinite-scrolling-table.component.css"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytInfiniteScrollingTableComponent implements OnInit {
-
   tableStatus: TableStatus = TableStatus.NoData;
 
   @Input()
@@ -52,34 +53,35 @@ export class HytInfiniteScrollingTableComponent implements OnInit {
   totalRows = 0;
   chunk = 0;
 
-  @ViewChild('tableContainer') private tableContainer: ElementRef;
+  @ViewChild("tableContainer") private tableContainer: ElementRef;
 
   @Output()
   dataRequest: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private hProjectsService: HProjectService,
-    private fileHandlerService: FileHandlerService,
-  ) { }
+    private fileHandlerService: FileHandlerService
+  ) {}
 
   ngOnInit(): void {
-    this.dataSource.subscribe((data) => {
+    this.dataSource.subscribe(
+      (data) => {
+        this.tableData = this.tableData.concat(data);
+        this.tableStatus = TableStatus.ShowData;
 
-      this.tableData = this.tableData.concat(data);
-      this.tableStatus = TableStatus.ShowData;
-
-      if(this.tableData.length >= this.dataLimit) {
-        this.tableData = this.tableData.slice(0, this.dataLimit);
-        this.tableStatus = TableStatus.LimitReached;
-      }
-      if(this.tableData.length >= this.totalRows) {
-        this.tableData = this.tableData.slice(0, this.totalRows);
-        this.tableStatus = TableStatus.DataEnd;
-      }
-
-    }, err => {
+        if (this.tableData.length >= this.dataLimit) {
+          this.tableData = this.tableData.slice(0, this.dataLimit);
+          this.tableStatus = TableStatus.LimitReached;
+        }
+        if (this.tableData.length >= this.totalRows) {
+          this.tableData = this.tableData.slice(0, this.totalRows);
+          this.tableStatus = TableStatus.DataEnd;
+        }
+      },
+      (err) => {
         this.tableStatus = TableStatus.Error;
-    });
+      }
+    );
   }
 
   retrieveFile(queryData) {
@@ -88,27 +90,41 @@ export class HytInfiniteScrollingTableComponent implements OnInit {
       queryData.packetId,
       queryData.fieldId,
       queryData.timestamp,
-      queryData.timestamp +1
+      queryData.timestamp + 1
     );
   }
 
   openFile(queryData) {
-    if (!queryData.projectId || !queryData.packetId || !queryData.fieldId || !queryData.timestamp) {
+    if (
+      !queryData.projectId ||
+      !queryData.packetId ||
+      !queryData.fieldId ||
+      !queryData.timestamp
+    ) {
       return;
     }
     // open popup before file download to prevent blocked popup
-    const fileWindow = window.open('', '_blank');
-    this.retrieveFile(queryData).subscribe(
-      res => this.fileHandlerService.openFile(res, queryData.mimeType, fileWindow)
+    const fileWindow = window.open("", "_blank");
+    this.retrieveFile(queryData).subscribe((res) =>
+      this.fileHandlerService.openFile(res, queryData.mimeType, fileWindow)
     );
   }
 
   downloadFile(queryData) {
-    if (!queryData.projectId || !queryData.packetId || !queryData.fieldId || !queryData.timestamp) {
+    if (
+      !queryData.projectId ||
+      !queryData.packetId ||
+      !queryData.fieldId ||
+      !queryData.timestamp
+    ) {
       return;
     }
-    this.retrieveFile(queryData).subscribe(
-      res => this.fileHandlerService.downloadFile(res, moment(queryData.timestamp).format('YYYY-MM-DD HH:mm:ss'), queryData.mimeType)
+    this.retrieveFile(queryData).subscribe((res) =>
+      this.fileHandlerService.downloadFile(
+        res,
+        moment(queryData.timestamp).format("YYYY-MM-DD HH:mm:ss"),
+        queryData.mimeType
+      )
     );
   }
 
@@ -117,8 +133,7 @@ export class HytInfiniteScrollingTableComponent implements OnInit {
       this.tableStatus = TableStatus.NoData;
       return;
     }
-    if(this.tableData.length > this.totalRows) {
-
+    if (this.tableData.length > this.totalRows) {
     }
     this.tableStatus = TableStatus.LoadingChunkData;
     this.dataRequest.emit(this.chunk);
@@ -147,10 +162,9 @@ export class HytInfiniteScrollingTableComponent implements OnInit {
     }
   }
 
-  getTdStyleClassByHeader(headers: TableHeader[]): string{
+  getTdStyleClassByHeader(headers: TableHeader[]): string {
     const percent = 100 / headers.length;
-    const cssPercent = `${percent.toFixed(3).slice(0,-1)}%`;
+    const cssPercent = `${percent.toFixed(3).slice(0, -1)}%`;
     return cssPercent;
   }
-
 }

@@ -1,41 +1,56 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Option } from 'components';
-import { EventComponent } from '../event-component';
-import { EventComponentType } from '../event-component-type.enum';
-import { SelectableText } from './selectableText';
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import { Option } from "components";
+import { EventComponent } from "../event-component";
+import { EventComponentType } from "../event-component-type.enum";
+import { SelectableText } from "./selectableText";
 
 @Component({
-    selector: 'hyt-event-mail',
-    templateUrl: './event-mail.component.html',
-    styleUrls: ['./event-mail.component.scss'],
-    standalone: false
+  selector: "hyt-event-mail",
+  templateUrl: "./event-mail.component.html",
+  styleUrls: ["./event-mail.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class EventMailComponent implements OnInit,EventComponent {
-
+export class EventMailComponent implements OnInit, EventComponent {
   mailForm: UntypedFormGroup;
 
-  private originalFormsValues = '';
+  private originalFormsValues = "";
 
   placeHolders: SelectableText[] = [
-    { placeholder: '${RULE_NAME}', description: $localize`:@@HYT_name_of_rule:The name of the rule` },
-    { placeholder: '${RULE_DESCRIPTION}', description: $localize`:@@HYT_description_of_rule:The description of the rule` },
-    { placeholder: '${RULE_RULEDEFINITION}', description: $localize`:@@HYT_definition_of_rule:The definition of the rule` },
-    { placeholder: '${EVENT_TRIGGER_TIME}', description: $localize`:@@HYT_event_trigger_time:Event Trigger Time` },
-    { placeholder: '${EVENT_VALUES}', description: $localize`:@@HYT_event_values:Event values` }
+    {
+      placeholder: "${RULE_NAME}",
+      description: $localize`:@@HYT_name_of_rule:The name of the rule`,
+    },
+    {
+      placeholder: "${RULE_DESCRIPTION}",
+      description: $localize`:@@HYT_description_of_rule:The description of the rule`,
+    },
+    {
+      placeholder: "${RULE_RULEDEFINITION}",
+      description: $localize`:@@HYT_definition_of_rule:The definition of the rule`,
+    },
+    {
+      placeholder: "${EVENT_TRIGGER_TIME}",
+      description: $localize`:@@HYT_event_trigger_time:Event Trigger Time`,
+    },
+    {
+      placeholder: "${EVENT_VALUES}",
+      description: $localize`:@@HYT_event_values:Event values`,
+    },
   ];
 
   activeOptions: Option[] = [
-    { value: "true", label: $localize`:@@HYT_send_email_active:ACTIVE`, checked: true },
-    { value: "false", label: $localize`:@@HYT_send_mail_disabled:DISABLED`}
+    {
+      value: "true",
+      label: $localize`:@@HYT_send_email_active:ACTIVE`,
+      checked: true,
+    },
+    { value: "false", label: $localize`:@@HYT_send_mail_disabled:DISABLED` },
     // { value: '', label: $localize`:@@HYT_start_statistic:START STATISTIC` }
   ];
 
-  constructor(
-    private fb: UntypedFormBuilder
-  ) {
-
-   }
+  constructor(private fb: UntypedFormBuilder) {}
 
   getId(): string {
     return EventComponentType.SEND_MAIL_ACTION;
@@ -46,19 +61,19 @@ export class EventMailComponent implements OnInit,EventComponent {
   }
 
   buildJsonAction(): string {
-    let jActionStr = '';
+    let jActionStr = "";
     const mail = this.buildMail();
     const act = {
-        actionName: this.getId(),
-        active: mail.active,
-        recipients: mail.mailRecipient,
-        ccRecipients: mail.mailCC,
-        subject: mail.mailObject,
-        body: mail.mailBody,
-      };
-      const jActions = [JSON.stringify(act)];
-      jActionStr = JSON.stringify(jActions);
-      return jActionStr;
+      actionName: this.getId(),
+      active: mail.active,
+      recipients: mail.mailRecipient,
+      ccRecipients: mail.mailCC,
+      subject: mail.mailObject,
+      body: mail.mailBody,
+    };
+    const jActions = [JSON.stringify(act)];
+    jActionStr = JSON.stringify(jActions);
+    return jActionStr;
   }
 
   buildMail(): any {
@@ -67,7 +82,7 @@ export class EventMailComponent implements OnInit,EventComponent {
       mailCC: this.mailForm.value.mailCC,
       mailObject: btoa(this.mailForm.value.mailObject),
       mailBody: btoa(this.mailForm.value.mailBody),
-      active: this.mailForm.value.active
+      active: this.mailForm.value.active,
     };
   }
 
@@ -76,17 +91,17 @@ export class EventMailComponent implements OnInit,EventComponent {
   }
 
   isInvalid(): boolean {
-    return this.mailForm.get('mailRecipient').invalid;
+    return this.mailForm.get("mailRecipient").invalid;
   }
 
   setMail(dataArr): void {
     const data = JSON.parse(dataArr[0]);
     console.log(data);
-    this.mailForm.get('mailRecipient').setValue(data.recipients);
-    this.mailForm.get('mailCC').setValue(data.ccRecipients);
-    this.mailForm.get('mailObject').setValue(atob(data.subject));
-    this.mailForm.get('mailBody').setValue(atob(data.body));
-    this.mailForm.get('active').setValue(data.active);
+    this.mailForm.get("mailRecipient").setValue(data.recipients);
+    this.mailForm.get("mailCC").setValue(data.ccRecipients);
+    this.mailForm.get("mailObject").setValue(atob(data.subject));
+    this.mailForm.get("mailBody").setValue(atob(data.body));
+    this.mailForm.get("active").setValue(data.active);
     this.originalValueUpdate();
   }
 
@@ -97,9 +112,13 @@ export class EventMailComponent implements OnInit,EventComponent {
 
   addPlaceHolder(event): void {
     this.mailForm.patchValue({
-      mailBody: this.mailForm.value.mailBody + event
+      mailBody: this.mailForm.value.mailBody + event,
     });
-    (document.querySelector('#mailBody.hyt-input.mat-input-element') as HTMLElement).focus();
+    (
+      document.querySelector(
+        "#mailBody.hyt-input.mat-input-element"
+      ) as HTMLElement
+    ).focus();
   }
 
   originalValueUpdate() {
@@ -107,12 +126,15 @@ export class EventMailComponent implements OnInit,EventComponent {
   }
 
   isDirty() {
-    return this.originalFormsValues !==  "" && this.originalFormsValues !== null &&
-           this.originalFormsValues !== undefined &&
-            this.getJsonForms() !== this.originalFormsValues;
+    return (
+      this.originalFormsValues !== "" &&
+      this.originalFormsValues !== null &&
+      this.originalFormsValues !== undefined &&
+      this.getJsonForms() !== this.originalFormsValues
+    );
   }
 
-  changeEventActive(active){
+  changeEventActive(active) {
     this.mailForm.get("active").setValue(active);
   }
 

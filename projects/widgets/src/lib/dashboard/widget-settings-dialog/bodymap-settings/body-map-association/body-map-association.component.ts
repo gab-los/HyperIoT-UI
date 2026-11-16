@@ -1,14 +1,24 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { DIALOG_DATA, DialogRef, Option } from 'components';
-import { BodyMapAssociation } from '../bodymap.model';
+import { HttpClient } from "@angular/common/http";
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DIALOG_DATA, DialogRef, Option } from "components";
+import { BodyMapAssociation } from "../bodymap.model";
 
 @Component({
-    selector: 'hyperiot-body-map-association',
-    templateUrl: './body-map-association.component.html',
-    styleUrls: ['./body-map-association.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyperiot-body-map-association",
+  templateUrl: "./body-map-association.component.html",
+  styleUrls: ["./body-map-association.component.css"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class BodyMapAssociationComponent implements OnInit {
   ready = undefined;
@@ -16,7 +26,8 @@ export class BodyMapAssociationComponent implements OnInit {
   @Input() bodyMap;
   @Input() bodyMapAssociation: BodyMapAssociation;
 
-  @Output() save: EventEmitter<BodyMapAssociation> = new EventEmitter<BodyMapAssociation>();
+  @Output() save: EventEmitter<BodyMapAssociation> =
+    new EventEmitter<BodyMapAssociation>();
 
   muscleListOptions: Option[] = [];
   packetList: string[] = [];
@@ -26,8 +37,8 @@ export class BodyMapAssociationComponent implements OnInit {
   constructor(
     private httpService: HttpClient,
     private dialogRef: DialogRef<BodyMapAssociation>,
-    @Inject(DIALOG_DATA) public data: any,
-  ) { }
+    @Inject(DIALOG_DATA) public data: any
+  ) {}
 
   ngOnInit(): void {
     if (this.data) {
@@ -47,15 +58,17 @@ export class BodyMapAssociationComponent implements OnInit {
       this.bodyMapAssociation = {
         muscleIds: [],
         packets: [],
-        color: '#ffff00'
+        color: "#ffff00",
       };
     }
-    this.httpService.get(this.bodyMap.dataUrl).subscribe(res => {
-      const muscleList = res as {id: string; label: string }[];
-      this.muscleListOptions = muscleList.map(m => ({value: m.id, label: m.label}));
+    this.httpService.get(this.bodyMap.dataUrl).subscribe((res) => {
+      const muscleList = res as { id: string; label: string }[];
+      this.muscleListOptions = muscleList.map((m) => ({
+        value: m.id,
+        label: m.label,
+      }));
       this.ready = true;
     });
-
   }
 
   onChangeSelectMuscle(event) {
@@ -74,7 +87,10 @@ export class BodyMapAssociationComponent implements OnInit {
   }
 
   isButtonDisabled() {
-    return this.bodyMapAssociation.muscleIds.length === 0 || this.bodyMapAssociation.packets.length === 0;
+    return (
+      this.bodyMapAssociation.muscleIds.length === 0 ||
+      this.bodyMapAssociation.packets.length === 0
+    );
   }
 
   saveAndExit() {
@@ -86,5 +102,4 @@ export class BodyMapAssociationComponent implements OnInit {
     this.save.emit(null);
     this.dialogRef.close();
   }
-
 }

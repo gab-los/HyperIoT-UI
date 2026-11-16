@@ -1,5 +1,4 @@
 <hyperiot-base-widget-template>
-
   <header-widget>
     <hyperiot-common-toolbar
       #toolbar
@@ -25,38 +24,29 @@
         Click 'Settings' button to configure.
       </strong>
     </div>
+    } @else { @if (!graph || !graph?.data || graph.data.length === 0) {
+    <hyperiot-loader> </hyperiot-loader>
     } @else {
-      @if (!graph || !graph?.data || graph.data.length === 0) {
-      <hyperiot-loader
-      >
-      </hyperiot-loader>
-      } @else {
-        <plotly-plot
-          divId="widget-{{ widget.id }}{{ isToolbarVisible }}"
-          [data]="graph?.data"
-          [layout]="graph?.layout"
-          [useResizeHandler]="true"
-          [updateOnLayoutChange]="false"
-          [config]="graph?.config"
-          (initialized)="onChartInitialized()"
-        >
-        </plotly-plot>        
+    <plotly-plot
+      divId="widget-{{ widget.id }}{{ isToolbarVisible }}"
+      [data]="$safeNavigationMigration(graph?.data)"
+      [layout]="$safeNavigationMigration(graph?.layout)"
+      [useResizeHandler]="true"
+      [updateOnLayoutChange]="false"
+      [config]="$safeNavigationMigration(graph?.config)"
+      (initialized)="onChartInitialized()"
+    >
+    </plotly-plot>
 
-        @if (noRangeSelected()) {
-        <div class="loading-overlay">
-          <p i18n="@@HYT_noRangeSelected">
-            Select a range to display the graph...
-          </p>
-        </div>
-        }
-
-        @if (loadingOfflineData) {
-        <div class="loading-overlay">
-          <p>Loading data...</p>
-          <mat-spinner strokeWidth="4" diameter="44"></mat-spinner>
-        </div>
-        }
-      }
-    }
+    @if (noRangeSelected()) {
+    <div class="loading-overlay">
+      <p i18n="@@HYT_noRangeSelected">Select a range to display the graph...</p>
+    </div>
+    } @if (loadingOfflineData) {
+    <div class="loading-overlay">
+      <p>Loading data...</p>
+      <mat-spinner strokeWidth="4" diameter="44"></mat-spinner>
+    </div>
+    } } }
   </content-widget>
 </hyperiot-base-widget-template>

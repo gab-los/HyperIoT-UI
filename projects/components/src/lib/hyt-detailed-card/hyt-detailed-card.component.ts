@@ -1,4 +1,10 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Logger, LoggerService } from "core";
 
 /**
@@ -31,10 +37,11 @@ export interface CardEmittedValue {
 }
 
 @Component({
-    selector: "hyt-detailed-card",
-    templateUrl: "./hyt-detailed-card.component.html",
-    styleUrls: ["./hyt-detailed-card.component.scss"],
-    standalone: false
+  selector: "hyt-detailed-card",
+  templateUrl: "./hyt-detailed-card.component.html",
+  styleUrls: ["./hyt-detailed-card.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytDetailedCardComponent {
   private logger: Logger;

@@ -1,20 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { HUserService, Logger, LoggerService } from 'core';
-import { ActivatedRoute } from '@angular/router';
-import { SubmissionStatus } from '../models/pageStatus';
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { HUserService, Logger, LoggerService } from "core";
+import { ActivatedRoute } from "@angular/router";
+import { SubmissionStatus } from "../models/pageStatus";
 
 /**
  * UserActivationComponent is a component of AuthenticationModule.
  * It is used to hallow the user to activate his new account and to finish the registration process.
  */
 @Component({
-    selector: 'hyt-user-activation',
-    templateUrl: './user-activation.component.html',
-    styleUrls: ['./user-activation.component.scss'],
-    standalone: false
+  selector: "hyt-user-activation",
+  templateUrl: "./user-activation.component.html",
+  styleUrls: ["./user-activation.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class UserActivationComponent implements OnInit {
-
   /**
    * activationStatus is used to handle the template view during the activation process
    */
@@ -38,9 +38,13 @@ export class UserActivationComponent implements OnInit {
   /**
    * class constructor
    */
-  constructor(private route: ActivatedRoute, private hUserService: HUserService, private loggerService: LoggerService) {
+  constructor(
+    private route: ActivatedRoute,
+    private hUserService: HUserService,
+    private loggerService: LoggerService
+  ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('UserActivationComponent');
+    this.logger.registerClass("UserActivationComponent");
   }
 
   /**
@@ -49,13 +53,13 @@ export class UserActivationComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(
       (p) => {
-        this.logger.debug('', p);
-        this.email = p.get('email');
-        this.code = p.get('code');
+        this.logger.debug("", p);
+        this.email = p.get("email");
+        this.code = p.get("code");
         this.activate();
       },
-      err => {
-        this.logger.error('', err);
+      (err) => {
+        this.logger.error("", err);
       }
     );
   }
@@ -66,13 +70,14 @@ export class UserActivationComponent implements OnInit {
    */
   activate() {
     this.hUserService.activate(this.email, this.code).subscribe(
-      res => {
-        this.logger.debug('', res);
-        this.activationStatus = SubmissionStatus.Submitted; },
-      err => {
-        this.logger.error('', err);
-        this.activationStatus = SubmissionStatus.Error; }
+      (res) => {
+        this.logger.debug("", res);
+        this.activationStatus = SubmissionStatus.Submitted;
+      },
+      (err) => {
+        this.logger.error("", err);
+        this.activationStatus = SubmissionStatus.Error;
+      }
     );
   }
-
 }

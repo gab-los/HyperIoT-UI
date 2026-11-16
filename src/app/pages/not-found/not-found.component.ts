@@ -1,16 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
-    selector: 'hyt-not-found',
-    templateUrl: './not-found.component.html',
-    styleUrls: ['./not-found.component.scss'],
-    standalone: false
+  selector: "hyt-not-found",
+  templateUrl: "./not-found.component.html",
+  styleUrls: ["./not-found.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class NotFoundComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

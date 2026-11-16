@@ -1,13 +1,25 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import { PacketData } from 'core';
-import {TypeModelService, ServiceType} from '../../service/model/service-type';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { PacketData } from "core";
+import {
+  TypeModelService,
+  ServiceType,
+} from "../../service/model/service-type";
 
 @Component({
-    selector: 'hyperiot-dynamic-widget',
-    templateUrl: './dynamic-widget.component.html',
-    styleUrls: ['./dynamic-widget.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyperiot-dynamic-widget",
+  templateUrl: "./dynamic-widget.component.html",
+  styleUrls: ["./dynamic-widget.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DynamicWidgetComponent implements OnInit {
   @Input()
@@ -21,13 +33,11 @@ export class DynamicWidgetComponent implements OnInit {
   @Output()
   widgetAction: EventEmitter<any> = new EventEmitter();
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onWidgetAction(data) {
     this.widgetAction.emit(data);
   }
-
 }

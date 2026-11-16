@@ -1,36 +1,41 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { ServicesService } from 'core';
-import { map, PartialObserver } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { environment } from "src/environments/environment";
+import { ServicesService } from "core";
+import { map, PartialObserver } from "rxjs";
 
 @Component({
-    selector: 'hyt-info',
-    templateUrl: './info.component.html',
-    styleUrls: ['./info.component.scss'],
-    standalone: false
+  selector: "hyt-info",
+  templateUrl: "./info.component.html",
+  styleUrls: ["./info.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class InfoComponent implements OnInit {
   feVersion = environment.version;
-  beVersion = '';
+  beVersion = "";
   beVersionPending = true;
 
   beVersionObserver: PartialObserver<any> = {
-    next: res => {
+    next: (res) => {
       this.beVersion = res.version;
       this.beVersionPending = false;
     },
-    error: err => {
-      this.beVersion = 'ERR';
+    error: (err) => {
+      this.beVersion = "ERR";
       this.beVersionPending = false;
-    }
-  }
+    },
+  };
 
-  constructor(
-    private servicesService: ServicesService
-  ) { }
+  constructor(private servicesService: ServicesService) {}
 
   ngOnInit(): void {
-    this.servicesService.getHyperIoTServicesVersions().subscribe(this.beVersionObserver);
+    this.servicesService
+      .getHyperIoTServicesVersions()
+      .subscribe(this.beVersionObserver);
   }
-
 }

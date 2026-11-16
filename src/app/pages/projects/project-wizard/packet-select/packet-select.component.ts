@@ -1,17 +1,25 @@
-import { Component, OnInit, Output, EventEmitter, Input, ViewEncapsulation } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { SelectOption } from 'components';
-import { HDevice, HPacket } from 'core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
+import { SelectOption } from "components";
+import { HDevice, HPacket } from "core";
 
 @Component({
-    selector: 'hyt-pw-packet-select',
-    templateUrl: './packet-select.component.html',
-    styleUrls: ['./packet-select.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-pw-packet-select",
+  templateUrl: "./packet-select.component.html",
+  styleUrls: ["./packet-select.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PacketSelectComponent implements OnInit {
-
   @Input() hDevices: HDevice[] = [];
   @Input() hPackets: HPacket[] = [];
 
@@ -29,49 +37,40 @@ export class PacketSelectComponent implements OnInit {
 
   @Output() currentDevice = new EventEmitter<string>();
 
-  
-
-  constructor(
-    private fb: UntypedFormBuilder
-  ) {
+  constructor(private fb: UntypedFormBuilder) {
     this.selectForm = this.fb.group({});
-   }
-
-  ngOnInit() {
-
   }
 
-  buildDeviceOptions() {
-    
-    this.devicesOptions = this.hDevices.map(
-      dev => {
-        return ({
-          value: dev.id, label: dev.deviceName, disabled: this.hPackets.filter(
-            p => p.device.id === dev.id
-          ).length === 0
-        });
-      }
-    );
+  ngOnInit() {}
 
+  buildDeviceOptions() {
+    this.devicesOptions = this.hDevices.map((dev) => {
+      return {
+        value: dev.id,
+        label: dev.deviceName,
+        disabled:
+          this.hPackets.filter((p) => p.device.id === dev.id).length === 0,
+      };
+    });
   }
 
   buildPacketOptions() {
     this.packetsOptions = this.hPackets
-      .filter(p => p.device.id === this.selectedDeviceId)
-      .map(pac => ({ value: pac.id, label: pac.name }));
+      .filter((p) => p.device.id === this.selectedDeviceId)
+      .map((pac) => ({ value: pac.id, label: pac.name }));
   }
 
   buildSelects() {
-    
     this.buildDeviceOptions();
-    this.selectForm.get('selectDevice').setValue(this.selectedDeviceId);
+    this.selectForm.get("selectDevice").setValue(this.selectedDeviceId);
     this.buildPacketOptions();
-    this.selectForm.get('selectPacket').setValue(this.selectedPacketId);
+    this.selectForm.get("selectPacket").setValue(this.selectedPacketId);
 
-    const currentDevice = this.getDeviceNameByID(this.selectForm.controls.selectDevice.value);
+    const currentDevice = this.getDeviceNameByID(
+      this.selectForm.controls.selectDevice.value
+    );
     this.currentDevice.emit(currentDevice);
-    this.currentPacket.emit(this.selectForm.controls.selectPacket.value)
-    
+    this.currentPacket.emit(this.selectForm.controls.selectPacket.value);
   }
 
   updateSelect() {
@@ -85,47 +84,49 @@ export class PacketSelectComponent implements OnInit {
   autoSelect(deviceId?: number): void {
     this.buildDeviceOptions();
     if (this.devicesOptions.length !== 0) {
-      const device = this.devicesOptions.find(device => device.value === deviceId);
-      this.selectForm.get('selectDevice').setValue(device ? device.value : null);
+      const device = this.devicesOptions.find(
+        (device) => device.value === deviceId
+      );
+      this.selectForm
+        .get("selectDevice")
+        .setValue(device ? device.value : null);
       this.deviceChanged(device ? device : null);
     } else {
-      this.selectForm.get('selectDevice').setValue(null);
+      this.selectForm.get("selectDevice").setValue(null);
       this.deviceChanged(null);
     }
   }
 
   deviceChanged(event): void {
     if (event) {
-
       this.selectedDeviceId = event.value;
-      
-      if(event.label){
+
+      if (event.label) {
         this.currentDevice.emit(event.label);
       }
 
-      if(event.constructor.name === 'MatSelectChange'){
+      if (event.constructor.name === "MatSelectChange") {
         const deviceName = this.getDeviceNameByID(this.selectedDeviceId);
-        this.currentDevice.emit(deviceName)
+        this.currentDevice.emit(deviceName);
       }
 
       this.packetsOptions = [];
-      this.selectForm.get('selectPacket').setValue(null);
+      this.selectForm.get("selectPacket").setValue(null);
       this.currentPacket.emit(null);
       this.buildPacketOptions();
       if (this.packetsOptions.length !== 0) {
-        
-        this.selectForm.get('selectPacket').setValue(this.packetsOptions[0].value);
+        this.selectForm
+          .get("selectPacket")
+          .setValue(this.packetsOptions[0].value);
         this.packetChanged(this.packetsOptions[0]);
-
       } else {
         this.currentPacket.emit(null);
       }
     } else {
-      
-      this.currentDevice.emit(null)
+      this.currentDevice.emit(null);
 
       this.packetsOptions = [];
-      this.selectForm.get('selectPacket').setValue(null);
+      this.selectForm.get("selectPacket").setValue(null);
       this.currentPacket.emit(null);
       this.buildPacketOptions();
     }
@@ -137,22 +138,21 @@ export class PacketSelectComponent implements OnInit {
   }
 
   getDeviceNameByID(deviceID: number): string {
-    const deviceSelected = this.hDevices.find(el => el.id === deviceID);
-    if(deviceSelected) {
+    const deviceSelected = this.hDevices.find((el) => el.id === deviceID);
+    if (deviceSelected) {
       return deviceSelected.deviceName;
     } else {
-      return '';
+      return "";
     }
   }
 
   freezeSelection() {
-    this.selectForm.get('selectDevice').disable();
-    this.selectForm.get('selectPacket').disable();
+    this.selectForm.get("selectDevice").disable();
+    this.selectForm.get("selectPacket").disable();
   }
 
   unfreezeSelection() {
-    this.selectForm.get('selectDevice').enable();
-    this.selectForm.get('selectPacket').enable();
+    this.selectForm.get("selectDevice").enable();
+    this.selectForm.get("selectPacket").enable();
   }
-
 }

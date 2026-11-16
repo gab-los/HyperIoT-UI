@@ -36,67 +36,65 @@
       </h2>
 
       @if (utilsService.isAreaDevice(itemData)) {
-        <button
-          mat-menu-item
-          class="menu-item-flex"
-          (click)="
-            redirectByMapItemAction({
-              item: itemData,
-              action: deviceActions.DASHBOARDS,
-              dataSource: dataSource.REALTIME
-            })
-          "
+      <button
+        mat-menu-item
+        class="menu-item-flex"
+        (click)="
+          redirectByMapItemAction({
+            item: itemData,
+            action: deviceActions.DASHBOARDS,
+            dataSource: dataSource.REALTIME
+          })
+        "
+      >
+        <span i18n="@@HYT_go_to_device_dashboard">
+          Go To Realtime Device Dashboard
+        </span>
+        <span class="mat-icon hyt-icon icon-hyt_device"></span>
+      </button>
+      <button
+        mat-menu-item
+        class="menu-item-flex"
+        (click)="
+          redirectByMapItemAction({
+            item: itemData,
+            action: deviceActions.DASHBOARDS,
+            dataSource: dataSource.OFFLINE
+          })
+        "
+      >
+        <span i18n="@@HYT_go_to_device_dashboard"
+          >Go To Offline Device Dashboard</span
         >
-          <span i18n="@@HYT_go_to_device_dashboard">
-            Go To Realtime Device Dashboard
-          </span>
-          <span class="mat-icon hyt-icon icon-hyt_device"></span>
-        </button>
-        <button
-          mat-menu-item
-          class="menu-item-flex"
-          (click)="
-            redirectByMapItemAction({
-              item: itemData,
-              action: deviceActions.DASHBOARDS,
-              dataSource: dataSource.OFFLINE
-            })
-          "
-        >
-          <span i18n="@@HYT_go_to_device_dashboard"
-            >Go To Offline Device Dashboard</span
-          >
-          <span class="mat-icon hyt-icon icon-hyt_device"></span>
-        </button>
-        <button
-          mat-menu-item
-          class="menu-item-flex"
-          [disabled]="true"
-          (click)="
-            redirectByMapItemAction({
-              item: itemData,
-              action: deviceActions.ALARM_MANAGER
-            })
-          "
-        >
-          <span i18n="@@HYT_go_to_alarm_manager"> Go to Alarm Manager </span>
-          <span class="mat-icon hyt-icon icon-hyt_warnC"></span>
-        </button>
-      }
-
-      @if (utilsService.isArea(itemData)) {
-        <button
-          mat-button
-          (click)="
-            redirectByMapItemAction({
-              action: deviceActions.DASHBOARDS,
-              item: itemData
-            })
-          "
-          i18n="@@HYT_go_sub_area"
-        >
-          Go To Sub Area
-        </button>
+        <span class="mat-icon hyt-icon icon-hyt_device"></span>
+      </button>
+      <button
+        mat-menu-item
+        class="menu-item-flex"
+        [disabled]="true"
+        (click)="
+          redirectByMapItemAction({
+            item: itemData,
+            action: deviceActions.ALARM_MANAGER
+          })
+        "
+      >
+        <span i18n="@@HYT_go_to_alarm_manager"> Go to Alarm Manager </span>
+        <span class="mat-icon hyt-icon icon-hyt_warnC"></span>
+      </button>
+      } @if (utilsService.isArea(itemData)) {
+      <button
+        mat-button
+        (click)="
+          redirectByMapItemAction({
+            action: deviceActions.DASHBOARDS,
+            item: itemData
+          })
+        "
+        i18n="@@HYT_go_sub_area"
+      >
+        Go To Sub Area
+      </button>
       }
     </div>
   </mat-menu>
@@ -114,7 +112,7 @@
 
   @if ((alarmInfo$ | async)?.length) {
   <span
-    [matBadge]="(alarmInfo$ | async)?.length"
+    [matBadge]="$safeNavigationMigration((alarmInfo$ | async)?.length)"
     matBadgeOverlap="false"
   ></span>
   }

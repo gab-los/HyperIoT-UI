@@ -1,22 +1,39 @@
-import { AfterViewInit, Component, Injector, OnInit, ViewChild } from '@angular/core';
-import { AlgorithmOfflineDataService, HPacketService, LoggerService, PacketData } from 'core';
-import moment from 'moment';
-import { Subject, Subscription, lastValueFrom } from 'rxjs';
-import { BaseTableComponent } from '../../base/base-table/base-table.component';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
-
+import {
+  AfterViewInit,
+  Component,
+  Injector,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  AlgorithmOfflineDataService,
+  HPacketService,
+  LoggerService,
+  PacketData,
+} from "core";
+import moment from "moment";
+import { Subject, Subscription, lastValueFrom } from "rxjs";
+import { BaseTableComponent } from "../../base/base-table/base-table.component";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
 
 @Component({
-    selector: 'hyperiot-algorithm-table',
-    templateUrl: './algorithm-table.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './algorithm-table.component.css'],
-    standalone: false
+  selector: "hyperiot-algorithm-table",
+  templateUrl: "./algorithm-table.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./algorithm-table.component.css",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class AlgorithmTableComponent extends BaseTableComponent implements AfterViewInit, OnInit {
-
+export class AlgorithmTableComponent
+  extends BaseTableComponent
+  implements AfterViewInit, OnInit
+{
   readonly REFRESH_RATE = 60 * 60 * 1000; // one hour
 
-  @ViewChild('tableChild', { static: false }) tableChild;
+  @ViewChild("tableChild", { static: false }) tableChild;
 
   hProjectAlgorithmId: number;
 
@@ -27,15 +44,15 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
 
   dataRequest: Subscription;
 
-  hPacketIdMap : Map<number, string> = new Map()
+  hPacketIdMap: Map<number, string> = new Map();
 
-  trueArray : boolean = false;
+  trueArray: boolean = false;
 
   constructor(
     private algorithmOfflineDataServices: AlgorithmOfflineDataService,
     injector: Injector,
     protected loggerService: LoggerService,
-    private packetService: HPacketService,
+    private packetService: HPacketService
   ) {
     super(injector, loggerService);
   }
@@ -46,7 +63,6 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
   }
 
   configure(): void {
-
     super.configure();
 
     if (
@@ -65,17 +81,22 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
     this.hPacketIdMap.clear();
     // set data source
     this.setDatasource();
-
   }
 
   private setDatasource(): void {
     if (this.hProjectAlgorithmId !== this.widget.config.hProjectAlgorithmId) {
       if (this.hProjectAlgorithmId) {
-        this.algorithmOfflineDataServices.removeWidget(this.widget.id, this.hProjectAlgorithmId);
+        this.algorithmOfflineDataServices.removeWidget(
+          this.widget.id,
+          this.hProjectAlgorithmId
+        );
       }
       this.hProjectAlgorithmId = this.widget.config.hProjectAlgorithmId;
-      this.algorithmOfflineDataServices.addWidget(this.widget.id, this.hProjectAlgorithmId);
-      this.widgetAction.emit({ widget: this.widget, action: 'widget:ready'});
+      this.algorithmOfflineDataServices.addWidget(
+        this.widget.id,
+        this.hProjectAlgorithmId
+      );
+      this.widgetAction.emit({ widget: this.widget, action: "widget:ready" });
     }
     setTimeout(() => {
       // first load
@@ -90,7 +111,7 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
   onToolbarAction(action: string) {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:fullscreen':
+      case "toolbar:fullscreen":
         widgetAction.value = this.allData;
         break;
     }
@@ -98,7 +119,9 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
   }
 
   getDatum(array, name) {
-    return array.some(y => y.name === name) ? array.find(y => y.name === name).value : '-';
+    return array.some((y) => y.name === name)
+      ? array.find((y) => y.name === name).value
+      : "-";
   }
 
   getAlgorithmData() {
@@ -106,20 +129,21 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
     if (this.dataRequest) {
       this.dataRequest.unsubscribe();
     }
-    this.dataRequest = this.algorithmOfflineDataServices.getData(this.hProjectAlgorithmId).subscribe(
-      async res => {
-
+    this.dataRequest = this.algorithmOfflineDataServices
+      .getData(this.hProjectAlgorithmId)
+      .subscribe(async (res) => {
         if (Object.keys(res.rows).length > 0) {
           const pageData = [];
-          const rowKey = Object.keys(res.rows)[0];  // take only first value
+          const rowKey = Object.keys(res.rows)[0]; // take only first value
           const value = res.rows[rowKey].value;
 
           // TO DO: check conversion problem on output value
           //this.computePacketData([value]);
 
           // Compute timeStamp
-          const millis = + value.timestamp * 1000;
-          let valueTimestamp = moment(millis).format('L') + ' ' + moment(millis).format('LTS');
+          const millis = +value.timestamp * 1000;
+          let valueTimestamp =
+            moment(millis).format("L") + " " + moment(millis).format("LTS");
 
           // Create HEADERS of tables based on results
           let jsonObject = JSON.parse(value.output);
@@ -127,11 +151,14 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
           // custom behaviour
           if (jsonObject.customSchema) {
             // custom headers
-            let headers = jsonObject.headers
+            let headers = jsonObject.headers;
             this.hPacketIdMap = await this.setHeadersTable(headers, true);
-            jsonObject.results.slice().reverse().forEach((el) => {
-              this.addDataCustom(el, valueTimestamp, headers, pageData);
-            });
+            jsonObject.results
+              .slice()
+              .reverse()
+              .forEach((el) => {
+                this.addDataCustom(el, valueTimestamp, headers, pageData);
+              });
           }
 
           //default behaviour
@@ -147,83 +174,80 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
 
           //Lastly, in both cases, add results to page
           this.tableSource.next(pageData);
-
         } else {
           this.tableChild.resetTable();
         }
-      }
-    );
+      });
   }
 
   async setHeadersTable(groupingKeys: any, customSchema: boolean) {
     try {
       const fieldIds = Object.keys(this.widget.config?.packetFields) || [];
-      this.tableHeaders = fieldIds.map(hPacketFieldId => ({
-          value: this.widget.config.packetFields[hPacketFieldId],
-          label: this.widget.config.fieldAliases[hPacketFieldId] || this.widget.config.packetFields[hPacketFieldId],
-          type: this.widget.config.fieldTypes[hPacketFieldId],
+      this.tableHeaders = fieldIds.map((hPacketFieldId) => ({
+        value: this.widget.config.packetFields[hPacketFieldId],
+        label:
+          this.widget.config.fieldAliases[hPacketFieldId] ||
+          this.widget.config.packetFields[hPacketFieldId],
+        type: this.widget.config.fieldTypes[hPacketFieldId],
       }));
 
       if (!customSchema) {
         if (groupingKeys.length > 0 && this.hPacketIdMap.size == 0) {
-            const res = await lastValueFrom(this.packetService.getHPacketField(groupingKeys));
-            res.forEach(element => {
-                this.hPacketIdMap.set(element.id, element.name);
-            });
+          const res = await lastValueFrom(
+            this.packetService.getHPacketField(groupingKeys)
+          );
+          res.forEach((element) => {
+            this.hPacketIdMap.set(element.id, element.name);
+          });
 
-            for (let i = 0; i < groupingKeys.length; i++) {
-              let key = Number(groupingKeys[i]);
-              let groupingName = this.hPacketIdMap.get(key);
-                this.tableHeaders.unshift({
-                    value: groupingName,
-                    label: groupingName,
-                    type: 'DOUBLE'
-                });
-            }
+          for (let i = 0; i < groupingKeys.length; i++) {
+            let key = Number(groupingKeys[i]);
+            let groupingName = this.hPacketIdMap.get(key);
+            this.tableHeaders.unshift({
+              value: groupingName,
+              label: groupingName,
+              type: "DOUBLE",
+            });
+          }
         }
 
         // Finally, add the timestamp column
         this.tableHeaders.push({
-            value: 'timestamp',
-            label: this.widget.config.timestampFieldName,
-            type: 'DATE'
+          value: "timestamp",
+          label: this.widget.config.timestampFieldName,
+          type: "DATE",
         });
 
         return this.hPacketIdMap;
-      }
-
-      else if (customSchema) {
+      } else if (customSchema) {
         // List of NON-packet-belonging grouping field
-        groupingKeys.forEach(el => {
-            this.tableHeaders.unshift({
-                value: el,
-                label: el,
-                type: 'DOUBLE'
-            });
-            this.hPacketIdMap.set(this.stringToNumber(el), el);
+        groupingKeys.forEach((el) => {
+          this.tableHeaders.unshift({
+            value: el,
+            label: el,
+            type: "DOUBLE",
+          });
+          this.hPacketIdMap.set(this.stringToNumber(el), el);
         });
 
         // Finally, add the timestamp column
         this.tableHeaders.push({
-          value: 'timestamp',
+          value: "timestamp",
           label: this.widget.config.timestampFieldName,
-          type: 'DATE'
+          type: "DATE",
         });
 
         return this.hPacketIdMap;
       }
-
     } catch (error) {
-        this.logger.error('Si è verificato un errore:', error);
-        throw error;
+      this.logger.error("Si è verificato un errore:", error);
+      throw error;
     }
   }
 
-
   addData(el, valueTimestamp, map, pageData) {
-    let obj: any = { "output": el.output, "timestamp": valueTimestamp };
+    let obj: any = { output: el.output, timestamp: valueTimestamp };
     if (el.grouping && Object.keys(el.grouping).length > 0) {
-
       Object.keys(el.grouping).forEach((key) => {
         let k = map.get(Number(key));
         let v = el.grouping[key];
@@ -234,21 +258,23 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
   }
 
   addDataCustom(el, valueTimestamp, headers, pageData) {
-    let obj: any = { "output": el.output, "timestamp": valueTimestamp };
+    let obj: any = { output: el.output, timestamp: valueTimestamp };
     let values = Object.values(el.grouping); // Label and values have same order
 
     // Add inside headers
     if (el.outputArray && !this.trueArray) {
       if (!this.trueArray) {
-      for (const key in el.outputArray) {
+        for (const key in el.outputArray) {
           this.tableHeaders.splice(this.tableHeaders.length - 1, 0, {
             value: key,
             label: key,
-            type: 'DOUBLE'
+            type: "DOUBLE",
           });
         }
         // remove output column
-        this.tableHeaders = this.tableHeaders.filter(header => header.label !== 'output');
+        this.tableHeaders = this.tableHeaders.filter(
+          (header) => header.label !== "output"
+        );
         this.trueArray = true;
       }
     }
@@ -258,7 +284,8 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
       let v = values[index] ?? null;
 
       // inside header values
-      if (el.outputArray) for (const key in el.outputArray) obj[key] = el.outputArray[key]
+      if (el.outputArray)
+        for (const key in el.outputArray) obj[key] = el.outputArray[key];
 
       obj[k] = v;
     });
@@ -267,9 +294,8 @@ export class AlgorithmTableComponent extends BaseTableComponent implements After
 
   stringToNumber(str) {
     return str
-        .split("")
-        .map(char => char.charCodeAt(0))
-        .reduce((sum, code) => sum + code, 0);
+      .split("")
+      .map((char) => char.charCodeAt(0))
+      .reduce((sum, code) => sum + code, 0);
   }
-
 }

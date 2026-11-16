@@ -1,4 +1,3 @@
-
 /*
  *
  *  Copyright 2019-2023 HyperIoT
@@ -27,23 +26,24 @@ import {
   HostListener,
   EventEmitter,
   Input,
-  Output, OnDestroy
-} from '@angular/core';
-import { DraggableItemComponent } from '../draggable-item/draggable-item.component';
-import { MapDirective } from '../map.directive';
-import { AreaDevice, Area, Logger, LoggerService } from 'core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { MapItemAction } from 'components';
+  Output,
+  OnDestroy,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DraggableItemComponent } from "../draggable-item/draggable-item.component";
+import { MapDirective } from "../map.directive";
+import { AreaDevice, Area, Logger, LoggerService } from "core";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { MapItemAction } from "components";
 
 @Component({
-    selector: 'hyt-area-map',
-    templateUrl: './area-map.component.html',
-    styleUrls: ['./area-map.component.scss'],
-    standalone: false
+  selector: "hyt-area-map",
+  templateUrl: "./area-map.component.html",
+  styleUrls: ["./area-map.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-
-
 export class AreaMapComponent implements OnDestroy {
   /**
    * Listener on map area
@@ -53,7 +53,7 @@ export class AreaMapComponent implements OnDestroy {
   /**
    * Listener on Container map area
    */
-  @ViewChild('mapBoundary', { static: true })
+  @ViewChild("mapBoundary", { static: true })
   mapBoundary: ElementRef;
   /**
    * Measurements of the map area
@@ -79,7 +79,7 @@ export class AreaMapComponent implements OnDestroy {
   /**
    * Message present in the overlay that will be set by the parent component
    */
-  overlayMsg = '';
+  overlayMsg = "";
   /**
    * Array containing the components present in the map
    */
@@ -98,11 +98,9 @@ export class AreaMapComponent implements OnDestroy {
    * Listener on the window resize event
    * @param event
    */
-  @HostListener('window:resize', ['$event'])
+  @HostListener("window:resize", ["$event"])
   onResize(event) {
-
     this.refresh();
-
   }
 
   constructor(
@@ -111,7 +109,7 @@ export class AreaMapComponent implements OnDestroy {
   ) {
     // Init Logger
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('AreaMapComponent');
+    this.logger.registerClass("AreaMapComponent");
   }
   ngOnDestroy() {
     if (this.ngUnsubscribe) {
@@ -135,8 +133,9 @@ export class AreaMapComponent implements OnDestroy {
    * @param areaItem
    */
   addAreaItem(areaItem: AreaDevice | Area) {
-    this.logger.debug('addAreaItem function');
-    const container = this.mapContainer.viewContainerRef.element.nativeElement.parentElement;
+    this.logger.debug("addAreaItem function");
+    const container =
+      this.mapContainer.viewContainerRef.element.nativeElement.parentElement;
     const component = this.addItem();
     component.instance.setConfig(container, areaItem);
   }
@@ -146,9 +145,10 @@ export class AreaMapComponent implements OnDestroy {
    * @param items
    */
   setAreaItems(items: (AreaDevice | Area)[]) {
-    this.logger.debug('setAreaItems function');
+    this.logger.debug("setAreaItems function");
     this.reset();
-    const container = this.mapContainer.viewContainerRef.element.nativeElement.parentElement;
+    const container =
+      this.mapContainer.viewContainerRef.element.nativeElement.parentElement;
     items.forEach((d) => {
       const component = this.addItem();
       component.instance.setConfig(container, d);
@@ -162,9 +162,11 @@ export class AreaMapComponent implements OnDestroy {
    * @param height
    */
   setMapImage(imageUrl: string, width: number, height: number) {
-    this.logger.debug('setMapImage function');
+    this.logger.debug("setMapImage function");
     this.mapImageSize = { width, height };
-    this.mapBoundary.nativeElement.style['background-image'] = `url(${imageUrl})`;
+    this.mapBoundary.nativeElement.style[
+      "background-image"
+    ] = `url(${imageUrl})`;
     this.refresh();
   }
 
@@ -172,19 +174,20 @@ export class AreaMapComponent implements OnDestroy {
    * Unset background image area map
    */
   unsetMapImage() {
-    this.logger.debug('unsetMapImage function');
-    this.mapBoundary.nativeElement.style['background-image'] = null;
+    this.logger.debug("unsetMapImage function");
+    this.mapBoundary.nativeElement.style["background-image"] = null;
   }
 
   /**
    * Add single item on the Area map
    */
   addItem(): ComponentRef<DraggableItemComponent> {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(DraggableItemComponent);
+    const componentFactory =
+      this.componentFactoryResolver.resolveComponentFactory(
+        DraggableItemComponent
+      );
     const viewContainerRef = this.mapContainer.viewContainerRef;
     const component = viewContainerRef.createComponent(componentFactory);
-
-    
 
     // enable/disable editMode
     component.instance.editMode = this.editMode;
@@ -235,7 +238,10 @@ export class AreaMapComponent implements OnDestroy {
    * @param component
    * @param disableEvent
    */
-  removeItem(component: ComponentRef<DraggableItemComponent>, disableEvent?: boolean) {
+  removeItem(
+    component: ComponentRef<DraggableItemComponent>,
+    disableEvent?: boolean
+  ) {
     const viewContainerRef = this.mapContainer.viewContainerRef;
     const idx = viewContainerRef.indexOf(component.hostView);
     viewContainerRef.remove(idx);
@@ -261,9 +267,12 @@ export class AreaMapComponent implements OnDestroy {
     const mapHost = boundary.parentElement.parentElement;
 
     if (mapHost) {
-      boundary.style.maxWidth = mapHost.clientWidth + 'px'; /* modified from 'boundary.style.width' */
-      const h = boundary.clientWidth / this.mapImageSize.width * this.mapImageSize.height;
-      boundary.style.height = h + 'px';
+      boundary.style.maxWidth =
+        mapHost.clientWidth + "px"; /* modified from 'boundary.style.width' */
+      const h =
+        (boundary.clientWidth / this.mapImageSize.width) *
+        this.mapImageSize.height;
+      boundary.style.height = h + "px";
     }
 
     this.mapComponents.forEach((c) => c.instance.refresh());
@@ -279,5 +288,4 @@ export class AreaMapComponent implements OnDestroy {
   getAreaCenter() {
     return { x: 0.5, y: 0.5 };
   }
-
 }

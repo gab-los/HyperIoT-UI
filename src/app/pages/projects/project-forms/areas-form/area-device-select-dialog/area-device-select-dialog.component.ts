@@ -1,15 +1,22 @@
-import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
-import { DIALOG_DATA, DialogRef } from 'components';
-import { Area_Service, HDevicesService, AreaDevice, HDevice, Area } from 'core';
-import { LoadingStatusEnum } from '../../project-form-entity';
-import { AREA_ICONS_OPTIONS } from 'components';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DIALOG_DATA, DialogRef } from "components";
+import { Area_Service, HDevicesService, AreaDevice, HDevice, Area } from "core";
+import { LoadingStatusEnum } from "../../project-form-entity";
+import { AREA_ICONS_OPTIONS } from "components";
 
 @Component({
-    selector: 'hyt-area-device-select-dialog',
-    templateUrl: './area-device-select-dialog.component.html',
-    styleUrls: ['./area-device-select-dialog.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-area-device-select-dialog",
+  templateUrl: "./area-device-select-dialog.component.html",
+  styleUrls: ["./area-device-select-dialog.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AreaDeviceSelectDialogComponent implements OnInit {
   projectDevices = [] as (HDevice & { added?: boolean; area?: string })[];
@@ -17,7 +24,7 @@ export class AreaDeviceSelectDialogComponent implements OnInit {
   loadingStatus = LoadingStatusEnum.Ready;
   LoadingStatus = LoadingStatusEnum;
 
-   // @@I18N@@ (for all labels)
+  // @@I18N@@ (for all labels)
   deviceIconOptions = [];
   selectedDeviceIcon: string;
 
@@ -26,27 +33,38 @@ export class AreaDeviceSelectDialogComponent implements OnInit {
     @Inject(DIALOG_DATA) public data: any,
     private areaService: Area_Service,
     private deviceService: HDevicesService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadingStatus = LoadingStatusEnum.Loading;
     this.deviceIconOptions = AREA_ICONS_OPTIONS.get(this.data.areaType);
-    this.deviceService.findAllHDeviceByProjectId(this.data.projectId).subscribe((projectDevices: HDevice[]) => {
-      this.projectDevices = projectDevices;
-      this.areaService.getAreaDeviceDeepListFromRoot(this.data.areaId).subscribe((assignedDevices) => {
-        this.loadingStatus = LoadingStatusEnum.Ready;
-        projectDevices.map(pd => {
-          const ad = assignedDevices.filter((d: AreaDevice) => d.device.id === pd.id);
-          if (ad.length > 0) {
-            pd['added'] = true;
-            this.areaService.findArea(ad[0].area.id)
-              .subscribe((deviceArea: Area) => {
-                pd['area'] = deviceArea.name;
+    this.deviceService.findAllHDeviceByProjectId(this.data.projectId).subscribe(
+      (projectDevices: HDevice[]) => {
+        this.projectDevices = projectDevices;
+        this.areaService
+          .getAreaDeviceDeepListFromRoot(this.data.areaId)
+          .subscribe(
+            (assignedDevices) => {
+              this.loadingStatus = LoadingStatusEnum.Ready;
+              projectDevices.map((pd) => {
+                const ad = assignedDevices.filter(
+                  (d: AreaDevice) => d.device.id === pd.id
+                );
+                if (ad.length > 0) {
+                  pd["added"] = true;
+                  this.areaService
+                    .findArea(ad[0].area.id)
+                    .subscribe((deviceArea: Area) => {
+                      pd["area"] = deviceArea.name;
+                    });
+                }
               });
-          }
-        });
-      }, (err) => this.apiError(err));
-    }, (err) => this.apiError(err));
+            },
+            (err) => this.apiError(err)
+          );
+      },
+      (err) => this.apiError(err)
+    );
   }
 
   close(deviceData?) {

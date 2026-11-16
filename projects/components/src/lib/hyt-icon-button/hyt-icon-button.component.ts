@@ -1,10 +1,17 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
-    selector: 'hyt-icon-button',
-    templateUrl: './hyt-icon-button.component.html',
-    styleUrls: ['./hyt-icon-button.component.css'],
-    standalone: false
+  selector: "hyt-icon-button",
+  templateUrl: "./hyt-icon-button.component.html",
+  styleUrls: ["./hyt-icon-button.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytIconButtonComponent {
   /** Specifies button color: primary, accent or warn */

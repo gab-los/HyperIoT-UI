@@ -1,27 +1,34 @@
-import { DIALOG_DATA, DialogRef } from 'components';
-import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
-import { ServiceType } from '../../service/model/service-type';
-import { PacketData } from 'core';
+import { DIALOG_DATA, DialogRef } from "components";
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Inject,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ServiceType } from "../../service/model/service-type";
+import { PacketData } from "core";
 
 @Component({
-    selector: 'hyt-widget-fullscreen-dialog',
-    templateUrl: './widget-fullscreen-dialog.component.html',
-    styleUrls: ['./widget-fullscreen-dialog.component.scss'],
-    standalone: false
+  selector: "hyt-widget-fullscreen-dialog",
+  templateUrl: "./widget-fullscreen-dialog.component.html",
+  styleUrls: ["./widget-fullscreen-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class WidgetFullscreenDialogComponent implements OnInit {
-
   @Output() widgetAction: EventEmitter<any> = new EventEmitter();
 
   widget: any = null;
-  widgetName = '';
+  widgetName = "";
   fullScreenInitData: PacketData[] = [];
   serviceType: ServiceType;
 
   constructor(
     private dialogRef: DialogRef<any>,
-    @Inject(DIALOG_DATA) public data: any,
-  ) { }
+    @Inject(DIALOG_DATA) public data: any
+  ) {}
 
   ngOnInit(): void {
     this.widget = this.data?.widget;
@@ -37,9 +44,8 @@ export class WidgetFullscreenDialogComponent implements OnInit {
 
   configureWidget() {
     this.dialogRef.close({
-      action: 'widget:setting',
-      widget: this.widget
-    })
+      action: "widget:setting",
+      widget: this.widget,
+    });
   }
-
 }

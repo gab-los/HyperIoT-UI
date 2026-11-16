@@ -5,8 +5,9 @@ import {
   ViewChild,
   ElementRef,
   forwardRef,
-  ViewEncapsulation
-} from '@angular/core';
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -14,10 +15,10 @@ import {
   NgForm,
   UntypedFormControl,
   Validators,
-  FormGroup
-} from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { LoggerService, Logger } from 'core';
+  FormGroup,
+} from "@angular/forms";
+import { ErrorStateMatcher } from "@angular/material/core";
+import { LoggerService, Logger } from "core";
 
 /**
  * Custom provider for NG_VALUE_ACCESSOR
@@ -26,16 +27,23 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_INPUT_TEMPLATE: any = {
   provide: NG_VALUE_ACCESSOR,
   // tslint:disable-next-line: no-use-before-declare
   useExisting: forwardRef(() => HytInputTemplateComponent),
-  multi: true
+  multi: true,
 };
 
 /**
  * Error when invalid control is dirty, touched, or submitted
  */
 export class CustomErrorStateMatcherInputTemplate implements ErrorStateMatcher {
-  isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(
+    control: UntypedFormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
     const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+    return !!(
+      control &&
+      control.invalid &&
+      (control.dirty || control.touched || isSubmitted)
+    );
   }
 }
 
@@ -50,12 +58,13 @@ export class CustomErrorStateMatcherInputTemplate implements ErrorStateMatcher {
  * isInputPassword: password without validators
  */
 @Component({
-    selector: "hyt-input-template",
-    templateUrl: "./hyt-input-template.component.html",
-    styleUrls: ["./hyt-input-template.component.scss"],
-    providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_INPUT_TEMPLATE],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-input-template",
+  templateUrl: "./hyt-input-template.component.html",
+  styleUrls: ["./hyt-input-template.component.scss"],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_INPUT_TEMPLATE],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytInputTemplateComponent implements OnInit, ControlValueAccessor {
   /** Foloating label of the input */

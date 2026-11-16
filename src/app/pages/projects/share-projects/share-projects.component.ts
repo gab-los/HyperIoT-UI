@@ -1,4 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DIALOG_DATA, DialogRef } from "components";
 import { HProject, HUser, SharedEntity, SharedEntityService } from "core";
 import { SharedPages } from "../project-wizard/model/shared.model";
@@ -12,24 +18,28 @@ import {
 import { Subject, takeUntil } from "rxjs";
 
 @Component({
-    selector: "hyt-share-projects",
-    templateUrl: "./share-projects.component.html",
-    styleUrls: ["./share-projects.component.scss"],
-    providers: [SharedEntityService],
-    animations: [
-        trigger("enterTrigger", [
-            state("fadeIn", style({
-                opacity: "1",
-            })),
-            transition("void => *", [
-                style({
-                    opacity: "0",
-                }),
-                animate("500ms"),
-            ]),
-        ]),
-    ],
-    standalone: false
+  selector: "hyt-share-projects",
+  templateUrl: "./share-projects.component.html",
+  styleUrls: ["./share-projects.component.scss"],
+  providers: [SharedEntityService],
+  animations: [
+    trigger("enterTrigger", [
+      state(
+        "fadeIn",
+        style({
+          opacity: "1",
+        })
+      ),
+      transition("void => *", [
+        style({
+          opacity: "0",
+        }),
+        animate("500ms"),
+      ]),
+    ]),
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ShareProjectsComponent implements OnInit, OnDestroy {
   /** Identify components to show by the state:
@@ -110,12 +120,12 @@ export class ShareProjectsComponent implements OnInit, OnDestroy {
     const newCollValue = this.newCollaboratorValue;
     const body: SharedEntity = {
       entityId: this.data.id,
-      entityResourceName: "it.acsoftware.hyperiot.hproject.model.HProject"
+      entityResourceName: "it.acsoftware.hyperiot.hproject.model.HProject",
     };
-    if(this.isEmail(newCollValue)){
-      body['userEmail'] = newCollValue
-    }else{
-      body['username'] = newCollValue
+    if (this.isEmail(newCollValue)) {
+      body["userEmail"] = newCollValue;
+    } else {
+      body["username"] = newCollValue;
     }
     this.updateOverlayState(this.sharedPagesEnum.LOADING);
     this.sharedService.saveSharedEntity(body).subscribe({
@@ -125,9 +135,9 @@ export class ShareProjectsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.log(err);
-        if(err.status === 409){
+        if (err.status === 409) {
           this.updateOverlayState(this.sharedPagesEnum.USER_ALREADY_EXIST);
-        }else{
+        } else {
           this.updateOverlayState(this.sharedPagesEnum.ERROR);
         }
       },

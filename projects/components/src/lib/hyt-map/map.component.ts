@@ -1,16 +1,24 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MapTypeKey} from "./models/map-type-key";
-import {Area, AreaDevice, Logger, LoggerService} from "core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { MapTypeKey } from "./models/map-type-key";
+import { Area, AreaDevice, Logger, LoggerService } from "core";
 
 @Component({
-    selector: 'hyt-map',
-    templateUrl: './map.component.html',
-    styleUrls: ['./map.component.scss'],
-    standalone: false
+  selector: "hyt-map",
+  templateUrl: "./map.component.html",
+  styleUrls: ["./map.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class MapComponent implements OnInit {
-
-  @ViewChild('map') mapComponent: any;
+  @ViewChild("map") mapComponent: any;
 
   /**
    * Indication of the type of third-party library used for map display
@@ -32,24 +40,29 @@ export class MapComponent implements OnInit {
   renderDataRequest = new EventEmitter<any>();
 
   /*
-  * logger service
-  */
+   * logger service
+   */
   private logger: Logger;
 
   constructor(private loggerService: LoggerService) {
     // Init Logger
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('MapComponent');
+    this.logger.registerClass("MapComponent");
   }
 
   ngOnInit(): void {
-    this.logger.info('Created map! Map Type: ' + this.mapType + ' - Edit mode: ' + this.editMode);
+    this.logger.info(
+      "Created map! Map Type: " +
+        this.mapType +
+        " - Edit mode: " +
+        this.editMode
+    );
   }
 
   ngAfterViewInit() {
-    this.mapComponent.itemOpen.subscribe(res => this.itemOpen.emit(res));
-    this.mapComponent.itemRemove.subscribe(res => this.itemRemove.emit(res));
-    this.mapComponent.itemUpdate.subscribe(res => this.itemUpdate.emit(res));
+    this.mapComponent.itemOpen.subscribe((res) => this.itemOpen.emit(res));
+    this.mapComponent.itemRemove.subscribe((res) => this.itemRemove.emit(res));
+    this.mapComponent.itemUpdate.subscribe((res) => this.itemUpdate.emit(res));
   }
 
   initArea(options: any) {
@@ -65,7 +78,7 @@ export class MapComponent implements OnInit {
   }
 
   addAreaItem(areaItem: AreaDevice | Area) {
-    this.logger.debug('addAreaItem function');
+    this.logger.debug("addAreaItem function");
     this.mapComponent.addAreaItem(areaItem);
   }
 
@@ -73,10 +86,18 @@ export class MapComponent implements OnInit {
     this.mapComponent.setAreaItems(items);
   }
 
-  refresh() { }
+  refresh() {}
 
-  toggleEditCenter(isEditCenterEnabled: boolean, moveCB: (areaConfiguration: string) => void, areaConfiguration?: string) {
-    this.mapComponent.toggleEditCenter(isEditCenterEnabled, moveCB, areaConfiguration);
+  toggleEditCenter(
+    isEditCenterEnabled: boolean,
+    moveCB: (areaConfiguration: string) => void,
+    areaConfiguration?: string
+  ) {
+    this.mapComponent.toggleEditCenter(
+      isEditCenterEnabled,
+      moveCB,
+      areaConfiguration
+    );
   }
 
   setMapCenter(areaConfiguration: string) {
@@ -90,5 +111,4 @@ export class MapComponent implements OnInit {
   getImage() {
     return this.mapComponent.getImage();
   }
-
 }

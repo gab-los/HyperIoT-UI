@@ -1,11 +1,26 @@
-import { Component, OnInit, OnChanges, Input,ChangeDetectorRef } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { DialogService, SelectOption } from 'components';
-import { Algorithm, HPacket, HPacketField, HPacketService, HProject, HProjectAlgorithmConfig, HProjectAlgorithmInputField } from 'core';
-import { resolve } from 'dns';
-import { InputDefinitionModalComponent } from './input-definition-modal/input-definition-modal.component';
-import { StatisticInputErrorComponent } from './statistic-input-error/statistic-input-error.component';
-import { ScrollStrategyOptions } from '@angular/cdk/overlay';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  Input,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import { DialogService, SelectOption } from "components";
+import {
+  Algorithm,
+  HPacket,
+  HPacketField,
+  HPacketService,
+  HProject,
+  HProjectAlgorithmConfig,
+  HProjectAlgorithmInputField,
+} from "core";
+import { resolve } from "dns";
+import { InputDefinitionModalComponent } from "./input-definition-modal/input-definition-modal.component";
+import { StatisticInputErrorComponent } from "./statistic-input-error/statistic-input-error.component";
+import { ScrollStrategyOptions } from "@angular/cdk/overlay";
 
 interface StatisticInputForm {
   form: UntypedFormGroup;
@@ -18,10 +33,11 @@ interface FieldList {
 }
 
 @Component({
-    selector: "hyt-statistic-input-definition",
-    templateUrl: "./statistic-input-definition.component.html",
-    styleUrls: ["./statistic-input-definition.component.scss"],
-    standalone: false
+  selector: "hyt-statistic-input-definition",
+  templateUrl: "./statistic-input-definition.component.html",
+  styleUrls: ["./statistic-input-definition.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class StatisticInputDefinitionComponent implements OnInit {
   @Input() project: HProject;
@@ -98,7 +114,9 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   isFormInvalid(k: number): boolean {
     const valArr = this.statisticInputForms[k].form;
-    return Object.entries(valArr.value).length === 0 || valArr.get("packet") === undefined || valArr.get("mappedInputList") === undefined
+    return Object.entries(valArr.value).length === 0 ||
+      valArr.get("packet") === undefined ||
+      valArr.get("mappedInputList") === undefined
       ? true
       : valArr.get("packet").invalid || valArr.get("mappedInputList").invalid;
   }
@@ -167,7 +185,11 @@ export class StatisticInputDefinitionComponent implements OnInit {
       mappedInputList,
     };
     const scrollStrategy = this.scrollStrategyOptions.noop(); // TODO passing noop scrollstrategy because of drag-drop scroll issue. Should be fixed in agular 16
-    const modalRef = this.dialogService.open(InputDefinitionModalComponent, { data, width: '800px', scrollStrategy });
+    const modalRef = this.dialogService.open(InputDefinitionModalComponent, {
+      data,
+      width: "800px",
+      scrollStrategy,
+    });
     modalRef.dialogRef.afterClosed().subscribe(
       (res) => {
         if (!res) {
@@ -233,58 +255,59 @@ export class StatisticInputDefinitionComponent implements OnInit {
 
   setInputConfigDefinition(input: HProjectAlgorithmInputField[]): void {
     this.updating = true;
-    this.loadHPackets().then(packets => {
-        if (input && input.length !== 0) {
-          this.statisticInputForms = [];
+    this.loadHPackets().then((packets) => {
+      if (input && input.length !== 0) {
+        this.statisticInputForms = [];
 
-          for (let k = 0; k < input.length; k++) {
-            const currentPacket: HPacket = packets.find(
-              (p) => p.id === input[k].packetId
-            );
-            if (!currentPacket) {
-              this.dialogService.open(StatisticInputErrorComponent, { backgroundClosable: true });
+        for (let k = 0; k < input.length; k++) {
+          const currentPacket: HPacket = packets.find(
+            (p) => p.id === input[k].packetId
+          );
+          if (!currentPacket) {
+            this.dialogService.open(StatisticInputErrorComponent, {
+              backgroundClosable: true,
+            });
+            this.resetRuleDefinition();
+            return;
+          }
+
+          const fields: HPacketField[] = this.buildLeafFieldList(currentPacket);
+          // check if all fields still exist
+          input[k].mappedInputList.forEach((mappedInput) => {
+            if (!fields.find((f) => f.id === mappedInput.packetFieldId)) {
+              this.dialogService.open(StatisticInputErrorComponent, {
+                backgroundClosable: true,
+              });
               this.resetRuleDefinition();
               return;
             }
+          });
 
-            const fields: HPacketField[] =
-              this.buildLeafFieldList(currentPacket);
-            // check if all fields still exist
-            input[k].mappedInputList.forEach((mappedInput) => {
-              if (!fields.find((f) => f.id === mappedInput.packetFieldId)) {
-                this.dialogService.open(StatisticInputErrorComponent, { backgroundClosable: true });
-                this.resetRuleDefinition();
-                return;
-              }
-            });
+          this.statisticInputForms.push({
+            form: this.fb.group({}),
+            leafFieldList: fields,
+          });
 
-            this.statisticInputForms.push({
-              form: this.fb.group({}),
-              leafFieldList: fields,
-            });
+          this.cd.detectChanges();
 
-            this.cd.detectChanges();
-
-            const packet = this.statisticInputForms[k].form.get("packet");
-            if (packet) {
-              packet.setValue(currentPacket.id);
-            }
-            const mappedInputList =
-              this.statisticInputForms[k].form.get("mappedInputList");
-            if (mappedInputList) {
-              mappedInputList.setValue(
-                JSON.stringify(input[k].mappedInputList)
-              );
-            }
-            if (k === this.statisticInputForms.length - 1) {
-              this.originalValueUpdate();
-              this.updating = false;
-            }
+          const packet = this.statisticInputForms[k].form.get("packet");
+          if (packet) {
+            packet.setValue(currentPacket.id);
           }
-        } else {
-          this.resetRuleDefinition();
+          const mappedInputList =
+            this.statisticInputForms[k].form.get("mappedInputList");
+          if (mappedInputList) {
+            mappedInputList.setValue(JSON.stringify(input[k].mappedInputList));
+          }
+          if (k === this.statisticInputForms.length - 1) {
+            this.originalValueUpdate();
+            this.updating = false;
+          }
         }
-    })
+      } else {
+        this.resetRuleDefinition();
+      }
+    });
   }
 
   setConfigDefinition(configDefinition: string) {

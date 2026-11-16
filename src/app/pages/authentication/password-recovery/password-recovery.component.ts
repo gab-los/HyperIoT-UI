@@ -1,23 +1,28 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { SubmissionStatus } from '../models/pageStatus';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { HUserService, LoggerService, Logger } from 'core';
-import { AuthenticationHttpErrorHandlerService } from 'src/app/services/errorHandler/authentication-http-error-handler.service';
-import { HYTError } from 'src/app/services/errorHandler/models/models';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { SubmissionStatus } from "../models/pageStatus";
+import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
+import { HUserService, LoggerService, Logger } from "core";
+import { AuthenticationHttpErrorHandlerService } from "src/app/services/errorHandler/authentication-http-error-handler.service";
+import { HYTError } from "src/app/services/errorHandler/models/models";
 
 /**
  * PasswordRecoveryComponent is a component of AuthenticationModule.
  * It is used to hallow the user to send the request to reset his account password.
  */
 @Component({
-    selector: 'hyt-password-recovery',
-    templateUrl: './password-recovery.component.html',
-    styleUrls: ['./password-recovery.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-password-recovery",
+  templateUrl: "./password-recovery.component.html",
+  styleUrls: ["./password-recovery.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PasswordRecoveryComponent implements OnInit {
-
   /**
    * recoverMailForm stores the recover-mail form
    */
@@ -48,8 +53,8 @@ export class PasswordRecoveryComponent implements OnInit {
     private loggerService: LoggerService
   ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('PasswordRecoveryComponent');
-   }
+    this.logger.registerClass("PasswordRecoveryComponent");
+  }
 
   /**
    * ngOnInit() builds the recoverMailForm
@@ -64,19 +69,21 @@ export class PasswordRecoveryComponent implements OnInit {
    */
   recoveryRequest() {
     this.recoverMailStatus = SubmissionStatus.Default;
-    this.hUserService.resetPasswordRequest1(this.recoverMailForm.value.email).subscribe(
-      res => {
-        this.logger.debug('email address:', res);
-        this.recoverMailStatus = SubmissionStatus.Submitted;
-      },
-      err => {
-        const k: HYTError[] = this.httperrorHandler.handlePwdRecovery(err);
-        for (const e of k) {
-          this.error = e.message;
+    this.hUserService
+      .resetPasswordRequest1(this.recoverMailForm.value.email)
+      .subscribe(
+        (res) => {
+          this.logger.debug("email address:", res);
+          this.recoverMailStatus = SubmissionStatus.Submitted;
+        },
+        (err) => {
+          const k: HYTError[] = this.httperrorHandler.handlePwdRecovery(err);
+          for (const e of k) {
+            this.error = e.message;
+          }
+          this.recoverMailStatus = SubmissionStatus.Error;
         }
-        this.recoverMailStatus = SubmissionStatus.Error;
-      }
-    );
+      );
   }
 
   /**
@@ -84,7 +91,6 @@ export class PasswordRecoveryComponent implements OnInit {
    * This function is used by the template.
    */
   notValid(): boolean {
-    return this.recoverMailForm.get('email').invalid;
+    return this.recoverMailForm.get("email").invalid;
   }
-
 }

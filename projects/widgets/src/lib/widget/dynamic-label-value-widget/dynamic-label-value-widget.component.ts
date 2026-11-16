@@ -1,16 +1,35 @@
-import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { DataChannel, DataPacketFilter, Logger, LoggerService, PacketDataChunk } from 'core';
-import { Subject } from 'rxjs';
-import { BaseWidgetComponent } from '../../base/base-widget/base-widget.component';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
+import {
+  Component,
+  Injector,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  DataChannel,
+  DataPacketFilter,
+  Logger,
+  LoggerService,
+  PacketDataChunk,
+} from "core";
+import { Subject } from "rxjs";
+import { BaseWidgetComponent } from "../../base/base-widget/base-widget.component";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
 
 @Component({
-    selector: 'hyperiot-dynamic-label-value-widget',
-    templateUrl: './dynamic-label-value-widget.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './dynamic-label-value-widget.component.scss'],
-    standalone: false
+  selector: "hyperiot-dynamic-label-value-widget",
+  templateUrl: "./dynamic-label-value-widget.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./dynamic-label-value-widget.component.scss",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implements OnInit, OnDestroy {
+export class DynamicLabelValueWidgetComponent
+  extends BaseWidgetComponent
+  implements OnInit, OnDestroy
+{
   /**
    * DataChannel to subscribe to retrieve data
    */
@@ -26,10 +45,7 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
 
   protected logger: Logger;
 
-  constructor(
-    injector: Injector,
-    protected loggerService: LoggerService
-  ) {
+  constructor(injector: Injector, protected loggerService: LoggerService) {
     super(injector, loggerService);
     this.logger = new Logger(this.loggerService);
     this.logger.registerClass(DynamicLabelValueWidgetComponent.name);
@@ -55,10 +71,19 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
     this.isConfigured = true;
     const labelsIds = Object.keys(this.widget.config.packetFields);
     this.chartLabels = [];
-    labelsIds.forEach(id => this.chartLabels.push(this.widget.config.fieldAliases[id] ?
-      { id: this.widget.config.packetFields[id], label: this.widget.config.fieldAliases[id] } :
-      { id: this.widget.config.packetFields[id], label: this.widget.config.packetFields[id] }));
-
+    labelsIds.forEach((id) =>
+      this.chartLabels.push(
+        this.widget.config.fieldAliases[id]
+          ? {
+              id: this.widget.config.packetFields[id],
+              label: this.widget.config.fieldAliases[id],
+            }
+          : {
+              id: this.widget.config.packetFields[id],
+              label: this.widget.config.packetFields[id],
+            }
+      )
+    );
 
     this.initStream();
     const dataPacketFilter = new DataPacketFilter(
@@ -66,16 +91,20 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
       this.widget.config.packetFields,
       true
     );
-    this.dataChannel = this.dataService.addDataChannel(+this.widget.id, [dataPacketFilter]);
-    this.dataSubscription = this.dataChannel.subject.subscribe((packet: PacketDataChunk) => {
-      if (packet.data.length > 0) {
-        this.logger.debug('computePacketData -> packetData: ', packet);
-        super.computePacketData(packet.data);
-        this.convertAndBufferData([packet]);
-      } else {
-        this.logger.debug('initStream: data is empty');
+    this.dataChannel = this.dataService.addDataChannel(+this.widget.id, [
+      dataPacketFilter,
+    ]);
+    this.dataSubscription = this.dataChannel.subject.subscribe(
+      (packet: PacketDataChunk) => {
+        if (packet.data.length > 0) {
+          this.logger.debug("computePacketData -> packetData: ", packet);
+          super.computePacketData(packet.data);
+          this.convertAndBufferData([packet]);
+        } else {
+          this.logger.debug("initStream: data is empty");
+        }
       }
-    });
+    );
   }
 
   /**
@@ -92,14 +121,14 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
       if (packetData.length === 0) {
         return;
       }
-      packetData.data.forEach(element => {
-        Object.values(this.widget.config.packetFields).forEach(key => {
+      packetData.data.forEach((element) => {
+        Object.values(this.widget.config.packetFields).forEach((key) => {
           if (element.hasOwnProperty(key)) {
             this.chartData[key] = element[key];
           }
         });
       });
-    })
+    });
   }
 
   /**
@@ -109,7 +138,7 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
   play(): void {
     this.dataChannel.controller.play();
   }
-  
+
   /**
    * Called when the pause button from the toolbar is pressed
    * Pauses the data channel stream
@@ -120,15 +149,15 @@ export class DynamicLabelValueWidgetComponent extends BaseWidgetComponent implem
 
   /**
    * Called when one of the toolbar options is pressed and emits the correct event
-   * @param action 
+   * @param action
    */
   onToolbarAction(action: string) {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:play':
+      case "toolbar:play":
         this.play();
         break;
-      case 'toolbar:pause':
+      case "toolbar:pause":
         this.pause();
         break;
     }

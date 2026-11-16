@@ -1,8 +1,20 @@
-import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { AlgorithmOfflineDataService, AlgorithmTimeRange, DateFormatterService, HPacketService, LoggerService } from 'core';
-import { Subscription, lastValueFrom, skip } from 'rxjs';
-import { BaseTableComponent } from '../../base/base-table/base-table.component';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
+import {
+  Component,
+  Injector,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  AlgorithmOfflineDataService,
+  AlgorithmTimeRange,
+  DateFormatterService,
+  HPacketService,
+  LoggerService,
+} from "core";
+import { Subscription, lastValueFrom, skip } from "rxjs";
+import { BaseTableComponent } from "../../base/base-table/base-table.component";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
 import {
   AlgorithmExecution,
   AlgorithmOutputColumn,
@@ -10,13 +22,13 @@ import {
   buildAlgorithmResultTable,
   getGroupingFieldIds,
   parseAlgorithmExecutions,
-} from '../../util/algorithm-output.util';
+} from "../../util/algorithm-output.util";
 
 enum TableStatus {
-  NoRange = 'noRange',
-  Loading = 'loading',
-  Ready = 'ready',
-  Error = 'error',
+  NoRange = "noRange",
+  Loading = "loading",
+  Ready = "ready",
+  Error = "error",
 }
 
 interface ExecutionRow {
@@ -30,13 +42,19 @@ interface ExecutionRow {
 }
 
 @Component({
-    selector: 'hyperiot-algorithm-history-table',
-    templateUrl: './algorithm-history-table.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './algorithm-history-table.component.css'],
-    standalone: false
+  selector: "hyperiot-algorithm-history-table",
+  templateUrl: "./algorithm-history-table.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./algorithm-history-table.component.css",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class AlgorithmHistoryTableComponent extends BaseTableComponent implements OnInit, OnDestroy {
-
+export class AlgorithmHistoryTableComponent
+  extends BaseTableComponent
+  implements OnInit, OnDestroy
+{
   readonly PAGE_SIZE = 10;
 
   readonly tableStatus = TableStatus;
@@ -62,7 +80,7 @@ export class AlgorithmHistoryTableComponent extends BaseTableComponent implement
     injector: Injector,
     protected loggerService: LoggerService,
     private packetService: HPacketService,
-    private dateFormatterService: DateFormatterService,
+    private dateFormatterService: DateFormatterService
   ) {
     super(injector, loggerService);
   }
@@ -73,7 +91,10 @@ export class AlgorithmHistoryTableComponent extends BaseTableComponent implement
   }
 
   get lastPageIndex(): number {
-    return Math.max(Math.ceil(this.executionRows.length / this.PAGE_SIZE) - 1, 0);
+    return Math.max(
+      Math.ceil(this.executionRows.length / this.PAGE_SIZE) - 1,
+      0
+    );
   }
 
   ngOnInit(): void {
@@ -82,14 +103,17 @@ export class AlgorithmHistoryTableComponent extends BaseTableComponent implement
     // configure already loaded data with the current range
     this.timeRangeSubscription = this.algorithmOfflineDataServices.timeRange$
       .pipe(skip(1))
-      .subscribe(range => this.loadData(range));
+      .subscribe((range) => this.loadData(range));
   }
 
   ngOnDestroy(): void {
     this.timeRangeSubscription?.unsubscribe();
     this.dataRequest?.unsubscribe();
     if (this.hProjectAlgorithmId) {
-      this.algorithmOfflineDataServices.removeWidget(this.widget.id, this.hProjectAlgorithmId);
+      this.algorithmOfflineDataServices.removeWidget(
+        this.widget.id,
+        this.hProjectAlgorithmId
+      );
     }
     super.ngOnDestroy();
   }
@@ -113,10 +137,16 @@ export class AlgorithmHistoryTableComponent extends BaseTableComponent implement
 
     if (this.hProjectAlgorithmId !== this.widget.config.hProjectAlgorithmId) {
       if (this.hProjectAlgorithmId) {
-        this.algorithmOfflineDataServices.removeWidget(this.widget.id, this.hProjectAlgorithmId);
+        this.algorithmOfflineDataServices.removeWidget(
+          this.widget.id,
+          this.hProjectAlgorithmId
+        );
       }
       this.hProjectAlgorithmId = this.widget.config.hProjectAlgorithmId;
-      this.algorithmOfflineDataServices.addWidget(this.widget.id, this.hProjectAlgorithmId);
+      this.algorithmOfflineDataServices.addWidget(
+        this.widget.id,
+        this.hProjectAlgorithmId
+      );
     }
 
     this.loadData(this.algorithmOfflineDataServices.timeRange$.value);
@@ -158,64 +188,83 @@ export class AlgorithmHistoryTableComponent extends BaseTableComponent implement
     }
 
     this.status = TableStatus.Loading;
-    this.dataRequest = this.algorithmOfflineDataServices.getDataInRange(this.hProjectAlgorithmId, range).subscribe({
-      next: async res => {
-        try {
-          const executions = parseAlgorithmExecutions(res);
-          await this.loadGroupingFieldNames(executions);
-          this.executionRows = executions.map(execution => this.toExecutionRow(execution));
-          this.status = TableStatus.Ready;
-        } catch (error) {
-          this.logger.error('Error parsing statistics outputs', error);
+    this.dataRequest = this.algorithmOfflineDataServices
+      .getDataInRange(this.hProjectAlgorithmId, range)
+      .subscribe({
+        next: async (res) => {
+          try {
+            const executions = parseAlgorithmExecutions(res);
+            await this.loadGroupingFieldNames(executions);
+            this.executionRows = executions.map((execution) =>
+              this.toExecutionRow(execution)
+            );
+            this.status = TableStatus.Ready;
+          } catch (error) {
+            this.logger.error("Error parsing statistics outputs", error);
+            this.status = TableStatus.Error;
+          }
+        },
+        error: (error) => {
+          this.logger.error("Error loading statistics outputs", error);
           this.status = TableStatus.Error;
-        }
-      },
-      error: error => {
-        this.logger.error('Error loading statistics outputs', error);
-        this.status = TableStatus.Error;
-      }
-    });
+        },
+      });
   }
 
   private async loadGroupingFieldNames(executions: AlgorithmExecution[]) {
-    const missingIds = getGroupingFieldIds(executions).filter(id => !this.groupingFieldNames.has(id));
+    const missingIds = getGroupingFieldIds(executions).filter(
+      (id) => !this.groupingFieldNames.has(id)
+    );
     if (missingIds.length === 0) {
       return;
     }
     try {
-      const fields = await lastValueFrom(this.packetService.getHPacketField(missingIds));
-      fields.forEach(field => this.groupingFieldNames.set(field.id, field.name));
+      const fields = await lastValueFrom(
+        this.packetService.getHPacketField(missingIds)
+      );
+      fields.forEach((field) =>
+        this.groupingFieldNames.set(field.id, field.name)
+      );
     } catch (error) {
       // grouping columns fall back to field ids
-      this.logger.error('Error loading grouping field names', error);
+      this.logger.error("Error loading grouping field names", error);
     }
   }
 
   private getConfigOutputColumns(): AlgorithmOutputColumn[] {
     const packetFields = this.widget.config.packetFields || {};
     const fieldAliases = this.widget.config.fieldAliases || {};
-    return Object.keys(packetFields).map(fieldId => ({
+    return Object.keys(packetFields).map((fieldId) => ({
       value: packetFields[fieldId],
       label: fieldAliases[fieldId] || packetFields[fieldId],
     }));
   }
 
   private toExecutionRow(execution: AlgorithmExecution): ExecutionRow {
-    const table = buildAlgorithmResultTable(execution.output, this.getConfigOutputColumns(), this.groupingFieldNames);
+    const table = buildAlgorithmResultTable(
+      execution.output,
+      this.getConfigOutputColumns(),
+      this.groupingFieldNames
+    );
     const singleResult = table.rows.length === 1 ? table.rows[0] : null;
     return {
       rowKey: execution.rowKey,
-      timestampLabel: this.dateFormatterService.formatTimestamp(execution.timestamp),
+      timestampLabel: this.dateFormatterService.formatTimestamp(
+        execution.timestamp
+      ),
       table,
       summaryOutput: singleResult
-        ? (table.outputColumns.length === 1
+        ? table.outputColumns.length === 1
           ? singleResult.outputs[0]
-          : table.outputColumns.map((column, i) => `${column.label}: ${singleResult.outputs[i]}`).join(' · '))
-        : '',
+          : table.outputColumns
+              .map((column, i) => `${column.label}: ${singleResult.outputs[i]}`)
+              .join(" · ")
+        : "",
       summaryGrouping: singleResult
-        ? table.groupingColumns.map((column, i) => `${column.label}: ${singleResult.grouping[i]}`).join(' · ')
-        : '',
+        ? table.groupingColumns
+            .map((column, i) => `${column.label}: ${singleResult.grouping[i]}`)
+            .join(" · ")
+        : "",
     };
   }
-
 }

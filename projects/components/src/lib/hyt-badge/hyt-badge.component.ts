@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Logger, LoggerService } from "core";
 
 /**
@@ -26,10 +31,11 @@ export enum HytBadgeSize {
  * Component for print small detail with strong visibility and appearence
  */
 @Component({
-    selector: "hyt-badge",
-    templateUrl: "./hyt-badge.component.html",
-    styleUrls: ["./hyt-badge.component.scss"],
-    standalone: false
+  selector: "hyt-badge",
+  templateUrl: "./hyt-badge.component.html",
+  styleUrls: ["./hyt-badge.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytBadgeComponent {
   private logger: Logger;
@@ -56,7 +62,7 @@ export class HytBadgeComponent {
   /**
    * @property {HytBadgeSize} size - gradient direction for background
    */
-  @Input() gradientDirection: 'top'|'left'|'bottom'|'right' = 'bottom';
+  @Input() gradientDirection: "top" | "left" | "bottom" | "right" = "bottom";
 
   constructor(loggerService: LoggerService) {
     this.logger = new Logger(loggerService);

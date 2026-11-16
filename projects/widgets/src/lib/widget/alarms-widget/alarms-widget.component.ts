@@ -1,33 +1,65 @@
-import { Component, Injector } from '@angular/core';
-import { Logger, LoggerService, HytAlarm, HPacketService, LiveAlarmSelectors } from 'core';
-import { BaseWidgetComponent } from '../../base/base-widget/base-widget.component';
-import { Option } from 'components';
-import { animate, group, query, style, transition, trigger } from '@angular/animations';
-import { Store } from '@ngrx/store';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { Component, Injector, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Logger,
+  LoggerService,
+  HytAlarm,
+  HPacketService,
+  LiveAlarmSelectors,
+} from "core";
+import { BaseWidgetComponent } from "../../base/base-widget/base-widget.component";
+import { Option } from "components";
+import {
+  animate,
+  group,
+  query,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
+import { Store } from "@ngrx/store";
+import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
 
 @Component({
-    selector: 'hyperiot-alarms-widget',
-    templateUrl: './alarms-widget.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './alarms-widget.component.scss'],
-    animations: [
-        trigger('containerAnim', [
-            transition('* => *', [
-                group([
-                    query('hyt-alarm:enter', [
-                        style({ height: 0, opacity: 0, 'overflow-y': 'clip' }),
-                        animate('200ms ease-in', style({ height: '*', opacity: 1 })),
-                        style({ 'overflow-y': 'auto' }),
-                    ], { optional: true }),
-                    query('hyt-alarm:leave', [
-                        animate('200ms ease-out', style({ opacity: 0, transform: 'translateX(-300px)', 'overflow-y': 'clip' })),
-                        animate('200ms', style({ height: 0, padding: 0 })),
-                    ], { optional: true }),
-                ]),
-            ]),
+  selector: "hyperiot-alarms-widget",
+  templateUrl: "./alarms-widget.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./alarms-widget.component.scss",
+  ],
+  animations: [
+    trigger("containerAnim", [
+      transition("* => *", [
+        group([
+          query(
+            "hyt-alarm:enter",
+            [
+              style({ height: 0, opacity: 0, "overflow-y": "clip" }),
+              animate("200ms ease-in", style({ height: "*", opacity: 1 })),
+              style({ "overflow-y": "auto" }),
+            ],
+            { optional: true }
+          ),
+          query(
+            "hyt-alarm:leave",
+            [
+              animate(
+                "200ms ease-out",
+                style({
+                  opacity: 0,
+                  transform: "translateX(-300px)",
+                  "overflow-y": "clip",
+                })
+              ),
+              animate("200ms", style({ height: 0, padding: 0 })),
+            ],
+            { optional: true }
+          ),
         ]),
-    ],
-    standalone: false
+      ]),
+    ]),
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AlarmsWidgetComponent extends BaseWidgetComponent {
   protected logger: Logger;
@@ -48,18 +80,22 @@ export class AlarmsWidgetComponent extends BaseWidgetComponent {
   /**
    * severityList for display the select for filter
    */
-  severityList: Option[] = Array.from(this.severityLabel.entries()).map(([value, label]) => ({
-    label,
-    value: value.toString(),
-  }));
+  severityList: Option[] = Array.from(this.severityLabel.entries()).map(
+    ([value, label]) => ({
+      label,
+      value: value.toString(),
+    })
+  );
   /**
    * Selected severity to filter, linked to template with ngModel
    */
-  filteringSev : string[] = [];
+  filteringSev: string[] = [];
 
   alarmListArray$: Observable<HytAlarm.LiveAlarm[]> = new Observable();
   filteredList$: Observable<HytAlarm.LiveAlarm[]> = new Observable();
-  filterChanges$: BehaviorSubject<string[]> = new BehaviorSubject(this.filteringSev);
+  filterChanges$: BehaviorSubject<string[]> = new BehaviorSubject(
+    this.filteringSev
+  );
 
   constructor(
     injector: Injector,
@@ -73,26 +109,38 @@ export class AlarmsWidgetComponent extends BaseWidgetComponent {
   }
 
   ngOnInit(): void {
-    this.alarmListArray$ = this.store.select(LiveAlarmSelectors.selectLiveAlarmsByProjectId({ projectId: this.widget.projectId }));
+    this.alarmListArray$ = this.store.select(
+      LiveAlarmSelectors.selectLiveAlarmsByProjectId({
+        projectId: this.widget.projectId,
+      })
+    );
     this.filteredList$ = combineLatest([
-      this.store.select(LiveAlarmSelectors.selectLiveAlarmsByProjectId({ projectId: this.widget.projectId })),
-      this.filterChanges$
+      this.store.select(
+        LiveAlarmSelectors.selectLiveAlarmsByProjectId({
+          projectId: this.widget.projectId,
+        })
+      ),
+      this.filterChanges$,
     ]).pipe(
       map(([value, filter]) => {
-        if (filter.length){
-          return value.filter((alarm)=> filter.includes(alarm.event.severity.toString()))
+        if (filter.length) {
+          return value.filter((alarm) =>
+            filter.includes(alarm.event.severity.toString())
+          );
         } else {
           return value;
         }
       })
-    )
+    );
   }
 
   ngAfterViewInit() {
     this.configure();
-    this.hPacketsService.findAllHPacketByProjectId(this.widget.projectId).subscribe(
-      res => this.hPacketIdList = res.map(packet => packet.id)
-    );
+    this.hPacketsService
+      .findAllHPacketByProjectId(this.widget.projectId)
+      .subscribe(
+        (res) => (this.hPacketIdList = res.map((packet) => packet.id))
+      );
   }
 
   configure() {
@@ -106,8 +154,9 @@ export class AlarmsWidgetComponent extends BaseWidgetComponent {
   /**
    * Used for display all the severity that we are filtering as a list(ES: low, medium)
    */
-  get listSelectedSev(){
-    return this.filteringSev.map(sev => this.severityLabel.get(+sev)).join(', ');
+  get listSelectedSev() {
+    return this.filteringSev
+      .map((sev) => this.severityLabel.get(+sev))
+      .join(", ");
   }
-
 }

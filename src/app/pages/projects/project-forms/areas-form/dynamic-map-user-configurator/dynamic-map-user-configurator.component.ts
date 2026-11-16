@@ -1,18 +1,38 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Host, Input, OnInit, Optional} from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import {MatButtonToggleChange} from "@angular/material/button-toggle";
-import { CoordinatesType, GenericMap, MapComponent, MapDefaultConfiguration } from 'components';
-import {Logger, LoggerService} from "core";
-import { Observable } from 'rxjs';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Host,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
+import { MatButtonToggleChange } from "@angular/material/button-toggle";
+import {
+  CoordinatesType,
+  GenericMap,
+  MapComponent,
+  MapDefaultConfiguration,
+} from "components";
+import { Logger, LoggerService } from "core";
+import { Observable } from "rxjs";
 
 @Component({
-    selector: 'hyt-dynamic-map-user-configurator',
-    templateUrl: './dynamic-map-user-configurator.component.html',
-    styleUrls: ['./dynamic-map-user-configurator.component.scss'],
-    standalone: false
+  selector: "hyt-dynamic-map-user-configurator",
+  templateUrl: "./dynamic-map-user-configurator.component.html",
+  styleUrls: ["./dynamic-map-user-configurator.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewInit {
-
+export class DynamicMapUserConfiguratorComponent
+  implements OnInit, AfterViewInit
+{
   private _noneConfiguration = false;
 
   mapComponentReference?: MapComponent;
@@ -27,13 +47,13 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
 
   addressList: Observable<any>; // Observable<SearchResult<RawResult>[]>;
   geoSearchForm = new UntypedFormGroup({
-    address: new UntypedFormControl(''),
+    address: new UntypedFormControl(""),
   });
 
   latLongForm = new UntypedFormGroup({
-    latitude:  new UntypedFormControl('', Validators.required),
-    longitude:  new UntypedFormControl('', Validators.required),
-    zoom:  new UntypedFormControl('', [
+    latitude: new UntypedFormControl("", Validators.required),
+    longitude: new UntypedFormControl("", Validators.required),
+    zoom: new UntypedFormControl("", [
       Validators.required,
       Validators.min(this.mapConfiguration.minZoom),
       Validators.max(this.mapConfiguration.maxZoom),
@@ -45,7 +65,7 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
 
   @Input() saveFunction: (areaConfig: GenericMap) => Observable<any>;
 
-  editCenter  = false;
+  editCenter = false;
 
   //@Output() onUpdate: EventEmitter<string> = new EventEmitter();
   /*
@@ -56,12 +76,12 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
   constructor(
     private loggerService: LoggerService,
     private cdr: ChangeDetectorRef,
-    @Host() @Optional() private mapComponent: MapComponent,
+    @Host() @Optional() private mapComponent: MapComponent
   ) {
     this.mapComponentReference = mapComponent;
     // Init Logger
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('DynamicMapUserConfiguratorComponent');
+    this.logger.registerClass("DynamicMapUserConfiguratorComponent");
   }
 
   ngAfterViewInit() {
@@ -71,13 +91,12 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
   }
 
   ngOnInit(): void {
-
     this._noneConfiguration = !this.mapComponentReference.areaConfiguration;
 
     //this.addressList = this.geoSearchForm.valueChanges.pipe(switchMap(res => from(this.geoSearchProvider.search({ query: res.address }))));
-    
+
     this.latLongForm.disable();
-    this.latLongForm.valueChanges.subscribe(res => {
+    this.latLongForm.valueChanges.subscribe((res) => {
       this.areaConfiguration = JSON.stringify(res);
       this.mapComponentReference.setMapCenter(this.areaConfiguration);
     });
@@ -85,12 +104,20 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
 
   resetFormValue(markDirty?) {
     if (this.areaConfiguration) {
-      const areaConfigurationParsed: GenericMap = JSON.parse(this.areaConfiguration);
-      this.latLongForm.patchValue({
-        latitude: areaConfigurationParsed.latitude || this.mapConfiguration.latitude,
-        longitude: areaConfigurationParsed.longitude || this.mapConfiguration.longitude,
-        zoom: areaConfigurationParsed.zoom || this.mapConfiguration.zoom,
-      }, { emitEvent: false });
+      const areaConfigurationParsed: GenericMap = JSON.parse(
+        this.areaConfiguration
+      );
+      this.latLongForm.patchValue(
+        {
+          latitude:
+            areaConfigurationParsed.latitude || this.mapConfiguration.latitude,
+          longitude:
+            areaConfigurationParsed.longitude ||
+            this.mapConfiguration.longitude,
+          zoom: areaConfigurationParsed.zoom || this.mapConfiguration.zoom,
+        },
+        { emitEvent: false }
+      );
       if (markDirty) {
         this.latLongForm.markAsDirty();
       }
@@ -102,32 +129,35 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
    * @param change
    */
   changeCoordType(change: MatButtonToggleChange) {
-    this.logger.debug('changeCoordType - Coordinates type has changed', change);
+    this.logger.debug("changeCoordType - Coordinates type has changed", change);
     this.selectedCoordType = change.value;
   }
 
   saveMapCenterAndZoom() {
     this.saveFunction(this.latLongForm.value).subscribe(
-      res => {
+      (res) => {
         this.latLongForm.disable();
         this.editCenter = false;
         this.mapComponentReference.toggleEditCenter(this.editCenter, null);
         this.latLongForm.markAsPristine();
         this._noneConfiguration = false;
       },
-      err => console.log(err)
+      (err) => console.log(err)
     );
   }
-
 
   enableEditCenter() {
     this._originalFormValue = JSON.stringify(this.latLongForm.value);
     this.latLongForm.enable({ emitEvent: false });
     this.editCenter = true;
-    this.mapComponentReference.toggleEditCenter(this.editCenter, (areaConfiguration: string) => {
-      this.areaConfiguration = areaConfiguration;
-      this.resetFormValue();
-    }, this.areaConfiguration);
+    this.mapComponentReference.toggleEditCenter(
+      this.editCenter,
+      (areaConfiguration: string) => {
+        this.areaConfiguration = areaConfiguration;
+        this.resetFormValue();
+      },
+      this.areaConfiguration
+    );
   }
 
   cancelEditCenter() {
@@ -135,17 +165,20 @@ export class DynamicMapUserConfiguratorComponent implements OnInit, AfterViewIni
     this.resetFormValue();
     this.latLongForm.disable({ emitEvent: false });
     this.editCenter = false;
-    this.mapComponentReference.toggleEditCenter(this.editCenter, null, this.areaConfiguration);
+    this.mapComponentReference.toggleEditCenter(
+      this.editCenter,
+      null,
+      this.areaConfiguration
+    );
   }
 
   getConfigrationStatus() {
     if (this._noneConfiguration) {
-      return 'none';
-    } else if (this.mapComponentReference.getAreaItemCount() === 0){
-      return 'nodevice';
+      return "none";
+    } else if (this.mapComponentReference.getAreaItemCount() === 0) {
+      return "nodevice";
     } else {
-      return 'complete';
+      return "complete";
     }
   }
-
 }

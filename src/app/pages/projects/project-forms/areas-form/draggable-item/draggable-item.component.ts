@@ -1,16 +1,24 @@
-import { Component, ElementRef, EventEmitter, HostListener, ViewEncapsulation } from '@angular/core';
-import { CdkDrag } from '@angular/cdk/drag-drop';
-import { Area, AreaDevice, Dashboard, HDevice, LiveAlarmSelectors } from 'core';
-import { DeviceActions, MapItemAction, UtilsService } from 'components';
-import { Store } from '@ngrx/store';
-import { Observable, map, tap } from 'rxjs';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { CdkDrag } from "@angular/cdk/drag-drop";
+import { Area, AreaDevice, Dashboard, HDevice, LiveAlarmSelectors } from "core";
+import { DeviceActions, MapItemAction, UtilsService } from "components";
+import { Store } from "@ngrx/store";
+import { Observable, map, tap } from "rxjs";
 
 @Component({
-    selector: 'hyt-draggable-item',
-    templateUrl: './draggable-item.component.html',
-    styleUrls: ['./draggable-item.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-draggable-item",
+  templateUrl: "./draggable-item.component.html",
+  styleUrls: ["./draggable-item.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DraggableItemComponent {
   openClicked = new EventEmitter<MapItemAction>();
@@ -29,20 +37,36 @@ export class DraggableItemComponent {
   renderData: any = {};
   showName = false;
 
-  titleToDisplay = '';
+  titleToDisplay = "";
 
-  alarmInfo$: Observable<any> = this.store.select(LiveAlarmSelectors.selectAllLiveAlarms).pipe(
-    map(allLiveAlarms => allLiveAlarms.filter(x => x.deviceIds.some(y => this.deepHDeviceList.map(z => z.id).includes(y)))),
-    tap(allLiveAlarms => {
-      if (allLiveAlarms.length) {
-        const alarmByMaxSeverity = allLiveAlarms.reduce((maxSeverityAlarm, alarm) => {
-          return alarm.event.severity > maxSeverityAlarm.event.severity ? alarm : maxSeverityAlarm;
-        }, allLiveAlarms[0]);
-        const nativeElement = this.elRef.nativeElement;
-        nativeElement.style.setProperty('--alarm-badge-color', alarmByMaxSeverity.color.background);
-      }
-    }),
-  );
+  alarmInfo$: Observable<any> = this.store
+    .select(LiveAlarmSelectors.selectAllLiveAlarms)
+    .pipe(
+      map((allLiveAlarms) =>
+        allLiveAlarms.filter((x) =>
+          x.deviceIds.some((y) =>
+            this.deepHDeviceList.map((z) => z.id).includes(y)
+          )
+        )
+      ),
+      tap((allLiveAlarms) => {
+        if (allLiveAlarms.length) {
+          const alarmByMaxSeverity = allLiveAlarms.reduce(
+            (maxSeverityAlarm, alarm) => {
+              return alarm.event.severity > maxSeverityAlarm.event.severity
+                ? alarm
+                : maxSeverityAlarm;
+            },
+            allLiveAlarms[0]
+          );
+          const nativeElement = this.elRef.nativeElement;
+          nativeElement.style.setProperty(
+            "--alarm-badge-color",
+            alarmByMaxSeverity.color.background
+          );
+        }
+      })
+    );
 
   /**
    * flat device list linked to this item used to filter alarms
@@ -53,9 +77,9 @@ export class DraggableItemComponent {
     private store: Store,
     private elRef: ElementRef,
     public utilsService: UtilsService
-  ) { }
+  ) {}
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener("window:resize", ["$event"])
   onResize(event) {
     this.refresh();
   }
@@ -75,12 +99,16 @@ export class DraggableItemComponent {
   setConfig(container: HTMLElement, areaItem: AreaDevice | Area): void {
     this.itemData = areaItem;
     this.container = container;
-    this.deepHDeviceList = (areaItem as AreaDevice).device ? [ (areaItem as AreaDevice).device ] : (areaItem as any).deepDevices;
-    this.style['background-image'] = `url(assets/icons/${this.itemData.mapInfo.icon})`;
-    this.style['background-size'] = `contain`;
-    this.style['background-repeat'] = `no-repeat`;
-    this.style['background-position'] = `top center`;
-    this.style['cursor'] = this.editMode ? 'move' : '';
+    this.deepHDeviceList = (areaItem as AreaDevice).device
+      ? [(areaItem as AreaDevice).device]
+      : (areaItem as any).deepDevices;
+    this.style[
+      "background-image"
+    ] = `url(assets/icons/${this.itemData.mapInfo.icon})`;
+    this.style["background-size"] = `contain`;
+    this.style["background-repeat"] = `no-repeat`;
+    this.style["background-position"] = `top center`;
+    this.style["cursor"] = this.editMode ? "move" : "";
     this.refresh();
   }
 
@@ -94,7 +122,7 @@ export class DraggableItemComponent {
   refresh(): void {
     this.position = {
       x: this.itemData.mapInfo.x * this.container.clientWidth,
-      y: this.itemData.mapInfo.y * this.container.clientHeight
+      y: this.itemData.mapInfo.y * this.container.clientHeight,
     };
     this.renderDataRequest.emit();
   }
@@ -112,28 +140,29 @@ export class DraggableItemComponent {
   }
 
   setTitleAttribute(itemData: any, editMode: boolean, action: string): string {
-    const deviceName = itemData.device ? itemData.device.deviceName : itemData.name;
+    const deviceName = itemData.device
+      ? itemData.device.deviceName
+      : itemData.name;
 
     switch (action) {
-      case 'move':
+      case "move":
         if (editMode) {
           const moveText = $localize`:@@HYT_draggableitem_move:Move`;
-          return moveText + ' ' + deviceName;
+          return moveText + " " + deviceName;
         } else {
           if (itemData.device) {
-            return `Open ${deviceName} menu`
-          };
+            return `Open ${deviceName} menu`;
+          }
           return deviceName;
         }
 
-      case 'remove':
+      case "remove":
         if (editMode) {
           const removeText = $localize`:@@HYT_draggableitem_remove:Remove`;
-          return removeText + ' ' + deviceName;
+          return removeText + " " + deviceName;
         } else {
           return deviceName;
         }
     }
   }
-
 }

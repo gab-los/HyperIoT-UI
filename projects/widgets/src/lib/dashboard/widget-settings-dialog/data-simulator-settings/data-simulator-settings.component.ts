@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, ViewEncapsulation } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AreaDevice,
   Area_Service,
@@ -15,12 +21,13 @@ import { DataSimulatorSettings } from "./data-simulator.models";
 import { ControlContainer, NgForm } from "@angular/forms";
 
 @Component({
-    selector: "hyperiot-data-simulator-settings",
-    templateUrl: "./data-simulator-settings.component.html",
-    styleUrls: ["./data-simulator-settings.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
-    standalone: false
+  selector: "hyperiot-data-simulator-settings",
+  templateUrl: "./data-simulator-settings.component.html",
+  styleUrls: ["./data-simulator-settings.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DataSimulatorSettingsComponent implements OnInit {
   @Input() widget: WidgetConfig;

@@ -1,15 +1,20 @@
-import { Component, OnInit, HostListener } from '@angular/core';
-import { LoggerService, Logger } from 'core';
-import { PlatformService } from '../../services/platform/platform.service'
+import {
+  Component,
+  OnInit,
+  HostListener,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { LoggerService, Logger } from "core";
+import { PlatformService } from "../../services/platform/platform.service";
 
 @Component({
-    selector: 'hyt-notificationbar',
-    templateUrl: './notificationbar.component.html',
-    styleUrls: ['./notificationbar.component.scss'],
-    standalone: false
+  selector: "hyt-notificationbar",
+  templateUrl: "./notificationbar.component.html",
+  styleUrls: ["./notificationbar.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class NotificationbarComponent implements OnInit {
-
   /**
    * logger service
    */
@@ -20,9 +25,9 @@ export class NotificationbarComponent implements OnInit {
   notificationDisplay = false;
   deferredPrompt: any;
 
-  @HostListener('window:beforeinstallprompt', ['$event'])
+  @HostListener("window:beforeinstallprompt", ["$event"])
   onBeforeInstallPrompt(e) {
-    this.logger.info('onBeforeInstallPrompt');
+    this.logger.info("onBeforeInstallPrompt");
     // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault();
     // Stash the event so it can be triggered later.
@@ -34,88 +39,75 @@ export class NotificationbarComponent implements OnInit {
     private loggerService: LoggerService,
     private platformService: PlatformService
   ) {
-
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('NotificationbarComponent');
-
+    this.logger.registerClass("NotificationbarComponent");
   }
 
   ngOnInit() {
-
     this.plBrowser = this.platformService.getPlBrowser();
-    this.logger.info('Current Browser: '+ this.plBrowser);
+    this.logger.info("Current Browser: " + this.plBrowser);
 
-    if (this.plBrowser === 'ios' || this.plBrowser === 'android') {
-      this.showNotificationBar()
+    if (this.plBrowser === "ios" || this.plBrowser === "android") {
+      this.showNotificationBar();
     }
 
     const self = this;
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('entrato event', e)
+    window.addEventListener("beforeinstallprompt", (e) => {
+      console.log("entrato event", e);
       // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
       // Stash the event so it can be triggered later.
       self.deferredPrompt = e;
       self.showNotificationBar();
-
     });
-
   }
 
   showNotificationBar() {
+    this.logger.info("SHOW NOTIFICATION BAR");
 
-    this.logger.info('SHOW NOTIFICATION BAR');
-
-    const notificationBar: HTMLElement = document.getElementById('notification-bar') as HTMLElement;
-    notificationBar.style.display = 'flex';
-
+    const notificationBar: HTMLElement = document.getElementById(
+      "notification-bar"
+    ) as HTMLElement;
+    notificationBar.style.display = "flex";
   }
 
   addToHomeScreen() {
+    this.logger.info("ADD TO SCREEN");
 
-    this.logger.info('ADD TO SCREEN');
+    const notificationBar: HTMLElement = document.getElementById(
+      "notification-bar"
+    ) as HTMLElement;
 
-    const notificationBar: HTMLElement = document.getElementById('notification-bar') as HTMLElement;
-
-    if (this.plBrowser === 'safari' || this.plBrowser === 'ios') {
-
-      document.body.classList.add('stop-scrolling');
-      notificationBar.style.display = 'none';
+    if (this.plBrowser === "safari" || this.plBrowser === "ios") {
+      document.body.classList.add("stop-scrolling");
+      notificationBar.style.display = "none";
       this.platformService.showSafariPrompt = true;
-
-    } else if (this.plBrowser === 'firefox') {
-
-      document.body.classList.add('stop-scrolling');
-      notificationBar.style.display = 'none';
+    } else if (this.plBrowser === "firefox") {
+      document.body.classList.add("stop-scrolling");
+      notificationBar.style.display = "none";
       this.platformService.showFirefoxPrompt = true;
-
     } else {
-      
-      notificationBar.style.display = 'none';
-      
+      notificationBar.style.display = "none";
+
       this.deferredPrompt.prompt();
-      this.deferredPrompt.userChoice
-        .then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the A2HS prompt');
-          } else {
-            console.log('User dismissed the A2HS prompt');
-          }
-          this.deferredPrompt = null;
-        });
-
+      this.deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+        this.deferredPrompt = null;
+      });
     }
-
   }
 
   closeNotificationBar() {
+    this.logger.info("CLOSE NOTIFICATION BAR");
 
-    this.logger.info('CLOSE NOTIFICATION BAR');
-
-    const notificationBar: HTMLElement = document.getElementById('notification-bar') as HTMLElement;
-    notificationBar.style.display = 'none';
-
+    const notificationBar: HTMLElement = document.getElementById(
+      "notification-bar"
+    ) as HTMLElement;
+    notificationBar.style.display = "none";
   }
-
 }

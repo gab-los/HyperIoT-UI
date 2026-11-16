@@ -1,18 +1,35 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { SelectOption } from 'components';
-import { Observable } from 'rxjs';
-import { PacketSelectComponent } from '../packet-select/packet-select.component';
-import { ConfigModel, Step, WidgetConfig } from '../../../base/base-widget/model/widget.model';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { SelectOption } from "components";
+import { Observable } from "rxjs";
+import { PacketSelectComponent } from "../packet-select/packet-select.component";
+import {
+  ConfigModel,
+  Step,
+  WidgetConfig,
+} from "../../../base/base-widget/model/widget.model";
+import {
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  NgForm,
+  Validators,
+} from "@angular/forms";
 
 @Component({
-    selector: 'hyperiot-trend-gauge-chart-settings',
-    templateUrl: './trend-gauge-chart-settings.component.html',
-    styleUrls: ['./trend-gauge-chart-settings.component.scss'],
-    standalone: false
+  selector: "hyperiot-trend-gauge-chart-settings",
+  templateUrl: "./trend-gauge-chart-settings.component.html",
+  styleUrls: ["./trend-gauge-chart-settings.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
-
   @ViewChild(PacketSelectComponent, { static: true })
   packetSelect: PacketSelectComponent;
 
@@ -22,7 +39,7 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
   readonly range = {
     min: -1,
     max: 1,
-    step: 0.1
+    step: 0.1,
   } as const;
 
   subscription: any;
@@ -31,60 +48,59 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
   gaugeForm: UntypedFormGroup;
 
   get stepList(): UntypedFormArray {
-    return this.gaugeForm.get('stepList') as UntypedFormArray;
+    return this.gaugeForm.get("stepList") as UntypedFormArray;
   }
 
   get title(): UntypedFormGroup {
-    return this.gaugeForm.get('title') as UntypedFormGroup;
+    return this.gaugeForm.get("title") as UntypedFormGroup;
   }
 
-  private defaultConfig: Pick<ConfigModel, 'textColor' | 'bgColor' | 'title' | 'steps'> = {
-    textColor: '#275691',
-    bgColor: 'bright',
+  private defaultConfig: Pick<
+    ConfigModel,
+    "textColor" | "bgColor" | "title" | "steps"
+  > = {
+    textColor: "#275691",
+    bgColor: "bright",
     title: {
-      text: 'Trend Gauge Chart',
+      text: "Trend Gauge Chart",
       fontSize: 16,
     },
     steps: [
       {
-        color: '#fe2739',
-        range: [this.range.min, -0.5]
+        color: "#fe2739",
+        range: [this.range.min, -0.5],
       },
       {
-        color: '#febf58',
-        range: [-0.5, -0.3]
+        color: "#febf58",
+        range: [-0.5, -0.3],
       },
       {
-        color: '#91cf52',
-        range: [-0.3, 0.3]
+        color: "#91cf52",
+        range: [-0.3, 0.3],
       },
       {
-        color: '#febf58',
-        range: [0.3, 0.5]
+        color: "#febf58",
+        range: [0.3, 0.5],
       },
       {
-        color: '#fe2739',
-        range: [0.5, this.range.max]
+        color: "#fe2739",
+        range: [0.5, this.range.max],
       },
-    ]
+    ],
   };
 
   bgColorOptions: SelectOption[] = [
     {
-      value: 'bright',
-      label: $localize`:@@HYT_widget_settings_bg_color_bright:Bright`
+      value: "bright",
+      label: $localize`:@@HYT_widget_settings_bg_color_bright:Bright`,
     },
     {
-      value: 'dark',
-      label: $localize`:@@HYT_widget_settings_bg_color_dark:Dark`
-    }
+      value: "dark",
+      label: $localize`:@@HYT_widget_settings_bg_color_dark:Dark`,
+    },
   ];
 
-  constructor(
-    private fb: UntypedFormBuilder
-  ) {
-
-  }
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     if (!this.widget.config) {
@@ -97,26 +113,25 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
       title: this.fb.group({
         text: [text, Validators.required],
         fontSize: [
-          fontSize, [
-            Validators.required,
-            Validators.min(10),
-            Validators.max(25)
-          ]
-        ]
+          fontSize,
+          [Validators.required, Validators.min(10), Validators.max(25)],
+        ],
       }),
       stepList: this.fb.array([]),
     });
 
     this.widget.config.steps.forEach(({ range: [start, stop], color }) => {
-      this.stepList.push(this.fb.group({
-        start: [start, Validators.required],
-        stop: [stop, Validators.required],
-        color: [color, Validators.required]
-      }));
-    })
+      this.stepList.push(
+        this.fb.group({
+          start: [start, Validators.required],
+          stop: [stop, Validators.required],
+          color: [color, Validators.required],
+        })
+      );
+    });
 
     this.subscription = this.modalApply.subscribe((event) => {
-      if (event === 'apply') {
+      if (event === "apply") {
         this.apply();
       }
     });
@@ -129,17 +144,19 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
   }
 
   apply(): void {
-    const steps: Step[] = (this.stepList.value as []).map(({ start, stop, color }) => {
-      return {
-        range: [start, stop],
-        color
+    const steps: Step[] = (this.stepList.value as []).map(
+      ({ start, stop, color }) => {
+        return {
+          range: [start, stop],
+          color,
+        };
       }
-    });
+    );
 
     this.widget.config.steps = steps;
 
     const field = this.selectedFields[0];
-    this.widget.config.packetFields = [{[field.id]: field.name}]
+    this.widget.config.packetFields = [{ [field.id]: field.name }];
 
     const { text, fontSize } = this.title.value;
     this.widget.config.title = { text, fontSize };
@@ -153,9 +170,10 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
 
   addStep(): void {
     const stepCount = this.stepList.length;
-    const start = stepCount === 0
-      ? this.range.min
-      : Number(this.stepList.at(stepCount - 1).get('stop')?.value);
+    const start =
+      stepCount === 0
+        ? this.range.min
+        : Number(this.stepList.at(stepCount - 1).get("stop")?.value);
 
     if (start >= 1) {
       return;
@@ -163,15 +181,16 @@ export class TrendGaugeChartSettingsComponent implements OnInit, OnDestroy {
 
     const stop = Number((start + this.range.step).toFixed(1));
 
-    this.stepList.push(this.fb.group({
-      start: [start, Validators.required],
-      stop: [stop, Validators.required],
-      color: [null, Validators.required]
-    }));
+    this.stepList.push(
+      this.fb.group({
+        start: [start, Validators.required],
+        stop: [stop, Validators.required],
+        color: [null, Validators.required],
+      })
+    );
   }
 
   deleteStep(index: number): void {
     this.stepList.removeAt(index);
   }
-
 }

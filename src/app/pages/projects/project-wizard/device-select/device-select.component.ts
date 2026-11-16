@@ -1,17 +1,25 @@
-import { Component, OnChanges, Input, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
-import { HDevice } from 'core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { SelectOption } from 'components';
+import {
+  Component,
+  OnChanges,
+  Input,
+  EventEmitter,
+  Output,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { HDevice } from "core";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import { SelectOption } from "components";
 
 @Component({
-    selector: 'hyt-device-select',
-    templateUrl: './device-select.component.html',
-    styleUrls: ['./device-select.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-device-select",
+  templateUrl: "./device-select.component.html",
+  styleUrls: ["./device-select.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DeviceSelectComponent implements OnChanges {
-
   @Input() hDevices: HDevice[];
 
   selectForm: UntypedFormGroup;
@@ -20,25 +28,23 @@ export class DeviceSelectComponent implements OnChanges {
 
   @Output() selectedDevice = new EventEmitter<HDevice>();
 
-  constructor(
-    private fb: UntypedFormBuilder
-  ) {
+  constructor(private fb: UntypedFormBuilder) {
     this.selectForm = this.fb.group({});
   }
 
   ngOnChanges(): void {
     this.devicesOptions = [];
-    this.hDevices.forEach(device => {
+    this.hDevices.forEach((device) => {
       this.devicesOptions.push({
         value: device,
-        label: device.deviceName
+        label: device.deviceName,
       });
     });
     this.autoSelect();
   }
 
-  getSelectedDevice():string {
-    const deviceSelected = this.selectForm.get('selectDevice').value;
+  getSelectedDevice(): string {
+    const deviceSelected = this.selectForm.get("selectDevice").value;
     return deviceSelected.deviceName;
   }
 
@@ -48,15 +54,21 @@ export class DeviceSelectComponent implements OnChanges {
   }
 
   /**
-   * Sets a value to selected based on previous value or deafults to the first element 
+   * Sets a value to selected based on previous value or deafults to the first element
    */
   autoSelect(): void {
     if (this.devicesOptions.length !== 0) {
-      if (this.selectForm.get('selectDevice').value) {
-        const option = this.devicesOptions.find(option => option.label === this.selectForm.get('selectDevice').value.deviceName);
+      if (this.selectForm.get("selectDevice").value) {
+        const option = this.devicesOptions.find(
+          (option) =>
+            option.label ===
+            this.selectForm.get("selectDevice").value.deviceName
+        );
         this.deviceChanged(option);
       } else {
-        this.selectForm.get('selectDevice').setValue(this.devicesOptions[0].value);
+        this.selectForm
+          .get("selectDevice")
+          .setValue(this.devicesOptions[0].value);
         this.deviceChanged(this.devicesOptions[0]);
       }
     } else {
@@ -65,17 +77,18 @@ export class DeviceSelectComponent implements OnChanges {
   }
 
   selectSpecific(deviceId: number): void {
-    const so: SelectOption = this.devicesOptions.find(x => x.value.id === deviceId);
-    this.selectForm.get('selectDevice').setValue(so.value);
+    const so: SelectOption = this.devicesOptions.find(
+      (x) => x.value.id === deviceId
+    );
+    this.selectForm.get("selectDevice").setValue(so.value);
     this.deviceChanged(so);
   }
 
   freezeSelection() {
-    this.selectForm.get('selectDevice').disable();
+    this.selectForm.get("selectDevice").disable();
   }
 
   unfreezeSelection() {
-    this.selectForm.get('selectDevice').enable();
+    this.selectForm.get("selectDevice").enable();
   }
-
 }

@@ -1,13 +1,22 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { SelectOptionGroup } from 'components';
-import { HDevice, HDevicesService, HPacket, HPacketService } from 'core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { SelectOptionGroup } from "components";
+import { HDevice, HDevicesService, HPacket, HPacketService } from "core";
 
 @Component({
-    selector: 'hyperiot-packets-select',
-    templateUrl: './packets-select.component.html',
-    styleUrls: ['./packets-select.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyperiot-packets-select",
+  templateUrl: "./packets-select.component.html",
+  styleUrls: ["./packets-select.component.css"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PacketsSelectComponent implements OnInit {
   @Input() projectId: number;
@@ -25,16 +34,16 @@ export class PacketsSelectComponent implements OnInit {
 
   constructor(
     // private hDevicesService: HDevicesService,
-    private hPacketsService: HPacketService,
+    private hPacketsService: HPacketService
   ) {}
 
   ngOnInit(): void {
     if (!this.projectId) {
-      throw new Error('No projectId provided');
+      throw new Error("No projectId provided");
     }
     // setting selected initial option
     if (this.currentSelectedPackets.length) {
-      this.selectedPacketOption = this.currentSelectedPackets.map(x => x.id);
+      this.selectedPacketOption = this.currentSelectedPackets.map((x) => x.id);
     }
     this.hPacketsService
       .findAllHPacketByProjectId(this.projectId)
@@ -55,9 +64,9 @@ export class PacketsSelectComponent implements OnInit {
             .map((y) => ({
               value: y.id,
               label: y.name,
-              icon: 'icon-hyt_packets',
+              icon: "icon-hyt_packets",
             })),
-          icon: 'icon-hyt_device',
+          icon: "icon-hyt_device",
         }));
       });
 
@@ -87,8 +96,9 @@ export class PacketsSelectComponent implements OnInit {
   }
 
   packetChanged(packetOptions) {
-    this.currentSelectedPackets = packetOptions.value.map(val => this.allPackets.find(p => p.id === val));
+    this.currentSelectedPackets = packetOptions.value.map((val) =>
+      this.allPackets.find((p) => p.id === val)
+    );
     this.selectedPackets.emit(this.currentSelectedPackets);
   }
-
 }

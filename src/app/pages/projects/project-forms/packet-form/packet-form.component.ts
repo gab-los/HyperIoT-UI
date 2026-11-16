@@ -8,6 +8,7 @@ import {
   ViewEncapsulation,
   ChangeDetectorRef,
   AfterViewInit,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
@@ -21,15 +22,17 @@ import { environment } from "src/environments/environment";
 import { triggerAsyncId } from "async_hooks";
 
 @Component({
-    selector: "hyt-packet-form",
-    templateUrl: "./packet-form.component.html",
-    styleUrls: ["./packet-form.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-packet-form",
+  templateUrl: "./packet-form.component.html",
+  styleUrls: ["./packet-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PacketFormComponent
   extends ProjectFormEntity
-  implements AfterViewInit, OnDestroy {
+  implements AfterViewInit, OnDestroy
+{
   private overlayHeight: ElementRef;
   showPreloader: boolean;
   divHeight: number;
@@ -105,19 +108,19 @@ export class PacketFormComponent
     value: k,
   }));
 
-  serializationOptions: Option[] = Object.keys(
-    HPacket.SerializationEnum
-  ).map((k) => ({ label: k, value: k }));
+  serializationOptions: Option[] = Object.keys(HPacket.SerializationEnum).map(
+    (k) => ({ label: k, value: k })
+  );
 
   formatOptions: Option[] = Object.keys(HPacket.FormatEnum).map((k) => ({
     label: k,
     value: k,
-    disabled: k === HPacket.FormatEnum.TEXT?true:false
+    disabled: k === HPacket.FormatEnum.TEXT ? true : false,
   }));
 
-  trafficPlanOptions: Option[] = Object.keys(
-    HPacket.TrafficPlanEnum
-  ).map((k) => ({ label: k, value: k }));
+  trafficPlanOptions: Option[] = Object.keys(HPacket.TrafficPlanEnum).map(
+    (k) => ({ label: k, value: k })
+  );
 
   timestampTypeOptions: Option[] = [
     {
@@ -151,7 +154,7 @@ export class PacketFormComponent
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
-    super(injector,cdr);
+    super(injector, cdr);
     this.formTemplateId = "container-packet-form";
     this.longDefinition = this.entitiesService.packet.longDefinition;
     this.formTitle = this.entitiesService.packet.formTitle;
@@ -220,10 +223,10 @@ export class PacketFormComponent
     this.entity.type = event;
 
     let optionFormatText = this.formatOptions.find(
-        (opt) => opt.value === HPacket.FormatEnum.TEXT
+      (opt) => opt.value === HPacket.FormatEnum.TEXT
     );
 
-    if (this.entity.type === "OUTPUT" && this.entity.serialization !== 'AVRO') {
+    if (this.entity.type === "OUTPUT" && this.entity.serialization !== "AVRO") {
       optionFormatText.disabled = false;
     } else {
       optionFormatText.disabled = true;
@@ -239,21 +242,21 @@ export class PacketFormComponent
     console.log("Serialization changed!");
     this.entity.serialization = event;
     //when avro is selected , format must be json
-    if(event === 'AVRO'){
+    if (event === "AVRO") {
       this.formatOptions.forEach((opt) => {
-          if(opt.value !== HPacket.FormatEnum.JSON){
-              opt.disabled = true;
-              opt.checked = false;
-          } else {
-            opt.checked = true;
-            this.entity.format = opt.value;
-          }
+        if (opt.value !== HPacket.FormatEnum.JSON) {
+          opt.disabled = true;
+          opt.checked = false;
+        } else {
+          opt.checked = true;
+          this.entity.format = opt.value;
+        }
       });
     } else {
       this.formatOptions.forEach((opt) => {
-          if(opt.value !== HPacket.FormatEnum.JSON){
-              opt.disabled = false;
-          }
+        if (opt.value !== HPacket.FormatEnum.JSON) {
+          opt.disabled = false;
+        }
       });
     }
     //forcing recalculatin radio status
@@ -261,7 +264,7 @@ export class PacketFormComponent
   }
 
   private defineTopics(packet: HPacket) {
-    if(packet.device && packet.device.project) {
+    if (packet.device && packet.device.project) {
       this.mqttUrl = environment.mqttUrl;
       if (packet.type == "INPUT" || packet.type == "IO") {
         this.mqttTopic =

@@ -1,21 +1,22 @@
-import { Component, ViewEncapsulation } from '@angular/core';
-import { DialogRef } from 'components';
+import {
+  Component,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DialogRef } from "components";
 
 @Component({
-    selector: 'hyt-statistic-input-error',
-    templateUrl: './statistic-input-error.component.html',
-    styleUrls: ['./statistic-input-error.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-statistic-input-error",
+  templateUrl: "./statistic-input-error.component.html",
+  styleUrls: ["./statistic-input-error.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class StatisticInputErrorComponent {
-
-  constructor(
-    private dialogRef: DialogRef<void>,
-  ) { }
+  constructor(private dialogRef: DialogRef<void>) {}
 
   close() {
     this.dialogRef.close();
   }
-
 }

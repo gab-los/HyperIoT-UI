@@ -1,19 +1,39 @@
-import { AfterViewInit, Component, Injector, ViewChild } from '@angular/core';
-import { DataChannel, DataPacketFilter, HPacketField, Logger, LoggerService, PacketData, DateFormatterService } from 'core';
-import { Subject, Subscription } from 'rxjs';
-import { BaseTableComponent } from '../../base/base-table/base-table.component';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
-import { ServiceType } from '../../service/model/service-type';
+import {
+  AfterViewInit,
+  Component,
+  Injector,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  DataChannel,
+  DataPacketFilter,
+  HPacketField,
+  Logger,
+  LoggerService,
+  PacketData,
+  DateFormatterService,
+} from "core";
+import { Subject, Subscription } from "rxjs";
+import { BaseTableComponent } from "../../base/base-table/base-table.component";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
+import { ServiceType } from "../../service/model/service-type";
 
 @Component({
-    selector: 'hyperiot-hpacket-table',
-    templateUrl: './hpacket-table.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './hpacket-table.component.scss'],
-    standalone: false
+  selector: "hyperiot-hpacket-table",
+  templateUrl: "./hpacket-table.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./hpacket-table.component.scss",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class HpacketTableComponent extends BaseTableComponent implements AfterViewInit {
-
-  @ViewChild('tableChild', { static: false }) tableChild;
+export class HpacketTableComponent
+  extends BaseTableComponent
+  implements AfterViewInit
+{
+  @ViewChild("tableChild", { static: false }) tableChild;
 
   readonly TABLE_LIMIT = 400;
   tableHeaders = [];
@@ -60,7 +80,7 @@ export class HpacketTableComponent extends BaseTableComponent implements AfterVi
     // this.dataLoader.initConfig(this.widget);
 
     if (!this.serviceType) {
-      this.logger.error('TYPE SERVICE UNDEFINED');
+      this.logger.error("TYPE SERVICE UNDEFINED");
       return;
     }
 
@@ -86,54 +106,70 @@ export class HpacketTableComponent extends BaseTableComponent implements AfterVi
       fieldIds = Object.keys(this.widget.config?.packetFields);
     }
     if (fieldIds.length > 0) {
-      this.tableHeaders = fieldIds.map(hPacketFieldId => ({
+      this.tableHeaders = fieldIds.map((hPacketFieldId) => ({
         value: this.widget.config.packetFields[hPacketFieldId],
-        label: this.widget.config.fieldAliases[hPacketFieldId] || this.widget.config.packetFields[hPacketFieldId],
-        type: this.widget.config.fieldTypes[hPacketFieldId]
+        label:
+          this.widget.config.fieldAliases[hPacketFieldId] ||
+          this.widget.config.packetFields[hPacketFieldId],
+        type: this.widget.config.fieldTypes[hPacketFieldId],
       }));
     }
     this.tableHeaders.push({
-      value: 'timestamp',
+      value: "timestamp",
       label: this.widget.config.timestampFieldName,
-      type: 'DATE'
-    });  // display timestamp too
+      type: "DATE",
+    }); // display timestamp too
 
-    // TODO problema che dati che arrivano prima del render 
+    // TODO problema che dati che arrivano prima del render
     setTimeout(() => {
       this.subscribeDataChannel();
       if (this.serviceType === ServiceType.ONLINE) {
         this.computePacketData(this.initData.reverse());
       }
     }, 0);
-
   }
 
   subscribeDataChannel() {
-    const dataPacketFilter = new DataPacketFilter(this.widget.config.packetId, this.widget.config.packetFields, true);
+    const dataPacketFilter = new DataPacketFilter(
+      this.widget.config.packetId,
+      this.widget.config.packetFields,
+      true
+    );
     this.channelId = +this.widget.id;
     if (!this.isToolbarVisible && this.serviceType === ServiceType.OFFLINE) {
       // setting negative id to fullscreen offline widget channel to prevent updating original widget
       // TODO channelId should be a proper string
       this.channelId = -this.channelId;
-      this.dataChannel = this.dataService.copyDataChannel(this.channelId, -this.channelId);
+      this.dataChannel = this.dataService.copyDataChannel(
+        this.channelId,
+        -this.channelId
+      );
     } else {
-      this.dataChannel = this.dataService.addDataChannel(this.channelId, [dataPacketFilter]);
+      this.dataChannel = this.dataService.addDataChannel(this.channelId, [
+        dataPacketFilter,
+      ]);
     }
     this.dataChannel.addTimestampFieldToFormat(
-      this.tableHeaders.filter(el=> el.type === HPacketField.TypeEnum.TIMESTAMP).map(el=> el.value), 
+      this.tableHeaders
+        .filter((el) => el.type === HPacketField.TypeEnum.TIMESTAMP)
+        .map((el) => el.value)
     );
-    
-    this.dataSubscription = this.dataChannel.subject.subscribe((eventData) => this.computePacketData(eventData.data));
+
+    this.dataSubscription = this.dataChannel.subject.subscribe((eventData) =>
+      this.computePacketData(eventData.data)
+    );
     if (this.serviceType === ServiceType.OFFLINE) {
-      this.offControllerSubscription = this.dataChannel.controller.$totalCount.subscribe(res => {
-        if (!this.isToolbarVisible) { // if fullscreen
-          this.tableChild.totalRows = res;
-          this.computePacketData(this.initData);
-        } else {
-          this.allData = [];
-          this.tableChild.resetTable(res, true);
-        }
-      });
+      this.offControllerSubscription =
+        this.dataChannel.controller.$totalCount.subscribe((res) => {
+          if (!this.isToolbarVisible) {
+            // if fullscreen
+            this.tableChild.totalRows = res;
+            this.computePacketData(this.initData);
+          } else {
+            this.allData = [];
+            this.tableChild.resetTable(res, true);
+          }
+        });
     }
   }
 
@@ -145,8 +181,8 @@ export class HpacketTableComponent extends BaseTableComponent implements AfterVi
     }
     this.allData = this.allData.concat(packetData);
     const tableData: any[] = [];
-    packetData.forEach(pd => {
-      const el: any = {...pd};
+    packetData.forEach((pd) => {
+      const el: any = { ...pd };
       el.timestamp = this.dateFormatterService.formatDate(el.timestamp);
       tableData.push(el);
     });
@@ -174,13 +210,13 @@ export class HpacketTableComponent extends BaseTableComponent implements AfterVi
   onToolbarAction(action: string) {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:play':
+      case "toolbar:play":
         this.play();
         break;
-      case 'toolbar:pause':
+      case "toolbar:pause":
         this.pause();
         break;
-      case 'toolbar:fullscreen':
+      case "toolbar:fullscreen":
         widgetAction.value = this.allData;
         break;
     }
@@ -193,7 +229,6 @@ export class HpacketTableComponent extends BaseTableComponent implements AfterVi
       this.dataService.removeDataChannel(this.channelId);
     }
   }
-
 }
 
 export interface Result {
@@ -205,4 +240,3 @@ export interface Field {
   name: string;
   value: number;
 }
-

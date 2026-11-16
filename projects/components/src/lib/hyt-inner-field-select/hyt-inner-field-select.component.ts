@@ -1,38 +1,60 @@
-import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { HPacketField, HPacketFieldsHandlerService } from 'core';
+import { NestedTreeControl } from "@angular/cdk/tree";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { MatTreeNestedDataSource } from "@angular/material/tree";
+import { HPacketField, HPacketFieldsHandlerService } from "core";
 
 @Component({
-    selector: 'hyt-inner-field-select',
-    templateUrl: './hyt-inner-field-select.component.html',
-    styleUrls: ['./hyt-inner-field-select.component.css'],
-    standalone: false
+  selector: "hyt-inner-field-select",
+  templateUrl: "./hyt-inner-field-select.component.html",
+  styleUrls: ["./hyt-inner-field-select.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytInnerFieldSelectComponent implements OnChanges, OnInit {
-
   @Input() fields: HPacketField[] = [];
   @Input() selectedFieldsIds: number[] = [];
   @Input() isMultiSelect = false;
 
   fieldsOption = [];
 
-  treeControl = new NestedTreeControl<HPacketField>(field => field.innerFields);
+  treeControl = new NestedTreeControl<HPacketField>(
+    (field) => field.innerFields
+  );
   dataSource = new MatTreeNestedDataSource<HPacketField>();
 
-  @Output() fieldSelectionChanged: EventEmitter<number[]> = new EventEmitter<number[]>();
+  @Output() fieldSelectionChanged: EventEmitter<number[]> = new EventEmitter<
+    number[]
+  >();
 
   constructor(
     private hPacketFieldsHandlerService: HPacketFieldsHandlerService
-  ) { }
+  ) {}
 
-  findTreePathToField(fields: HPacketField[], targetField: HPacketField, path: HPacketField[] = []): HPacketField[] | null {
+  findTreePathToField(
+    fields: HPacketField[],
+    targetField: HPacketField,
+    path: HPacketField[] = []
+  ): HPacketField[] | null {
     for (const field of fields) {
       if (field === targetField) {
         return [...path, field];
       }
       if (field.innerFields) {
-        const foundPath = this.findTreePathToField(field.innerFields, targetField, [...path, field]);
+        const foundPath = this.findTreePathToField(
+          field.innerFields,
+          targetField,
+          [...path, field]
+        );
         if (foundPath) {
           return foundPath;
         }
@@ -42,9 +64,12 @@ export class HytInnerFieldSelectComponent implements OnChanges, OnInit {
   }
 
   expandTreePathToField(field: HPacketField) {
-    const treePath: HPacketField[] | null = this.findTreePathToField(this.dataSource.data, field);
+    const treePath: HPacketField[] | null = this.findTreePathToField(
+      this.dataSource.data,
+      field
+    );
     if (treePath) {
-      treePath.forEach(field => this.treeControl.expand(field));
+      treePath.forEach((field) => this.treeControl.expand(field));
     }
   }
 
@@ -52,15 +77,21 @@ export class HytInnerFieldSelectComponent implements OnChanges, OnInit {
     return fields
       .sort((a, b) => {
         // Sort fields of type OBJECT above other fields
-        if (a.type === HPacketField.TypeEnum.OBJECT && !(b.type === HPacketField.TypeEnum.OBJECT)) {
+        if (
+          a.type === HPacketField.TypeEnum.OBJECT &&
+          !(b.type === HPacketField.TypeEnum.OBJECT)
+        ) {
           return -1;
-        } else if (!(a.type === HPacketField.TypeEnum.OBJECT) && b.type === HPacketField.TypeEnum.OBJECT) {
+        } else if (
+          !(a.type === HPacketField.TypeEnum.OBJECT) &&
+          b.type === HPacketField.TypeEnum.OBJECT
+        ) {
           return 1;
         }
         // Sort fields alphabetically by name
         return a.name.localeCompare(b.name);
       })
-      .map(field => {
+      .map((field) => {
         if (field.innerFields) {
           field.innerFields = this.sortFields(field.innerFields);
         }
@@ -69,27 +100,38 @@ export class HytInnerFieldSelectComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('production changes', changes);
+    console.log("production changes", changes);
     const sortedFields = this.sortFields(this.fields);
     this.dataSource.data = sortedFields;
     if (this.selectedFieldsIds.length > 0) {
-      this.selectedFieldsIds.forEach(fieldId => {
-        this.expandTreePathToField(this.hPacketFieldsHandlerService.findFieldFromFieldsTree(sortedFields, fieldId));
+      this.selectedFieldsIds.forEach((fieldId) => {
+        this.expandTreePathToField(
+          this.hPacketFieldsHandlerService.findFieldFromFieldsTree(
+            sortedFields,
+            fieldId
+          )
+        );
       });
     }
-    const fieldsFlatList = this.hPacketFieldsHandlerService.flatFieldsTree(this.fields);
-    this.fieldsOption = fieldsFlatList.map(x => ({
+    const fieldsFlatList = this.hPacketFieldsHandlerService.flatFieldsTree(
+      this.fields
+    );
+    this.fieldsOption = fieldsFlatList.map((x) => ({
       value: x.field.id,
-      label: x.label
+      label: x.label,
     }));
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
-  ngAfterViewInit(): void { this.fieldSelectionChanged.emit(this.selectedFieldsIds); }
+  ngAfterViewInit(): void {
+    this.fieldSelectionChanged.emit(this.selectedFieldsIds);
+  }
 
-  isObjectField = (_: number, field: HPacketField) => field.type === HPacketField.TypeEnum.OBJECT;
-  isChecked = (field: HPacketField) => this.selectedFieldsIds.some(fId => fId === field.id);
+  isObjectField = (_: number, field: HPacketField) =>
+    field.type === HPacketField.TypeEnum.OBJECT;
+  isChecked = (field: HPacketField) =>
+    this.selectedFieldsIds.some((fId) => fId === field.id);
   isDisabled = (field: HPacketField) => {
     if (this.isMultiSelect) {
       return false;
@@ -99,11 +141,13 @@ export class HytInnerFieldSelectComponent implements OnChanges, OnInit {
       return false;
     }
     return true;
-  }
+  };
 
   itemSelectToggle(field: HPacketField) {
-    if (this.selectedFieldsIds.some(fId => fId === field.id)) {
-      this.selectedFieldsIds = this.selectedFieldsIds.filter(fId => fId !== field.id);
+    if (this.selectedFieldsIds.some((fId) => fId === field.id)) {
+      this.selectedFieldsIds = this.selectedFieldsIds.filter(
+        (fId) => fId !== field.id
+      );
     } else {
       this.selectedFieldsIds.push(field.id);
     }

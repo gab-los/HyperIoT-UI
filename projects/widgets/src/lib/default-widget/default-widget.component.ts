@@ -1,25 +1,24 @@
-import { Component, Injector } from '@angular/core';
-import { LoggerService } from 'core';
-import { BaseWidgetComponent } from '../base/base-widget/base-widget.component';
+import { Component, Injector, ChangeDetectionStrategy } from "@angular/core";
+import { LoggerService } from "core";
+import { BaseWidgetComponent } from "../base/base-widget/base-widget.component";
 
 @Component({
-    selector: 'hyperiot-default-widget',
-    templateUrl: './default-widget.component.html',
-    styleUrls: ['./default-widget.component.css'],
-    standalone: false
+  selector: "hyperiot-default-widget",
+  templateUrl: "./default-widget.component.html",
+  styleUrls: ["./default-widget.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DefaultWidgetComponent extends BaseWidgetComponent {
-
   constructor(injector: Injector, protected loggerService: LoggerService) {
     super(injector, loggerService);
   }
 
   configure(): void {
-    throw new Error('Unavailable widget.');
+    throw new Error("Unavailable widget.");
   }
 
   onToolbarAction(action: string) {
     this.widgetAction.emit({ widget: this.widget, action });
   }
-
 }

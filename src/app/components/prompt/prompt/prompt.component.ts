@@ -1,18 +1,20 @@
-import { Component, ViewEncapsulation } from '@angular/core';
-import { PlatformService } from '../../../services/platform/platform.service';
+import {
+  Component,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { PlatformService } from "../../../services/platform/platform.service";
 
 @Component({
-    selector: 'hyt-prompt',
-    templateUrl: './prompt.component.html',
-    styleUrls: ['./prompt.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-prompt",
+  templateUrl: "./prompt.component.html",
+  styleUrls: ["./prompt.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PromptComponent {
-
-  constructor(
-    private platformService: PlatformService
-  ) { }
+  constructor(private platformService: PlatformService) {}
 
   get safariPrompt(): boolean {
     return this.platformService.showSafariPrompt;
@@ -33,7 +35,6 @@ export class PromptComponent {
   close() {
     this.safariPrompt = false;
     this.firefoxPrompt = false;
-    document.body.classList.remove('stop-scrolling');
+    document.body.classList.remove("stop-scrolling");
   }
-
 }

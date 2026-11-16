@@ -1,13 +1,30 @@
-import { Component, Input, OnChanges, ViewEncapsulation, forwardRef } from '@angular/core';
-import { ControlValueAccessor, UntypedFormArray, UntypedFormControl, UntypedFormGroup, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
-import { CoreConfig, HPacket, HPacketFieldsHandlerService } from 'core';
-import {FieldType, IRulePart} from './rule-part/rule-part.interface';
-import {SelectOption, SelectOptionGroup} from '../hyt-select/hyt-select.component';
-import { Option } from '../hyt-radio-button/hyt-radio-button.component';
-import { DialogService } from '../hyt-dialog/dialog.service';
-import { RuleErrorModalComponent } from './rule-error/rule-error-modal.component';
-import { PacketRulePart } from './rule-part/packet-rule-part';
-import { parseRuleText } from './rule-part/operations.utils';
+import {
+  Component,
+  Input,
+  OnChanges,
+  ViewEncapsulation,
+  forwardRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  ControlValueAccessor,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
+  NG_VALUE_ACCESSOR,
+  Validators,
+} from "@angular/forms";
+import { CoreConfig, HPacket, HPacketFieldsHandlerService } from "core";
+import { FieldType, IRulePart } from "./rule-part/rule-part.interface";
+import {
+  SelectOption,
+  SelectOptionGroup,
+} from "../hyt-select/hyt-select.component";
+import { Option } from "../hyt-radio-button/hyt-radio-button.component";
+import { DialogService } from "../hyt-dialog/dialog.service";
+import { RuleErrorModalComponent } from "./rule-error/rule-error-modal.component";
+import { PacketRulePart } from "./rule-part/packet-rule-part";
+import { parseRuleText } from "./rule-part/operations.utils";
 
 interface RulePart {
   label: string;
@@ -28,20 +45,23 @@ interface RuleRow {
  * through a dynamic form that self-constructs based on user input.
  */
 @Component({
-    selector: 'hyt-rule-definition',
-    templateUrl: './rule-definition.component.html',
-    styleUrls: ['./rule-definition.component.scss'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => RuleDefinitionComponent),
-            multi: true
-        }
-    ],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-rule-definition",
+  templateUrl: "./rule-definition.component.html",
+  styleUrls: ["./rule-definition.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RuleDefinitionComponent),
+      multi: true,
+    },
+  ],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges {
+export class RuleDefinitionComponent
+  implements ControlValueAccessor, OnChanges
+{
   @Input() allPackets: HPacket[] = [];
   @Input() currentPacket: HPacket;
 
@@ -53,22 +73,25 @@ export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges 
   });
 
   value: { ruleDefinition: string; rulePrettyDefinition: string };
-  originalValue = '';
+  originalValue = "";
 
   joinOptions: Option[] = [
-    { value: 'AND', label: $localize`:@@HYT_operations_AND:AND`, checked: false },
-    { value: 'OR', label: $localize`:@@HYT_operations_OR:OR`, checked: false },
+    {
+      value: "AND",
+      label: $localize`:@@HYT_operations_AND:AND`,
+      checked: false,
+    },
+    { value: "OR", label: $localize`:@@HYT_operations_OR:OR`, checked: false },
   ];
 
   constructor(
     private hPacketFieldsHandlerService: HPacketFieldsHandlerService,
     private dialogService: DialogService,
-    private coreConfigService: CoreConfig,
+    private coreConfigService: CoreConfig
   ) {
     if (!this.coreConfigService.ruleNodes) {
       this.ruleDefinitionError = true;
     }
-
   }
 
   ngOnChanges() {
@@ -89,17 +112,24 @@ export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges 
   }
 
   onRulePartChanged(event, ruleRowIndex: number, rulePartIndex: number) {
-
     const rulePart = this.ruleRows[ruleRowIndex].ruleParts[rulePartIndex];
 
     // removing fields after modified field
     // this.ruleRows[ruleRowIndex].ruleParts.splice(rulePartIndex + 1);
-    for (let i = this.ruleRows[ruleRowIndex].ruleParts.length - 1; i > rulePartIndex; i--) {
+    for (
+      let i = this.ruleRows[ruleRowIndex].ruleParts.length - 1;
+      i > rulePartIndex;
+      i--
+    ) {
       this.ruleRows[ruleRowIndex].ruleParts.pop();
-      this.getRowFormGroup(ruleRowIndex).removeControl('rule-part-' + i);
+      this.getRowFormGroup(ruleRowIndex).removeControl("rule-part-" + i);
     }
 
-    if (rulePart.fieldType === 'text' || !rulePart.valueMap.has(String(event))) { // exit if no new fields should be added
+    if (
+      rulePart.fieldType === "text" ||
+      !rulePart.valueMap.has(String(event))
+    ) {
+      // exit if no new fields should be added
       return;
     }
 
@@ -110,57 +140,76 @@ export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges 
       fieldType: selectedIPart.fieldType,
       options: selectedIPart.generateOptions?.() || [],
       optionsGroup: selectedIPart.generateOptionsGroup?.() || [],
-      valueMap:  selectedIPart.generateChildrenRuleParts?.() || new Map<string, IRulePart>(),
+      valueMap:
+        selectedIPart.generateChildrenRuleParts?.() ||
+        new Map<string, IRulePart>(),
       ruleify: selectedIPart.ruleify,
       prettify: selectedIPart.prettify,
     });
 
-    this.getRowFormGroup(ruleRowIndex).addControl('rule-part-' + (rulePartIndex + 1), new UntypedFormControl('', selectedIPart.validators));
-
+    this.getRowFormGroup(ruleRowIndex).addControl(
+      "rule-part-" + (rulePartIndex + 1),
+      new UntypedFormControl("", selectedIPart.validators)
+    );
   }
 
   addCondition(index) {
     if (this.ruleRows.length === index + 1) {
-
-      const packetRulePart = new PacketRulePart(this.allPackets, this.coreConfigService.ruleNodes, this.hPacketFieldsHandlerService);
+      const packetRulePart = new PacketRulePart(
+        this.allPackets,
+        this.coreConfigService.ruleNodes,
+        this.hPacketFieldsHandlerService
+      );
       this.ruleRows.push({
-        ruleParts: [{
-          label: packetRulePart.label,
-          fieldType: packetRulePart.fieldType,
-          options: packetRulePart.generateOptions(),
-          optionsGroup: packetRulePart.generateOptionsGroup(),
-          valueMap: packetRulePart.generateChildrenRuleParts(),
-          ruleify: packetRulePart.ruleify,
-          prettify: packetRulePart.prettify,
-        }],
+        ruleParts: [
+          {
+            label: packetRulePart.label,
+            fieldType: packetRulePart.fieldType,
+            options: packetRulePart.generateOptions(),
+            optionsGroup: packetRulePart.generateOptionsGroup(),
+            valueMap: packetRulePart.generateChildrenRuleParts(),
+            ruleify: packetRulePart.ruleify,
+            prettify: packetRulePart.prettify,
+          },
+        ],
       });
 
-      this.ruleRowsFormArray.push(new UntypedFormGroup({
-        'rule-part-0': new UntypedFormControl('', packetRulePart.validators),
-        'ruleJoin': new UntypedFormControl(''),
-      }));
+      this.ruleRowsFormArray.push(
+        new UntypedFormGroup({
+          "rule-part-0": new UntypedFormControl("", packetRulePart.validators),
+          ruleJoin: new UntypedFormControl(""),
+        })
+      );
 
       if (this.currentPacket) {
-        this.getRowFormGroup(index + 1).get('rule-part-0').setValue(String(this.currentPacket.id));
-        this.getRowFormGroup(index + 1).get('rule-part-0').disable();
+        this.getRowFormGroup(index + 1)
+          .get("rule-part-0")
+          .setValue(String(this.currentPacket.id));
+        this.getRowFormGroup(index + 1)
+          .get("rule-part-0")
+          .disable();
         this.onRulePartChanged(String(this.currentPacket.id), index + 1, 0);
       }
     }
-
   }
 
   removeCondition(index) {
     this.ruleRows.splice(index, 1);
     this.ruleRowsFormArray.removeAt(index);
-    this.ruleRowsFormArray.at(this.ruleRows.length - 1).get('ruleJoin').setValue('');
+    this.ruleRowsFormArray
+      .at(this.ruleRows.length - 1)
+      .get("ruleJoin")
+      .setValue("");
     this.buildRuleDefinition();
   }
 
-  onChange: any = (value: any) => { };
-  onTouched: any = () => { };
+  onChange: any = (value: any) => {};
+  onTouched: any = () => {};
 
-  writeValue(rule: { ruleDefinition: string; rulePrettyDefinition: string }): void {
-
+  writeValue(rule: {
+    ruleDefinition: string;
+    rulePrettyDefinition: string;
+  }): void {
     this.resetRuleDefinition();
 
     if (!rule || !rule.ruleDefinition) {
@@ -170,71 +219,73 @@ export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges 
     let ruleDefinition = rule.ruleDefinition;
 
     try {
-
       // remove all " occurrences and any leading or trailing white space
-      ruleDefinition = ruleDefinition.replace(/"/g, '').trim();
+      ruleDefinition = ruleDefinition.replace(/"/g, "").trim();
 
-      const ruleArray: string[] = ruleDefinition.match(/[^AND|OR]+(AND|OR)?/g).map(x => x.trim());
+      const ruleArray: string[] = ruleDefinition
+        .match(/[^AND|OR]+(AND|OR)?/g)
+        .map((x) => x.trim());
 
       for (let k = 0; k < ruleArray.length; k++) {
         // TODO the rule parts should be recognized by RulePart classes somehow
-        const tempSplitted: string[] = ruleArray[k].split(' ').filter(i => i);
+        const tempSplitted: string[] = ruleArray[k].split(" ").filter((i) => i);
         const packetFieldPart = tempSplitted.shift();
-        const splitted: string[] = packetFieldPart.split('.').concat(tempSplitted);
+        const splitted: string[] = packetFieldPart
+          .split(".")
+          .concat(tempSplitted);
 
         this.addCondition(k - 1);
 
         splitted.forEach((part, i) => {
-
-          if (this.joinOptions.some(jo => jo.value === part)) {
-
+          if (this.joinOptions.some((jo) => jo.value === part)) {
             // set operator on previous form row
-            this.ruleRowsFormArray.at(k).get('ruleJoin').setValue(part);
-
+            this.ruleRowsFormArray.at(k).get("ruleJoin").setValue(part);
           } else {
-
             // set form value
-            this.ruleRowsFormArray.at(k).get('rule-part-' + i).setValue(part);
+            this.ruleRowsFormArray
+              .at(k)
+              .get("rule-part-" + i)
+              .setValue(part);
             // create new field based on set value
             this.onRulePartChanged(part, k, i);
-
           }
-
         });
-
       }
 
       this.originalValue = ruleDefinition;
-
     } catch (error) {
       this.resetRuleDefinition();
-      this.dialogService.open(RuleErrorModalComponent, { data: { ruleDefinition } });
+      this.dialogService.open(RuleErrorModalComponent, {
+        data: { ruleDefinition },
+      });
     }
-
   }
 
   buildRuleDefinition() {
-    let rd = '';
-    let ptf = '';
+    let rd = "";
+    let ptf = "";
     for (let i = 0; i < this.ruleRows.length; i++) {
-
       const ruleRow = this.ruleRows[i];
       const ruleRowFormGroup = this.getRowFormGroup(i);
-      for (let j = 0; j < ruleRow.ruleParts.length; j ++) {
+      for (let j = 0; j < ruleRow.ruleParts.length; j++) {
+        const rulePart = ruleRow.ruleParts[j];
+        const value = parseRuleText(
+          ruleRowFormGroup.get("rule-part-" + j).value,
+          rulePart.fieldType
+        );
 
-        const rulePart  = ruleRow.ruleParts[j];
-        const value = parseRuleText(ruleRowFormGroup.get('rule-part-' + j).value, rulePart.fieldType);
-        
         rd = rd.concat(rulePart.ruleify(value));
         ptf = ptf.concat(rulePart.prettify(value));
-
       }
-      if (ruleRowFormGroup.get('ruleJoin').value) {
-        const ruleJoinValue = ruleRowFormGroup.get('ruleJoin').value;
-        rd = rd.concat(' ' + ruleJoinValue) + ' ';
-        ptf = ptf.concat(' ' + this.joinOptions.find(jo => jo.value === ruleJoinValue).label + ' ');
+      if (ruleRowFormGroup.get("ruleJoin").value) {
+        const ruleJoinValue = ruleRowFormGroup.get("ruleJoin").value;
+        rd = rd.concat(" " + ruleJoinValue) + " ";
+        ptf = ptf.concat(
+          " " +
+            this.joinOptions.find((jo) => jo.value === ruleJoinValue).label +
+            " "
+        );
       }
-
     }
     this.value = {
       ruleDefinition: rd,
@@ -268,7 +319,8 @@ export class RuleDefinitionComponent implements ControlValueAccessor, OnChanges 
   }
 
   getFormControl(rowIndex, partIndex) {
-    return this.ruleForm.get('ruleRowsArray.' + rowIndex + '.rule-part-' + partIndex) as UntypedFormControl;
+    return this.ruleForm.get(
+      "ruleRowsArray." + rowIndex + ".rule-part-" + partIndex
+    ) as UntypedFormControl;
   }
-
 }

@@ -1,23 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
-    selector: 'hyperiot-dashboard-debug',
-    templateUrl: './dashboard-debug.component.html',
-    styleUrls: ['./dashboard-debug.component.css'],
-    standalone: false
+  selector: "hyperiot-dashboard-debug",
+  templateUrl: "./dashboard-debug.component.html",
+  styleUrls: ["./dashboard-debug.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DashboardDebugComponent implements OnInit {
-
   @Input() data: any[] = [];
   itemSelected = -1;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   getType(element: any): string {
-    return typeof(element);
+    return typeof element;
   }
 
   toggleItem(idx: number) {

@@ -1,5 +1,19 @@
-import { Component, OnInit, Input, forwardRef, ViewEncapsulation, OnChanges } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormControl, Validators, FormGroup } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  Input,
+  forwardRef,
+  ViewEncapsulation,
+  OnChanges,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  FormControl,
+  Validators,
+  FormGroup,
+} from "@angular/forms";
 
 /** Interface for select option element */
 export interface SelectOption {
@@ -19,30 +33,32 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TEMPLATE: any = {
   provide: NG_VALUE_ACCESSOR,
   // tslint:disable-next-line: no-use-before-declare
   useExisting: forwardRef(() => HytSelectTemplateComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-    selector: 'hyt-select-template',
-    templateUrl: './hyt-select-template.component.html',
-    styleUrls: ['./hyt-select-template.component.scss'],
-    providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TEMPLATE],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-select-template",
+  templateUrl: "./hyt-select-template.component.html",
+  styleUrls: ["./hyt-select-template.component.scss"],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TEMPLATE],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor, OnChanges {
-
+export class HytSelectTemplateComponent
+  implements OnInit, ControlValueAccessor, OnChanges
+{
   /** Selected element */
   selected: any;
 
   /** Element name, connected to the formcontrol */
-  @Input() name = '';
+  @Input() name = "";
 
   /** Select main label */
-  @Input() label = '';
+  @Input() label = "";
 
   /** Element name, connected to the formcontrol */
-  @Input() placeholder = '';
+  @Input() placeholder = "";
 
   /** Array of displayed options */
   @Input() options: SelectOption[] = [];
@@ -69,7 +85,7 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
   @Input() isSortable = false;
 
   /** Specify the element sorting algorithm */
-  @Input() sortingAlgorithm = 'A-Z';
+  @Input() sortingAlgorithm = "A-Z";
 
   /** Function used to compare elements */
   // @Input() compareFn: Function;
@@ -78,38 +94,44 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
    * Map an error key with the displayed message
    */
   errorMap = {
-    required: 'The field is required.',
+    required: "The field is required.",
   };
 
   /**
    * Callback functions for change
    */
-  private onChangeFn = (_: any) => { };
+  private onChangeFn = (_: any) => {};
 
   /**
    * Callback functions for blur
    */
-  private onTouchedFn = () => { };
+  private onTouchedFn = () => {};
 
   /**
    * Constructor
    */
-  constructor() { }
+  constructor() {}
 
-  sortAlphabeticallyAsc (option1: SelectOption, option2: SelectOption): 1 | -1 | 0  {
+  sortAlphabeticallyAsc(
+    option1: SelectOption,
+    option2: SelectOption
+  ): 1 | -1 | 0 {
     if (option1.label.localeCompare(option2.label) === 1) {
       return 1;
-    } else  if (option1.label.localeCompare(option2.label) === -1) {
+    } else if (option1.label.localeCompare(option2.label) === -1) {
       return -1;
     } else {
       return 0;
     }
   }
 
-  sortAlphabeticallyDesc (option1: SelectOption, option2: SelectOption): 1 | -1 | 0 {
+  sortAlphabeticallyDesc(
+    option1: SelectOption,
+    option2: SelectOption
+  ): 1 | -1 | 0 {
     if (option1.label.localeCompare(option2.label) === 1) {
       return -1;
-    } else  if (option1.label.localeCompare(option2.label) === -1) {
+    } else if (option1.label.localeCompare(option2.label) === -1) {
       return 1;
     } else {
       return 0;
@@ -118,14 +140,16 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
 
   sortOptions() {
     if (this.isSortable) {
-
-      let sortingFunction: (option1: SelectOption, option2: SelectOption) => 1 | -1 | 0 ;
+      let sortingFunction: (
+        option1: SelectOption,
+        option2: SelectOption
+      ) => 1 | -1 | 0;
 
       switch (this.sortingAlgorithm) {
-        case 'A-Z':
+        case "A-Z":
           sortingFunction = this.sortAlphabeticallyAsc;
           break;
-        case 'Z-A':
+        case "Z-A":
           sortingFunction = this.sortAlphabeticallyDesc;
           break;
         default:
@@ -138,9 +162,9 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
   }
 
   ngOnChanges(): void {
-    this.sortOptions();    
+    this.sortOptions();
   }
-  
+
   /**
    * ngOnInit
    */
@@ -158,8 +182,8 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
     if (order) {
       sortedSelectOptions = this.options.sort((option1, option2) => {
         if (option1.label.localeCompare(option2.label) === 1) {
-            return 1;
-        } else  if (option1.label.localeCompare(option2.label) === -1) {
+          return 1;
+        } else if (option1.label.localeCompare(option2.label) === -1) {
           return -1;
         } else {
           return 0;
@@ -168,8 +192,8 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
     } else {
       sortedSelectOptions = this.options.sort((option1, option2) => {
         if (option1.label.localeCompare(option2.label) === 1) {
-            return -1;
-        } else  if (option1.label.localeCompare(option2.label) === -1) {
+          return -1;
+        } else if (option1.label.localeCompare(option2.label) === -1) {
           return 1;
         } else {
           return 0;
@@ -202,5 +226,4 @@ export class HytSelectTemplateComponent implements OnInit, ControlValueAccessor,
   registerOnTouched(fn: any): void {
     this.onTouchedFn = fn;
   }
-
 }

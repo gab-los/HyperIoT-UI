@@ -1,4 +1,4 @@
-import { Component, Injector } from "@angular/core";
+import { Component, Injector, ChangeDetectionStrategy } from "@angular/core";
 import { BaseWidgetComponent } from "../../base/base-widget/base-widget.component";
 import { HPacketField, LoggerService, WsDataSenderService } from "core";
 import { Subscription } from "rxjs";
@@ -15,13 +15,14 @@ enum SimulatorStatus {
 }
 
 @Component({
-    selector: "hyperiot-data-simulator",
-    templateUrl: "./data-simulator.component.html",
-    styleUrls: [
-        "../../../../../../src/assets/widgets/styles/widget-commons.css",
-        "./data-simulator.component.scss",
-    ],
-    standalone: false
+  selector: "hyperiot-data-simulator",
+  templateUrl: "./data-simulator.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./data-simulator.component.scss",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DataSimulatorComponent extends BaseWidgetComponent {
   wsSenderService: WsDataSenderService = new WsDataSenderService();
@@ -43,7 +44,7 @@ export class DataSimulatorComponent extends BaseWidgetComponent {
   constructor(
     private dashboardEvent: DashboardEventService,
     injector: Injector,
-    protected loggerService: LoggerService,
+    protected loggerService: LoggerService
   ) {
     super(injector, loggerService);
   }
@@ -78,16 +79,16 @@ export class DataSimulatorComponent extends BaseWidgetComponent {
     this.isOutlierColumnVisible = Object.keys(this.fieldOutliers).length > 0;
 
     // save old status of simulator before pause/stop & and start if was active, trigger again the start
-    this.dashboardEvent.commandEvent.subscribe((res)=>{
-      if((res == DashboardEvent.Command.STOP) && this.isActive){
+    this.dashboardEvent.commandEvent.subscribe((res) => {
+      if (res == DashboardEvent.Command.STOP && this.isActive) {
         this.wasActiveBeforeStop = true;
         this.isActive = false;
       }
-      if((res == DashboardEvent.Command.RUN) && this.wasActiveBeforeStop){
+      if (res == DashboardEvent.Command.RUN && this.wasActiveBeforeStop) {
         this.wasActiveBeforeStop = false;
         this.isActive = true;
       }
-    })
+    });
 
     this.connect();
   }
@@ -160,8 +161,8 @@ export class DataSimulatorComponent extends BaseWidgetComponent {
               fieldValue = values[this.counter % values.length];
               break;
             case "random":
-                //ATM the random function emit only boolean value        
-                fieldValue = (Math.round(Math.random()) * 2) == 0;
+              //ATM the random function emit only boolean value
+              fieldValue = Math.round(Math.random()) * 2 == 0;
               break;
             // TODO shouldn't use eval. The evaluation should be performed using a specific library.
             case "expression":
@@ -235,7 +236,7 @@ export class DataSimulatorComponent extends BaseWidgetComponent {
       [field.value]: this.fieldOutliers[field.key],
     };
     console.log("outlier packet emitted", packet);
-    
+
     this.wsSenderService.send(packet);
   }
 

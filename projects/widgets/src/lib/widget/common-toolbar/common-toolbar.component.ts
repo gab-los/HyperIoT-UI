@@ -1,93 +1,95 @@
 import {
-    Component,
-    Input,
-    Output,
-    EventEmitter
-} from '@angular/core';
-import {ConfigButtonWidget} from "../../base/base-widget/model/widget.model";
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ConfigButtonWidget } from "../../base/base-widget/model/widget.model";
 
 @Component({
-    selector: 'hyperiot-common-toolbar',
-    templateUrl: './common-toolbar.component.html',
-    styleUrls: ['./common-toolbar.component.scss'],
-    standalone: false
+  selector: "hyperiot-common-toolbar",
+  templateUrl: "./common-toolbar.component.html",
+  styleUrls: ["./common-toolbar.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class CommonToolbarComponent {
-    @Input() widgetName: string;
+  @Input() widgetName: string;
 
-    @Input() config: ConfigButtonWidget = {
-        showClose: true,
-        showSettings: true,
-        showPlay: false,
-        showRefresh: false,
-        showTable: false,
-        hideFullScreen: false
+  @Input() config: ConfigButtonWidget = {
+    showClose: true,
+    showSettings: true,
+    showPlay: false,
+    showRefresh: false,
+    showTable: false,
+    hideFullScreen: false,
+  };
+
+  @Input() toolbarIsVisible: boolean = true;
+
+  @Output() action = new EventEmitter<string>();
+
+  isPaused: boolean;
+  showTable: boolean;
+  isDisabled: boolean;
+
+  constructor() {
+    this.isPaused = false;
+    this.isDisabled = false;
+  }
+
+  onPlayPause() {
+    if (this.isPaused) {
+      this.action.emit("toolbar:play");
+    } else {
+      this.action.emit("toolbar:pause");
     }
 
-    @Input() toolbarIsVisible: boolean = true;
+    this.isPaused = !this.isPaused;
+  }
 
-    @Output() action = new EventEmitter<string>();
-
-    isPaused: boolean;
-    showTable: boolean;
-    isDisabled: boolean;
-
-    constructor() {
-        this.isPaused = false;
-        this.isDisabled = false;
+  /**
+   * This method tells if the toolbar is in play mode
+   * @param play Whether to play or pause the data
+   */
+  play(play: boolean) {
+    if (play) {
+      this.action.emit("toolbar:play");
+    } else {
+      this.action.emit("toolbar:pause");
     }
 
-    onPlayPause() {
-        if (this.isPaused) {
-            this.action.emit('toolbar:play');
-        } else {
-            this.action.emit('toolbar:pause');
-        }
+    this.isPaused = !play;
+    this.isDisabled = !play;
+  }
 
-        this.isPaused = !this.isPaused;
+  onTableView() {
+    if (this.showTable) {
+      this.action.emit("toolbar:chart");
+    } else {
+      this.action.emit("toolbar:table");
     }
 
-    /**
-     * This method tells if the toolbar is in play mode
-     * @param play Whether to play or pause the data
-     */
-    play(play: boolean) {
-        if (play) {
-            this.action.emit('toolbar:play');
-        } else {
-            this.action.emit('toolbar:pause');
-        }
+    this.showTable = !this.showTable;
+  }
 
-        this.isPaused = !play;
-        this.isDisabled = !play;
-    }
+  onRefresh() {
+    this.action.emit("toolbar:refresh");
+  }
 
-    onTableView() {
-        if (this.showTable) {
-            this.action.emit('toolbar:chart');
-        } else {
-            this.action.emit('toolbar:table');
-        }
+  onSettings() {
+    this.action.emit("toolbar:settings");
+  }
 
-        this.showTable = !this.showTable;
-    }
+  onDrag() {
+    this.action.emit("toolbar:drag");
+  }
 
-    onRefresh() {
-        this.action.emit('toolbar:refresh');
-    }
-
-    onSettings() {
-        this.action.emit('toolbar:settings');
-    }
-
-    onDrag() {
-        this.action.emit('toolbar:drag');
-    }
-
-    onClose() {
-        this.action.emit('toolbar:close');
-    }
-    onFullScreen() {
-        this.action.emit('toolbar:fullscreen');
-    }
+  onClose() {
+    this.action.emit("toolbar:close");
+  }
+  onFullScreen() {
+    this.action.emit("toolbar:fullscreen");
+  }
 }

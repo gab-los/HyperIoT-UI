@@ -1,6 +1,16 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { FlatTreeControl } from "@angular/cdk/tree";
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+} from "@angular/material/tree";
 
 /**
  * Data node that is used in the `treeData` array passed by the hosting component
@@ -31,19 +41,24 @@ interface TreeViewNode {
 }
 
 @Component({
-    selector: 'hyt-tree-view-project',
-    templateUrl: './hyt-tree-view-project.component.html',
-    styleUrls: ['./hyt-tree-view-project.component.scss'],
-    standalone: false
+  selector: "hyt-tree-view-project",
+  templateUrl: "./hyt-tree-view-project.component.html",
+  styleUrls: ["./hyt-tree-view-project.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTreeViewProjectComponent implements OnInit {
   @Input() treeData: TreeDataNode[] = [];
   @Output() nodeClick = new EventEmitter<TreeViewNode>();
   treeControl = new FlatTreeControl<TreeViewNode>(
-    node => node.level, node => node.expandable
+    (node) => node.level,
+    (node) => node.expandable
   );
   treeFlattener = new MatTreeFlattener(
-    this.transformer, node => node.level, node => node.expandable, node => node.children
+    this.transformer,
+    (node) => node.level,
+    (node) => node.expandable,
+    (node) => node.children
   );
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
@@ -51,68 +66,62 @@ export class HytTreeViewProjectComponent implements OnInit {
 
   defaultData = [
     {
-      "data": {
-          "type": "source"
+      data: {
+        type: "source",
       },
-      "name": "Sources",
-      "icon": "icon-hyt_StreamCloud_Lamp",
-      "children": []
+      name: "Sources",
+      icon: "icon-hyt_StreamCloud_Lamp",
+      children: [],
     },
     {
-      "data": {
-        "type": "statistics"
+      data: {
+        type: "statistics",
       },
-      "name": "Statistics",
-      "icon": "icon-hyt_statistics"
+      name: "Statistics",
+      icon: "icon-hyt_statistics",
     },
     {
-      "data": {
-        "type": "events"
+      data: {
+        type: "events",
       },
-      "name": "Events",
-      "icon": "icon-hyt_event"
+      name: "Events",
+      icon: "icon-hyt_event",
     },
     {
-      "data": {
-        "type": "tags"
+      data: {
+        type: "tags",
       },
-      "name": "Tags",
-      "icon": "icon-hyt_tags"
+      name: "Tags",
+      icon: "icon-hyt_tags",
     },
     {
-      "data": {
-        "type": "categories"
+      data: {
+        type: "categories",
       },
-      "name": "Categories",
-      "icon": "icon-hyt_categories"
+      name: "Categories",
+      icon: "icon-hyt_categories",
     },
     {
-      "data": {
-        "type": "areas"
+      data: {
+        type: "areas",
       },
-      "name": "Areas",
-      "icon": "icon-hyt_areaB16"
-    }
+      name: "Areas",
+      icon: "icon-hyt_areaB16",
+    },
   ];
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
-
     if (this.treeData) {
       this.setData(this.treeData);
     }
-
-
   }
 
   setData(data: TreeDataNode[]) {
-
     this.prepareData(data);
     this.treeData = data;
     this.dataSource.data = this.treeData;
-
   }
 
   setActiveNode(node: TreeViewNode) {
@@ -150,18 +159,32 @@ export class HytTreeViewProjectComponent implements OnInit {
   }
 
   getLevelConnector(node, i) {
-    if ((i !== node.level - 1 && !this.isParentLast(node, i))) {
-      return 'line-straight';
-    } else if (!node.active && (i === node.level - 1 && !node.last) && ((i < node.level && !node.last) || (i !== node.level - 1 && node.last) || this.treeControl.isExpanded(node))) {
-      return 'line-right';
-    } else if (node.active && (i === node.level - 1 && !node.last) && ((i < node.level && !node.last) || (i !== node.level - 1 && node.last) || this.treeControl.isExpanded(node))) {
-      return 'line-right-active';
+    if (i !== node.level - 1 && !this.isParentLast(node, i)) {
+      return "line-straight";
+    } else if (
+      !node.active &&
+      i === node.level - 1 &&
+      !node.last &&
+      ((i < node.level && !node.last) ||
+        (i !== node.level - 1 && node.last) ||
+        this.treeControl.isExpanded(node))
+    ) {
+      return "line-right";
+    } else if (
+      node.active &&
+      i === node.level - 1 &&
+      !node.last &&
+      ((i < node.level && !node.last) ||
+        (i !== node.level - 1 && node.last) ||
+        this.treeControl.isExpanded(node))
+    ) {
+      return "line-right-active";
     } else if (i === node.level - 1 && node.last && !node.active) {
-      return 'line-end';
+      return "line-end";
     } else if (i === node.level - 1 && node.last && node.active) {
-      return 'line-end-active';
+      return "line-end-active";
     } else {
-      return 'line-empty';
+      return "line-empty";
     }
   }
 
@@ -197,7 +220,7 @@ export class HytTreeViewProjectComponent implements OnInit {
       parent: node.parent,
       expandable: !!node.children && node.children.length > 0,
       data: node.data,
-      visible: node.visible
+      visible: node.visible,
     };
   }
 
@@ -210,7 +233,7 @@ export class HytTreeViewProjectComponent implements OnInit {
 
   propagateVisibilityDown(node: TreeDataNode, visibility: boolean) {
     if (node.children) {
-      node.children.forEach(child => {
+      node.children.forEach((child) => {
         if (child.data.id !== 999999999 && child.data.id !== 999999998) {
           child.visible = visibility;
           this.propagateVisibilityDown(child, visibility);
@@ -226,7 +249,7 @@ export class HytTreeViewProjectComponent implements OnInit {
         this.propagateVisibilityUp(node, true);
         this.propagateVisibilityDown(node, true);
       }
-      node.children.forEach(child => {
+      node.children.forEach((child) => {
         if (!child.visible) {
           this.treeDataSearch(child, token);
         }
@@ -235,11 +258,11 @@ export class HytTreeViewProjectComponent implements OnInit {
   }
 
   onChangeInput(value: string) {
-    this.treeData.forEach(node => {
+    this.treeData.forEach((node) => {
       node.visible = false;
       this.propagateVisibilityDown(node, false);
     });
-    this.treeData.forEach(node => {
+    this.treeData.forEach((node) => {
       this.treeDataSearch(node, value);
     });
 
@@ -247,4 +270,3 @@ export class HytTreeViewProjectComponent implements OnInit {
     this.treeControl.expandAll();
   }
 }
-

@@ -1,27 +1,26 @@
 <div id="hyt-container" cdkScrollable>
-
   @if (showToolBars()) {
   <div id="hyt-container-topbar">
     <hyt-topbar
-      [logoPath]="(logoPaths | async)?.standard"
-      [logoMobilePath]="(logoPaths | async)?.mobile"
+      [logoPath]="$safeNavigationMigration((logoPaths | async)?.standard)"
+      [logoMobilePath]="$safeNavigationMigration((logoPaths | async)?.mobile)"
     ></hyt-topbar>
   </div>
   }
 
   <div id="hyt-container-nav">
-
     @if (showToolBars()) {
     <div id="hyt-container-sidebar">
       <hyt-sidebar></hyt-sidebar>
     </div>
     }
 
-    <div id="hyt-container-router" class="{{(showToolBars()) ? 'container-fluid' : 'container-full-screen'}}">
+    <div
+      id="hyt-container-router"
+      class="{{ showToolBars() ? 'container-fluid' : 'container-full-screen' }}"
+    >
       <router-outlet></router-outlet>
-
     </div>
-
   </div>
 
   <hyt-notificationbar></hyt-notificationbar>
@@ -34,9 +33,8 @@
     [urlPath]="environment.ccatPath"
     [retries]="environment.ccatRetries"
     [delay]="environment.ccatDelay"></hyt-chatbot-->
-
 </div>
 
 @if (isLogged()) {
-<hyt-notification-box  [notify-position]="'TOP_CENTER'"></hyt-notification-box>
+<hyt-notification-box [notify-position]="'TOP_CENTER'"></hyt-notification-box>
 }

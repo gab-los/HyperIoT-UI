@@ -1,9 +1,23 @@
-import { SelectionModel } from '@angular/cdk/collections';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { HPacketField } from 'core';
-import { BehaviorSubject } from 'rxjs';
+import { SelectionModel } from "@angular/cdk/collections";
+import { FlatTreeControl } from "@angular/cdk/tree";
+import {
+  Component,
+  Injectable,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+} from "@angular/material/tree";
+import { HPacketField } from "core";
+import { BehaviorSubject } from "rxjs";
 
 export class Node {
   name: string;
@@ -30,23 +44,25 @@ export class FlatNode {
  */
 @Injectable()
 export class NodeDatabase {
-
   dataChange = new BehaviorSubject<Node[]>([]);
 
-  get data(): Node[] { return this.dataChange.value; }
-
-  constructor() {
+  get data(): Node[] {
+    return this.dataChange.value;
   }
 
+  constructor() {}
+
   public initialize(treeData: any, deviceName: string) {
-    const root: Node[] = [{
-      name: deviceName,
-      data: null,
-      root: true,
-      lom: 'L.O.M.',
-      type: 'TYPE',
-      children: treeData
-    }];
+    const root: Node[] = [
+      {
+        name: deviceName,
+        data: null,
+        root: true,
+        lom: "L.O.M.",
+        type: "TYPE",
+        children: treeData,
+      },
+    ];
     const data = this.buildFileTree(root, 0);
     this.dataChange.next(data);
   }
@@ -77,7 +93,14 @@ export class NodeDatabase {
   }
 
   /** Add an item to to-do list */
-  insertItem(parent: Node, name: string, lom: string, type: string, data: any, root: boolean) {
+  insertItem(
+    parent: Node,
+    name: string,
+    lom: string,
+    type: string,
+    data: any,
+    root: boolean
+  ) {
     if (parent.children) {
       parent.children.push({ name, lom, type, data, root } as Node);
       this.dataChange.next(this.data);
@@ -96,7 +119,14 @@ export class NodeDatabase {
     }
   }
 
-  updateItem(node: Node, name: string, lom: string, type: string, data: any, root: boolean) {
+  updateItem(
+    node: Node,
+    name: string,
+    lom: string,
+    type: string,
+    data: any,
+    root: boolean
+  ) {
     node.name = name;
     node.lom = lom;
     node.type = type;
@@ -107,16 +137,16 @@ export class NodeDatabase {
 }
 
 @Component({
-    selector: 'hyt-tree-view-editable',
-    templateUrl: './hyt-tree-view-editable.component.html',
-    styleUrls: ['./hyt-tree-view-editable.component.scss'],
-    providers: [NodeDatabase],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-tree-view-editable",
+  templateUrl: "./hyt-tree-view-editable.component.html",
+  styleUrls: ["./hyt-tree-view-editable.component.scss"],
+  providers: [NodeDatabase],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTreeViewEditableComponent implements OnInit {
-
-  @ViewChild('editableTree') private Element: ElementRef;
+  @ViewChild("editableTree") private Element: ElementRef;
 
   @Input() deviceName: string;
 
@@ -147,7 +177,7 @@ export class HytTreeViewEditableComponent implements OnInit {
   selectedParent: FlatNode | null = null;
 
   /** The new item's name */
-  newItemName = '';
+  newItemName = "";
 
   treeControl: FlatTreeControl<FlatNode>;
 
@@ -158,15 +188,25 @@ export class HytTreeViewEditableComponent implements OnInit {
   /** The selection for checklist */
   checklistSelection = new SelectionModel<FlatNode>(true /* multiple */);
 
-  status = 'idle';
+  status = "idle";
 
   constructor(private database: NodeDatabase) {
-    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
-      this.isExpandable, this.getChildren);
-    this.treeControl = new FlatTreeControl<FlatNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    this.treeFlattener = new MatTreeFlattener(
+      this.transformer,
+      this.getLevel,
+      this.isExpandable,
+      this.getChildren
+    );
+    this.treeControl = new FlatTreeControl<FlatNode>(
+      this.getLevel,
+      this.isExpandable
+    );
+    this.dataSource = new MatTreeFlatDataSource(
+      this.treeControl,
+      this.treeFlattener
+    );
 
-    database.dataChange.subscribe(data => {
+    database.dataChange.subscribe((data) => {
       const sortedData = this.sortNodes(data);
       this.dataSource.data = sortedData;
     });
@@ -176,20 +216,25 @@ export class HytTreeViewEditableComponent implements OnInit {
     this.database.initialize(this.tree, this.deviceName);
   }
 
-  
   sortNodes(nodes: Node[]): Node[] {
     return nodes
       .sort((a, b) => {
         // Sort nodes of type OBJECT above other nodes
-        if (a.type === HPacketField.TypeEnum.OBJECT && !(b.type === HPacketField.TypeEnum.OBJECT)) {
+        if (
+          a.type === HPacketField.TypeEnum.OBJECT &&
+          !(b.type === HPacketField.TypeEnum.OBJECT)
+        ) {
           return -1;
-        } else if (!(a.type === HPacketField.TypeEnum.OBJECT) && b.type === HPacketField.TypeEnum.OBJECT) {
+        } else if (
+          !(a.type === HPacketField.TypeEnum.OBJECT) &&
+          b.type === HPacketField.TypeEnum.OBJECT
+        ) {
           return 1;
         }
         // Sort nodes alphabetically by name
         return a.name.localeCompare(b.name);
       })
-      .map(node => {
+      .map((node) => {
         if (node.children) {
           node.children = this.sortNodes(node.children);
         }
@@ -205,16 +250,17 @@ export class HytTreeViewEditableComponent implements OnInit {
 
   hasChild = (_: number, nodeData: FlatNode) => nodeData.expandable;
 
-  hasNoContent = (_: number, nodeData: FlatNode) => nodeData.name === '';
+  hasNoContent = (_: number, nodeData: FlatNode) => nodeData.name === "";
 
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
   transformer = (node: Node, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
-    const flatNode = existingNode && existingNode.name === node.name
-      ? existingNode
-      : new FlatNode();
+    const flatNode =
+      existingNode && existingNode.name === node.name
+        ? existingNode
+        : new FlatNode();
     flatNode.name = node.name;
     flatNode.lom = node.lom;
     flatNode.type = node.type;
@@ -225,12 +271,12 @@ export class HytTreeViewEditableComponent implements OnInit {
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
-  }
+  };
 
   /** Whether all the descendants of the node are selected. */
   descendantsAllSelected(node: FlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.every(child =>
+    const descAllSelected = descendants.every((child) =>
       this.checklistSelection.isSelected(child)
     );
     return descAllSelected;
@@ -239,7 +285,9 @@ export class HytTreeViewEditableComponent implements OnInit {
   /** Whether part of the descendants are selected */
   descendantsPartiallySelected(node: FlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.checklistSelection.isSelected(child));
+    const result = descendants.some((child) =>
+      this.checklistSelection.isSelected(child)
+    );
     return result && !this.descendantsAllSelected(node);
   }
 
@@ -252,9 +300,7 @@ export class HytTreeViewEditableComponent implements OnInit {
       : this.checklistSelection.deselect(...descendants);
 
     // Force update for the parent
-    descendants.every(child =>
-      this.checklistSelection.isSelected(child)
-    );
+    descendants.every((child) => this.checklistSelection.isSelected(child));
     this.checkAllParentsSelection(node);
   }
 
@@ -277,7 +323,7 @@ export class HytTreeViewEditableComponent implements OnInit {
   checkRootNodeSelection(node: FlatNode): void {
     const nodeSelected = this.checklistSelection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.every(child =>
+    const descAllSelected = descendants.every((child) =>
       this.checklistSelection.isSelected(child)
     );
     if (nodeSelected && !descAllSelected) {
@@ -310,7 +356,7 @@ export class HytTreeViewEditableComponent implements OnInit {
   /** Select the category so we can insert the new item. */
   addNewItem(node: FlatNode) {
     const parentNode: Node = this.flatNodeMap.get(node);
-    if (this.status !== 'nodeInsertion') {
+    if (this.status !== "nodeInsertion") {
       //this.status = 'nodeInsertion';
       //this.database.insertItem(parentNode!, '', '', '', 0, false);
       //this.treeControl.expand(node);
@@ -332,21 +378,21 @@ export class HytTreeViewEditableComponent implements OnInit {
     const parentNodeFlat = this.getParentNode(flatNode);
     const parentNode: Node = this.flatNodeMap.get(parentNodeFlat);
     this.database.removeItem(parentNode, flatNode.name);
-    this.status = 'idle';
+    this.status = "idle";
   }
 
   modifyItem(flatNode: FlatNode) {
     const node = this.flatNodeMap.get(flatNode);
-    this.status = 'idle';
+    this.status = "idle";
     this.editFn.emit(node);
   }
 
   refresh(treeData: any, deviceName: string) {
     this.database.initialize(treeData, deviceName);
     this.treeControl.expandAll();
-    this.status = 'idle';
+    this.status = "idle";
   }
-/*
+  /*
   cancelInsertion(flatNode: FlatNode) {
     const parentNodeFlat = this.getParentNode(flatNode);
     const parentNode: Node = this.flatNodeMap.get(parentNodeFlat);
@@ -356,8 +402,15 @@ export class HytTreeViewEditableComponent implements OnInit {
   }
 */
 
-/** Save the node to database */
-  saveNode(node: FlatNode, name: string, lom: string, type: string, data: any, root: boolean) {
+  /** Save the node to database */
+  saveNode(
+    node: FlatNode,
+    name: string,
+    lom: string,
+    type: string,
+    data: any,
+    root: boolean
+  ) {
     const nestedNode = this.flatNodeMap.get(node);
     this.database.updateItem(nestedNode!, name, lom, type, data, root);
   }

@@ -1,28 +1,31 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { AuthenticationService, LoggerService, Logger } from 'core';
-import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
-
-import {SubmissionStatus} from '../hyt-models/pageStatus';
 import {
-  AuthenticationHttpErrorHandlerService
-} from '../hyt-service/errorHandler/authentication-http-error-handler.service';
-import {HYTError} from '../hyt-service/errorHandler/models/models';
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup } from "@angular/forms";
+import { AuthenticationService, LoggerService, Logger } from "core";
+import { Router } from "@angular/router";
+import { CookieService } from "ngx-cookie-service";
+
+import { SubmissionStatus } from "../hyt-models/pageStatus";
+import { AuthenticationHttpErrorHandlerService } from "../hyt-service/errorHandler/authentication-http-error-handler.service";
+import { HYTError } from "../hyt-service/errorHandler/models/models";
 
 /**
  * LoginComponent is a component of AuthenticationModule.
  * It is used to hallow the user to login with the credentials of his account.
  */
 @Component({
-    selector: 'hyt-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-login",
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytLoginComponent implements OnInit {
-
   /**
    * error is used to handle errors in the template
    */
@@ -36,11 +39,9 @@ export class HytLoginComponent implements OnInit {
   /**
    * loginForm stores the login form
    */
-  loginForm: UntypedFormGroup =  new UntypedFormGroup({
+  loginForm: UntypedFormGroup = new UntypedFormGroup({});
 
-  });
-
-  initialValue = '';
+  initialValue = "";
 
   /**
    * loginStatus is used to handle the template view when the user is logging in
@@ -71,21 +72,22 @@ export class HytLoginComponent implements OnInit {
     private cookieService: CookieService,
     private router: Router,
     private httperrorHandler: AuthenticationHttpErrorHandlerService,
-    private loggerService: LoggerService) {
+    private loggerService: LoggerService
+  ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('LoginComponent');
+    this.logger.registerClass("LoginComponent");
   }
 
   /**
    * ngOnInit() builds the loginForm and sets the returnUrl
    */
   ngOnInit() {
-    if (this.cookieService.check('rememberme')) {
-      this.initialValue = this.cookieService.get('rememberme');
+    if (this.cookieService.check("rememberme")) {
+      this.initialValue = this.cookieService.get("rememberme");
       this.checked = true;
     }
 
-    this.returnUrl = window.history.state.returnUrl || '/';
+    this.returnUrl = window.history.state.returnUrl || "/";
   }
 
   onClickCheckbox(event) {
@@ -93,7 +95,7 @@ export class HytLoginComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('userInfo');
+    return !!localStorage.getItem("userInfo");
   }
 
   /**
@@ -108,33 +110,54 @@ export class HytLoginComponent implements OnInit {
       return;
     }
 
-    this.authenticationService.login(this.loginForm.value.username, this.loginForm.value.password).subscribe(
-      res => {
-        this.cookieService.set('HIT-AUTH', res.token, 2, '/', '', this.cookieSecure);
-        localStorage.setItem('userInfo', JSON.stringify(res));
-        localStorage.setItem('user', JSON.stringify(res.authenticable));
-        this.logger.trace('userInfo', JSON.stringify(res.authenticable));
+    this.authenticationService
+      .login(this.loginForm.value.username, this.loginForm.value.password)
+      .subscribe(
+        (res) => {
+          this.cookieService.set(
+            "HIT-AUTH",
+            res.token,
+            2,
+            "/",
+            "",
+            this.cookieSecure
+          );
+          localStorage.setItem("userInfo", JSON.stringify(res));
+          localStorage.setItem("user", JSON.stringify(res.authenticable));
+          this.logger.trace("userInfo", JSON.stringify(res.authenticable));
 
-        if (this.checked === true) {
-          this.cookieService.set('rememberme', this.loginForm.value.username, 2, '/', '', this.cookieSecure);
-        } else {
-          const deleteCookie = this.loginForm.value.username === this.cookieService.get('rememberme') && this.cookieService.check('rememberme');
-          if (deleteCookie) { this.cookieService.delete('rememberme', '/'); }
+          if (this.checked === true) {
+            this.cookieService.set(
+              "rememberme",
+              this.loginForm.value.username,
+              2,
+              "/",
+              "",
+              this.cookieSecure
+            );
+          } else {
+            const deleteCookie =
+              this.loginForm.value.username ===
+                this.cookieService.get("rememberme") &&
+              this.cookieService.check("rememberme");
+            if (deleteCookie) {
+              this.cookieService.delete("rememberme", "/");
+            }
+          }
+
+          this.loginStatus = SubmissionStatus.Submitted;
+
+          this.router.navigate([this.returnUrl]);
+        },
+        (err) => {
+          this.logger.error("Invalid account credentials", err);
+          const k: HYTError[] = this.httperrorHandler.handleLogin(err);
+          for (const e of k) {
+            this.error[2] = e.message;
+          }
+          this.loginStatus = SubmissionStatus.Error;
         }
-
-        this.loginStatus = SubmissionStatus.Submitted;
-
-        this.router.navigate([this.returnUrl]);
-      },
-      err => {
-        this.logger.error('Invalid account credentials', err);
-        const k: HYTError[] = this.httperrorHandler.handleLogin(err);
-        for (const e of k) {
-          this.error[2] = e.message;
-        }
-        this.loginStatus = SubmissionStatus.Error;
-      }
-    );
+      );
   }
 
   /**
@@ -142,7 +165,7 @@ export class HytLoginComponent implements OnInit {
    * @param event the key pressed
    */
   keyUpFunction(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.login();
     }
   }
@@ -153,9 +176,8 @@ export class HytLoginComponent implements OnInit {
    */
   notValid(): boolean {
     return (
-      this.loginForm.get('username').invalid ||
-      this.loginForm.get('password').invalid
+      this.loginForm.get("username").invalid ||
+      this.loginForm.get("password").invalid
     );
   }
-
 }

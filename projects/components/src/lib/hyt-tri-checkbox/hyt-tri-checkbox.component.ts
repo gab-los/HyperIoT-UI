@@ -1,6 +1,19 @@
-import { Component, OnInit, forwardRef, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
-import { NG_VALUE_ACCESSOR, FormControl, ControlValueAccessor } from '@angular/forms';
-import {MAT_CHECKBOX_DEFAULT_OPTIONS} from "@angular/material/checkbox";
+import {
+  Component,
+  OnInit,
+  forwardRef,
+  ViewEncapsulation,
+  Output,
+  EventEmitter,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  NG_VALUE_ACCESSOR,
+  FormControl,
+  ControlValueAccessor,
+} from "@angular/forms";
+import { MAT_CHECKBOX_DEFAULT_OPTIONS } from "@angular/material/checkbox";
 
 /**
  * Custom provider for NG_VALUE_ACCESSOR
@@ -9,19 +22,20 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TRI_CHECKBOX: any = {
   provide: NG_VALUE_ACCESSOR,
   // tslint:disable-next-line: no-use-before-declare
   useExisting: forwardRef(() => HytTriCheckboxComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-    selector: "hyt-tri-checkbox",
-    templateUrl: "./hyt-tri-checkbox.component.html",
-    styleUrls: ["./hyt-tri-checkbox.component.scss"],
-    providers: [
-        CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TRI_CHECKBOX,
-        { provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: "noop" },
-    ],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-tri-checkbox",
+  templateUrl: "./hyt-tri-checkbox.component.html",
+  styleUrls: ["./hyt-tri-checkbox.component.scss"],
+  providers: [
+    CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_TRI_CHECKBOX,
+    { provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: "noop" },
+  ],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTriCheckboxComponent implements OnInit, ControlValueAccessor {
   /** Disabled */

@@ -1,16 +1,26 @@
-import { Component, Injector } from '@angular/core';
-import { DataChannel, DataPacketFilter, HPacketField, Logger, LoggerService, PacketData } from 'core';
-import { BaseWidgetComponent } from '../../base/base-widget/base-widget.component';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
+import { Component, Injector, ChangeDetectionStrategy } from "@angular/core";
+import {
+  DataChannel,
+  DataPacketFilter,
+  HPacketField,
+  Logger,
+  LoggerService,
+  PacketData,
+} from "core";
+import { BaseWidgetComponent } from "../../base/base-widget/base-widget.component";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
 
 @Component({
-    selector: 'hyperiot-sensor-value',
-    templateUrl: './sensor-value.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './sensor-value.component.css'],
-    standalone: false
+  selector: "hyperiot-sensor-value",
+  templateUrl: "./sensor-value.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./sensor-value.component.css",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class SensorValueComponent extends BaseWidgetComponent {
-
   timestamp = new Date();
   sensorField: string;
   labelSensorField: string;
@@ -26,7 +36,7 @@ export class SensorValueComponent extends BaseWidgetComponent {
     this.logger = new Logger(this.loggerService);
     this.logger.registerClass(SensorValueComponent.name);
   }
-  
+
   ngAfterViewInit() {
     // TODO ?
     setTimeout(() => this.configure(), 500);
@@ -49,19 +59,24 @@ export class SensorValueComponent extends BaseWidgetComponent {
 
     const hPacketFieldId = Object.keys(this.widget.config.packetFields)[0];
     this.sensorField = this.widget.config.packetFields[hPacketFieldId];
-    this.labelSensorField = this.widget.config.fieldAliases[hPacketFieldId] || this.widget.config.packetFields[hPacketFieldId];
+    this.labelSensorField =
+      this.widget.config.fieldAliases[hPacketFieldId] ||
+      this.widget.config.packetFields[hPacketFieldId];
 
     const dataPacketFilter = new DataPacketFilter(
       this.widget.config.packetId,
       this.widget.config.packetFields,
       true
     );
-    this.dataChannel = this.dataService.addDataChannel(
-      +this.widget.id,
-      [dataPacketFilter]
-    );
-    if(this.widget.config.fieldTypes[hPacketFieldId] == HPacketField.TypeEnum.TIMESTAMP) this.dataChannel.addTimestampFieldToFormat([this.sensorField])
-    this.dataSubscription = this.dataChannel.subject.subscribe(res => {
+    this.dataChannel = this.dataService.addDataChannel(+this.widget.id, [
+      dataPacketFilter,
+    ]);
+    if (
+      this.widget.config.fieldTypes[hPacketFieldId] ==
+      HPacketField.TypeEnum.TIMESTAMP
+    )
+      this.dataChannel.addTimestampFieldToFormat([this.sensorField]);
+    this.dataSubscription = this.dataChannel.subject.subscribe((res) => {
       this.computePacketData(res.data);
     });
   }
@@ -69,19 +84,19 @@ export class SensorValueComponent extends BaseWidgetComponent {
   computePacketData(packetData: PacketData[]) {
     super.computePacketData(packetData);
 
-    packetData.forEach(datum => this.renderData(datum));
+    packetData.forEach((datum) => this.renderData(datum));
   }
 
   renderData(datum: PacketData) {
     this.timestamp = datum.timestamp;
-    if(this.canRender(datum[this.sensorField]))
+    if (this.canRender(datum[this.sensorField]))
       this.sensorRenderValue = datum[this.sensorField];
 
     this.blinkLed();
   }
 
-  canRender(field: any){
-    return field || typeof field == "boolean"
+  canRender(field: any) {
+    return field || typeof field == "boolean";
   }
 
   blinkLed() {
@@ -90,7 +105,7 @@ export class SensorValueComponent extends BaseWidgetComponent {
       clearTimeout(this.ledTimeout);
       this.ledTimeout = null;
     }
-    this.ledTimeout = setTimeout(() => this.isActivityLedOn = false, 100);
+    this.ledTimeout = setTimeout(() => (this.isActivityLedOn = false), 100);
   }
 
   play(): void {
@@ -104,14 +119,13 @@ export class SensorValueComponent extends BaseWidgetComponent {
   onToolbarAction(action: string) {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:play':
+      case "toolbar:play":
         this.play();
         break;
-      case 'toolbar:pause':
+      case "toolbar:pause":
         this.pause();
         break;
     }
     this.widgetAction.emit(widgetAction);
   }
-
 }

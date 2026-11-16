@@ -1,14 +1,21 @@
-import { Component, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
-    selector: 'hyt-button-toggle',
-    templateUrl: './hyt-button-toggle.component.html',
-    styleUrls: ['./hyt-button-toggle.component.css'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-button-toggle",
+  templateUrl: "./hyt-button-toggle.component.html",
+  styleUrls: ["./hyt-button-toggle.component.css"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytButtonToggleComponent {
-
   /**
    * Input of the selected value
    */
@@ -23,5 +30,4 @@ export class HytButtonToggleComponent {
    * Output of the selected value changes
    */
   @Output() valueChanged: EventEmitter<any> = new EventEmitter();
-
 }

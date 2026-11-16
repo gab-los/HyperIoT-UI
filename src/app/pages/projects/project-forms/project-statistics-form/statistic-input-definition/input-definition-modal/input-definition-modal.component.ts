@@ -1,24 +1,43 @@
-import { CdkDragDrop, CdkDragEnd, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
-import { DIALOG_DATA, DialogRef } from 'components';
-import { Algorithm, AlgorithmConfig, AlgorithmIOField, HPacketField, HProjectAlgorithmConfig, HProjectAlgorithmInputField, MappedInput } from 'core';
-import { eventNames } from 'process';
-
+import {
+  CdkDragDrop,
+  CdkDragEnd,
+  CdkDragStart,
+  moveItemInArray,
+  transferArrayItem,
+} from "@angular/cdk/drag-drop";
+import {
+  Component,
+  Inject,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DIALOG_DATA, DialogRef } from "components";
+import {
+  Algorithm,
+  AlgorithmConfig,
+  AlgorithmIOField,
+  HPacketField,
+  HProjectAlgorithmConfig,
+  HProjectAlgorithmInputField,
+  MappedInput,
+} from "core";
+import { eventNames } from "process";
 
 interface ChosenInput {
-  input: AlgorithmIOField,
-  hPacketField: HPacketField[]
+  input: AlgorithmIOField;
+  hPacketField: HPacketField[];
 }
 
 @Component({
-    selector: 'hyt-input-definition-modal',
-    templateUrl: './input-definition-modal.component.html',
-    styleUrls: ['./input-definition-modal.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-input-definition-modal",
+  templateUrl: "./input-definition-modal.component.html",
+  styleUrls: ["./input-definition-modal.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class InputDefinitionModalComponent implements OnInit {
-  
   /**
    * The selected algorithm
    */
@@ -55,11 +74,11 @@ export class InputDefinitionModalComponent implements OnInit {
 
   constructor(
     private dialogRef: DialogRef<any>,
-    @Inject(DIALOG_DATA) public data: any,
+    @Inject(DIALOG_DATA) public data: any
   ) {
     this.chosenInputList = [];
     this.panelOpenState = false;
-    this.searchText = '';
+    this.searchText = "";
   }
 
   ngOnInit(): void {
@@ -68,7 +87,10 @@ export class InputDefinitionModalComponent implements OnInit {
     this.inputArray = this.algorithmBaseConfig.input;
     // deep copy of available packet fields
     this.hPacketFieldList = [...this.data.hPacketFieldList];
-    this.mappedInputList = this.data.mappedInputList.length === 0 ? [] : JSON.parse(this.data.mappedInputList);
+    this.mappedInputList =
+      this.data.mappedInputList.length === 0
+        ? []
+        : JSON.parse(this.data.mappedInputList);
     this.buildChosenInputList();
   }
 
@@ -118,88 +140,103 @@ export class InputDefinitionModalComponent implements OnInit {
        * Of course, when this modal will be close, there is the opposite conversion (see method output)
        */
 
-      this.mappedInputList.forEach( mappedInput => {
+      this.mappedInputList.forEach((mappedInput) => {
         const packetFieldId: number = mappedInput.packetFieldId;
         const chosenInput: ChosenInput = {
           input: mappedInput.algorithmInput,
-          hPacketField: [this.hPacketFieldList.find(x =>  x.id === packetFieldId)]
+          hPacketField: [
+            this.hPacketFieldList.find((x) => x.id === packetFieldId),
+          ],
         };
         this.hPacketFieldList.forEach((x, index) => {
           if (x.id === chosenInput.hPacketField[0].id) {
             this.hPacketFieldList.splice(index, 1);
           }
         });
-        for (let i=0; i<this.hPacketFieldList.length; i++) {
+        for (let i = 0; i < this.hPacketFieldList.length; i++) {
           if (this.hPacketFieldList[i].id === chosenInput.hPacketField[0].id) {
             this.hPacketFieldList.splice(i, 1);
           }
         }
         this.chosenInputList.push(chosenInput);
-      })
+      });
     } else {
-      this.inputArray.forEach(i => this.chosenInputList.push({
-        input: i,
-        hPacketField: []
-      }));
+      this.inputArray.forEach((i) =>
+        this.chosenInputList.push({
+          input: i,
+          hPacketField: [],
+        })
+      );
     }
   }
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
     } else {
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
     }
-    this.searchText = '';
+    this.searchText = "";
   }
 
   getChosenInput(input: AlgorithmIOField): HPacketField[] {
-    return this.chosenInputList.find(x => x.input.id === input.id).hPacketField;
+    return this.chosenInputList.find((x) => x.input.id === input.id)
+      .hPacketField;
   }
 
   hasBeenSelected(): boolean {
-    console.log('HASBEENSELECTED', this.data)
-    console.log('HASBEENSELECTED LENGTH', this.data.length)
+    console.log("HASBEENSELECTED", this.data);
+    console.log("HASBEENSELECTED LENGTH", this.data.length);
     return this.data.length === 0;
   }
 
   hasFinished(): boolean {
-    return this.chosenInputList.every(chosenInput => chosenInput.hPacketField.length > 0);
+    return this.chosenInputList.every(
+      (chosenInput) => chosenInput.hPacketField.length > 0
+    );
   }
 
   output(action: string, data: any) {
     // do the conversion between frontend data structure and backend one
     const mappedInputList = [];
-    this.chosenInputList.forEach(x => {
-      mappedInputList.push({packetFieldId: x.hPacketField[0].id, algorithmInput: x.input});
+    this.chosenInputList.forEach((x) => {
+      mappedInputList.push({
+        packetFieldId: x.hPacketField[0].id,
+        algorithmInput: x.input,
+      });
     });
     data.mappedInputList = mappedInputList;
     this.dialogRef.close({ action, data });
   }
-  
+
   /**
    * this method is used to override zindex paramenter for dragged element
-   * @param event 
+   * @param event
    */
   onDragStarted(event: CdkDragStart): void {
-    
-    let fisrtMove: boolean = true; 
-    event.source.moved.subscribe((res)=> {
-      if(fisrtMove){
+    let fisrtMove: boolean = true;
+    event.source.moved.subscribe((res) => {
+      if (fisrtMove) {
         let zIndexSerial: number = 10000;
-        let preview: HTMLElement = document.querySelector('.cdk-drag.example-box.cdk-drag-preview');
-        preview.style.zIndex = zIndexSerial+"";
+        let preview: HTMLElement = document.querySelector(
+          ".cdk-drag.example-box.cdk-drag-preview"
+        );
+        preview.style.zIndex = zIndexSerial + "";
         fisrtMove = false;
       }
-    })
-    
+    });
   }
-  
+
   close() {
     this.dialogRef.close();
   }
-
 }

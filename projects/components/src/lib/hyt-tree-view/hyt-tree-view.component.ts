@@ -1,6 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { NestedTreeControl } from '@angular/cdk/tree';
-import { MatTreeNestedDataSource, MatTreeFlatDataSource } from '@angular/material/tree';
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { NestedTreeControl } from "@angular/cdk/tree";
+import {
+  MatTreeNestedDataSource,
+  MatTreeFlatDataSource,
+} from "@angular/material/tree";
 
 /**
  * Food data with nested structure.
@@ -12,25 +20,25 @@ export interface TreeNode {
 }
 
 @Component({
-    // tslint:disable-next-line: component-selector
-    selector: 'hyt-tree-view',
-    templateUrl: './hyt-tree-view.component.html',
-    styleUrls: ['./hyt-tree-view.component.scss'],
-    standalone: false
+  // tslint:disable-next-line: component-selector
+  selector: "hyt-tree-view",
+  templateUrl: "./hyt-tree-view.component.html",
+  styleUrls: ["./hyt-tree-view.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTreeViewComponent implements OnInit {
-
   @Input() treeData: TreeNode[];
 
-  treeControl = new NestedTreeControl<TreeNode>(node => node.children);
+  treeControl = new NestedTreeControl<TreeNode>((node) => node.children);
   dataSource = new MatTreeNestedDataSource<TreeNode>();
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.dataSource.data = this.treeData;
   }
 
-  hasChild = (_: number, node: TreeNode) => !!node.children && node.children.length > 0;
+  hasChild = (_: number, node: TreeNode) =>
+    !!node.children && node.children.length > 0;
 }

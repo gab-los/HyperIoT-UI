@@ -1,29 +1,34 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormGroup, FormControl } from '@angular/forms';
-import { AuthenticationService, LoggerService, Logger } from 'core';
-import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
-import { AuthenticationHttpErrorHandlerService } from 'src/app/services/errorHandler/authentication-http-error-handler.service';
-import { HYTError } from 'src/app/services/errorHandler/models/models';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup, FormControl } from "@angular/forms";
+import { AuthenticationService, LoggerService, Logger } from "core";
+import { Router } from "@angular/router";
+import { CookieService } from "ngx-cookie-service";
+import { AuthenticationHttpErrorHandlerService } from "src/app/services/errorHandler/authentication-http-error-handler.service";
+import { HYTError } from "src/app/services/errorHandler/models/models";
 
-import * as CryptoJS from 'crypto-js';
-import { SubmissionStatus } from '../models/pageStatus';
-import { environment } from 'src/environments/environment';
-import { PostLoginService } from 'src/app/services/postLogin/post-login.service';
+import * as CryptoJS from "crypto-js";
+import { SubmissionStatus } from "../models/pageStatus";
+import { environment } from "src/environments/environment";
+import { PostLoginService } from "src/app/services/postLogin/post-login.service";
 
 /**
  * LoginComponent is a component of AuthenticationModule.
  * It is used to hallow the user to login with the credentials of his account.
  */
 @Component({
-    selector: 'hyt-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-login",
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class LoginComponent implements OnInit {
-
   /**
    * error is used to handle errors in the template
    */
@@ -37,14 +42,12 @@ export class LoginComponent implements OnInit {
   /**
    * loginForm stores the login form
    */
-  loginForm: UntypedFormGroup =  new UntypedFormGroup({
-    
-  });
+  loginForm: UntypedFormGroup = new UntypedFormGroup({});
 
   /**
    * The key used to encrypt username and password
    */
-  private key = '9$&hy7Ke2/';
+  private key = "9$&hy7Ke2/";
 
   /**
    * The encrypted username and password
@@ -53,7 +56,7 @@ export class LoginComponent implements OnInit {
 
   private decrypted;
 
-  initialValue = '';
+  initialValue = "";
 
   /**
    * loginStatus is used to handle the template view when the user is logging in
@@ -85,19 +88,19 @@ export class LoginComponent implements OnInit {
     private postLoginService: PostLoginService
   ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('LoginComponent');
+    this.logger.registerClass("LoginComponent");
   }
 
   /**
    * ngOnInit() builds the loginForm and sets the returnUrl
    */
   ngOnInit() {
-    if (this.cookieService.check('rememberme')) {
-      this.initialValue = this.cookieService.get("rememberme");  
+    if (this.cookieService.check("rememberme")) {
+      this.initialValue = this.cookieService.get("rememberme");
       this.checked = true;
     }
-  
-    this.returnUrl = window.history.state.returnUrl || '/';
+
+    this.returnUrl = window.history.state.returnUrl || "/";
   }
 
   onClickCheckbox(event) {
@@ -105,7 +108,7 @@ export class LoginComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    if (localStorage.getItem('userInfo')) {
+    if (localStorage.getItem("userInfo")) {
       return true;
     } else {
       return false;
@@ -124,34 +127,55 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.authenticationService.login(this.loginForm.value.username, this.loginForm.value.password).subscribe(
-      res => {
-        this.cookieService.set('HIT-AUTH', res.token, 2, '/', '', environment.cookieSecure);
-        localStorage.setItem('userInfo', JSON.stringify(res));
-        localStorage.setItem('user', JSON.stringify(res.authenticable));
-        this.logger.trace('userInfo', JSON.stringify(res.authenticable));
+    this.authenticationService
+      .login(this.loginForm.value.username, this.loginForm.value.password)
+      .subscribe(
+        (res) => {
+          this.cookieService.set(
+            "HIT-AUTH",
+            res.token,
+            2,
+            "/",
+            "",
+            environment.cookieSecure
+          );
+          localStorage.setItem("userInfo", JSON.stringify(res));
+          localStorage.setItem("user", JSON.stringify(res.authenticable));
+          this.logger.trace("userInfo", JSON.stringify(res.authenticable));
 
-        if (this.checked === true) {
-          this.cookieService.set('rememberme', this.loginForm.value.username, 2, '/', '', environment.cookieSecure); 
-        } else {
-          let deleteCookie = this.loginForm.value.username === this.cookieService.get('rememberme') && this.cookieService.check("rememberme");
-          if (deleteCookie) { this.cookieService.delete('rememberme', '/'); }
+          if (this.checked === true) {
+            this.cookieService.set(
+              "rememberme",
+              this.loginForm.value.username,
+              2,
+              "/",
+              "",
+              environment.cookieSecure
+            );
+          } else {
+            let deleteCookie =
+              this.loginForm.value.username ===
+                this.cookieService.get("rememberme") &&
+              this.cookieService.check("rememberme");
+            if (deleteCookie) {
+              this.cookieService.delete("rememberme", "/");
+            }
+          }
+
+          this.loginStatus = SubmissionStatus.Submitted;
+
+          this.postLoginService.loadDataPostLogin();
+          this.router.navigate([this.returnUrl]);
+        },
+        (err) => {
+          this.logger.error("Invalid account credentials", err);
+          const k: HYTError[] = this.httperrorHandler.handleLogin(err);
+          for (const e of k) {
+            this.error[2] = e.message;
+          }
+          this.loginStatus = SubmissionStatus.Error;
         }
-
-        this.loginStatus = SubmissionStatus.Submitted;
-
-        this.postLoginService.loadDataPostLogin();
-        this.router.navigate([this.returnUrl]);
-      },
-      err => {
-        this.logger.error('Invalid account credentials', err);
-        const k: HYTError[] = this.httperrorHandler.handleLogin(err);
-        for (const e of k) {
-          this.error[2] = e.message;
-        }
-        this.loginStatus = SubmissionStatus.Error;
-      }
-    );
+      );
   }
 
   /**
@@ -183,9 +207,8 @@ export class LoginComponent implements OnInit {
    */
   notValid(): boolean {
     return (
-      this.loginForm.get('username').invalid ||
-      this.loginForm.get('password').invalid
+      this.loginForm.get("username").invalid ||
+      this.loginForm.get("password").invalid
     );
   }
-
 }

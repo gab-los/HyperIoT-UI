@@ -1,16 +1,26 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, FormControl } from '@angular/forms';
-import { HPacket, HProject, HPacketService, HPacketField } from 'core';
-import { EnrichmentType } from '../enrichment-type.enum';
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  FormControl,
+} from "@angular/forms";
+import { HPacket, HProject, HPacketService, HPacketField } from "core";
+import { EnrichmentType } from "../enrichment-type.enum";
 
 @Component({
-    selector: 'hyt-fourier-transform',
-    templateUrl: './fourier-transform.component.html',
-    styleUrls: ['./fourier-transform.component.scss'],
-    standalone: false
+  selector: "hyt-fourier-transform",
+  templateUrl: "./fourier-transform.component.html",
+  styleUrls: ["./fourier-transform.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class FourierTransformComponent implements OnInit {
-
   @Input()
   packet: HPacket;
 
@@ -28,18 +38,18 @@ export class FourierTransformComponent implements OnInit {
   form: UntypedFormGroup = this.fb.group({});
 
   methodOptions = [
-    { label: 'Fast', value: 'FAST' },
-    { label: 'Discrete', value: 'DISCRETE' }
+    { label: "Fast", value: "FAST" },
+    { label: "Discrete", value: "DISCRETE" },
   ];
 
   normOptions = [
-    { label: 'Standard', value: 'STANDARD' },
-    { label: 'Unitary', value: 'UNITARY' }
+    { label: "Standard", value: "STANDARD" },
+    { label: "Unitary", value: "UNITARY" },
   ];
 
   typeOptions = [
-    { label: 'Forward', value: 'FORWARD' },
-    { label: 'Inverse', value: 'INVERSE' }
+    { label: "Forward", value: "FORWARD" },
+    { label: "Inverse", value: "INVERSE" },
   ];
 
   inputFieldOptions = [];
@@ -53,20 +63,22 @@ export class FourierTransformComponent implements OnInit {
     this.update();
   }
 
-  get config() { return this._config };
+  get config() {
+    return this._config;
+  }
   originalConfig: any;
 
   constructor(
     private fb: UntypedFormBuilder,
     private hpacketService: HPacketService,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.packet.fields.forEach((pf) => {
       this.inputFieldOptions.push({
         label: pf.name,
-        value: pf.id
+        value: pf.id,
       });
     });
   }
@@ -76,7 +88,7 @@ export class FourierTransformComponent implements OnInit {
       this.config.transformMethod = method;
       this.cd.detectChanges();
       this.form.patchValue({ transformMethod: this.config.transformMethod });
-      this.form.get('transformMethod').setValue(this.config.transformMethod);
+      this.form.get("transformMethod").setValue(this.config.transformMethod);
     }
   }
 
@@ -84,7 +96,7 @@ export class FourierTransformComponent implements OnInit {
     if (norm) {
       this.config.fftNormalization = norm;
       this.cd.detectChanges();
-      this.form.get('transformNorm').setValue(this.config.fftNormalization);
+      this.form.get("transformNorm").setValue(this.config.fftNormalization);
     }
   }
 
@@ -92,7 +104,7 @@ export class FourierTransformComponent implements OnInit {
     if (type) {
       this.config.transformType = type;
       this.cd.detectChanges();
-      this.form.get('transformType').setValue(this.config.transformType);
+      this.form.get("transformType").setValue(this.config.transformType);
     }
   }
 
@@ -102,57 +114,70 @@ export class FourierTransformComponent implements OnInit {
 
   onOutputFieldChange(e) {
     const outputFieldName = e.target.value;
-    const outputField = this.packet.fields.find((pf) => pf.name === outputFieldName);
+    const outputField = this.packet.fields.find(
+      (pf) => pf.name === outputFieldName
+    );
     if (outputField) {
       this.config.outputFieldId = outputField.id;
       this.config.outputFieldName = outputFieldName;
     } else {
-      this.addOutputField(outputFieldName, (field) => {
-        this.config.outputFieldId = this.originalConfig.outputFieldId = field.id;
-        this.config.outputFieldName = this.originalConfig.outputFieldName = field.name;
-      }, (error) => {
-        // TODO: inject error on input text
-      });
+      this.addOutputField(
+        outputFieldName,
+        (field) => {
+          this.config.outputFieldId = this.originalConfig.outputFieldId =
+            field.id;
+          this.config.outputFieldName = this.originalConfig.outputFieldName =
+            field.name;
+        },
+        (error) => {
+          // TODO: inject error on input text
+        }
+      );
     }
   }
 
   onOutputFieldResetClick() {
-    this.hpacketService.deleteHPacketField(this.config.outputFieldId).subscribe((res) => {
-      this.config.outputFieldId = 0;
-      this.config.outputFieldName = '';
-    }, (err) => {
-      // TODO: report error
-    });
+    this.hpacketService.deleteHPacketField(this.config.outputFieldId).subscribe(
+      (res) => {
+        this.config.outputFieldId = 0;
+        this.config.outputFieldName = "";
+      },
+      (err) => {
+        // TODO: report error
+      }
+    );
   }
 
   new() {
     return {
       actionName: EnrichmentType.FOURIER_TRANSFORM_ENRICHMENT,
-      transformMethod: 'FAST',
-      fftNormalization: 'STANDARD',
-      transformType: 'FORWARD',
+      transformMethod: "FAST",
+      fftNormalization: "STANDARD",
+      transformType: "FORWARD",
       inputFieldId: 0,
       outputFieldId: 0,
-      outputFieldName: ''
+      outputFieldName: "",
     };
   }
 
   update() {
-    this.config.outputFieldName = '';
+    this.config.outputFieldName = "";
     this.onTransformMethodChange(this.config.transformMethod);
     this.onTransformNormChange(this.config.fftNormalization);
     this.onTransformTypeChange(this.config.transformType);
     this.cd.detectChanges();
-    this.form.get('inputField').setValue(this.config.inputFieldId);
+    this.form.get("inputField").setValue(this.config.inputFieldId);
     if (this.config.outputFieldId) {
       this.hpacketService.findHPacket(this.packet.id).subscribe((res) => {
         this.packet = res;
-        const outputField = this.packet.fields.find((pf) => pf.id === this.config.outputFieldId);
+        const outputField = this.packet.fields.find(
+          (pf) => pf.id === this.config.outputFieldId
+        );
         if (outputField) {
           this.config.outputFieldName = outputField.name;
         } else {
           this.config.outputFieldId = 0;
-          this.config.outputFieldName = '';
+          this.config.outputFieldName = "";
         }
       });
     }
@@ -163,16 +188,21 @@ export class FourierTransformComponent implements OnInit {
 
   addOutputField(outputFieldName, successCallback, errorCallback) {
     if (!this.config.outputFieldId) {
-      this.hpacketService.addHPacketField(this.packet.id, {
-        name: outputFieldName,
-        description: 'Fourier Transform output field',
-        multiplicity: 'ARRAY',
-        type: 'DOUBLE'
-      } as HPacketField).subscribe((res) => {
-        successCallback(res);
-      }, (error) => {
-        errorCallback();
-      });
+      this.hpacketService
+        .addHPacketField(this.packet.id, {
+          name: outputFieldName,
+          description: "Fourier Transform output field",
+          multiplicity: "ARRAY",
+          type: "DOUBLE",
+        } as HPacketField)
+        .subscribe(
+          (res) => {
+            successCallback(res);
+          },
+          (error) => {
+            errorCallback();
+          }
+        );
     }
   }
 
@@ -181,6 +211,10 @@ export class FourierTransformComponent implements OnInit {
   }
 
   isValid() {
-    return this._config && this._config.inputFieldId > 0 && this._config.outputFieldId > 0;
+    return (
+      this._config &&
+      this._config.inputFieldId > 0 &&
+      this._config.outputFieldId > 0
+    );
   }
 }

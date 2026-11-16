@@ -1,24 +1,31 @@
-import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
-import { AssetTag, AssetTagsService, HProject } from 'core';
-import { startWith, map } from 'rxjs/operators';
-import { MatChipInputEvent } from '@angular/material/chips';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormControl } from "@angular/forms";
+import { Observable, Subscription } from "rxjs";
+import { AssetTag, AssetTagsService, HProject } from "core";
+import { startWith, map } from "rxjs/operators";
+import { MatChipInputEvent } from "@angular/material/chips";
 
 export enum TagStatus {
   Default = 0,
   Loaded = 1,
-  Error = -1
+  Error = -1,
 }
 
 @Component({
-    selector: 'hyt-asset-tag',
-    templateUrl: './asset-tag.component.html',
-    styleUrls: ['./asset-tag.component.scss'],
-    standalone: false
+  selector: "hyt-asset-tag",
+  templateUrl: "./asset-tag.component.html",
+  styleUrls: ["./asset-tag.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AssetTagComponent implements OnInit {
-
   @Input()
   project: HProject;
 
@@ -35,14 +42,12 @@ export class AssetTagComponent implements OnInit {
   allTags: AssetTag[];
   tagChoice: AssetTag[] = [];
 
-  @ViewChild('tagInput')
+  @ViewChild("tagInput")
   tagInput: ElementRef<HTMLInputElement>;
 
   assetRequest: Subscription;
 
-  constructor(
-    private assetsTagService: AssetTagsService,
-  ) { }
+  constructor(private assetsTagService: AssetTagsService) {}
 
   ngOnInit() {
     this.getAssetTags();
@@ -54,16 +59,19 @@ export class AssetTagComponent implements OnInit {
       this.assetRequest.unsubscribe();
     }
     this.assetsTagService.findAllAssetTag().subscribe(
-      res => {
+      (res) => {
         this.allTags = res;
         this.tagChoice = [...this.allTags];
         this.filteredTags = this.tagCtrl.valueChanges.pipe(
           startWith(null),
-          map((ser: string | null) => ser ? this._filter(ser) : this.tagChoice.slice()));
+          map((ser: string | null) =>
+            ser ? this._filter(ser) : this.tagChoice.slice()
+          )
+        );
         this.fill();
         this.tagStatus = TagStatus.Loaded;
       },
-      err => {
+      (err) => {
         this.tagStatus = TagStatus.Error;
       }
     );
@@ -73,34 +81,34 @@ export class AssetTagComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    if ((value || '').trim()) {
+    if ((value || "").trim()) {
       let assetTag: AssetTag;
-      if (this.tags.find(x => x.name === event.value)) {
+      if (this.tags.find((x) => x.name === event.value)) {
         return;
-      } else if (this.allTags.some(x => x.name === event.value)) {
-        assetTag = this.allTags.find(x => x.name === event.value);
+      } else if (this.allTags.some((x) => x.name === event.value)) {
+        assetTag = this.allTags.find((x) => x.name === event.value);
         this.selected({ option: { value: assetTag } });
       } else {
         assetTag = {
           name: event.value,
           owner: {
-            ownerResourceName: 'it.acsoftware.hyperiot.hproject',
-            ownerResourceId: this.project.id
+            ownerResourceName: "it.acsoftware.hyperiot.hproject",
+            ownerResourceId: this.project.id,
           },
-          entityVersion: 1
+          entityVersion: 1,
         };
         this.assetsTagService.saveAssetTag(assetTag).subscribe(
-          res => {
+          (res) => {
             this.allTags.push(res);
             this.selected({ option: { value: res } });
           },
-          err => { }
+          (err) => {}
         );
       }
     }
 
     if (input) {
-      input.value = '';
+      input.value = "";
     }
 
     this.tagCtrl.setValue(null);
@@ -110,29 +118,39 @@ export class AssetTagComponent implements OnInit {
     const index = this.tags.indexOf(tag);
     if (index >= 0) {
       this.tags.splice(index, 1);
-      if (this.allTags.find(x => x.name === tag.name)) {
+      if (this.allTags.find((x) => x.name === tag.name)) {
         this.tagChoice.push(tag);
         this.tagCtrl.setValue(null);
       }
-      this.selectedTags = this.tags.map(t => t.id);
+      this.selectedTags = this.tags.map((t) => t.id);
     }
   }
 
   selected(event): void {
     this.tags.push(event.option.value);
-    this.selectedTags = this.tags.map(t => t.id);
-    this.tagChoice = this.allTags.filter(x => !this.selectedTags.some(y => y === x.id));
-    this.tagInput.nativeElement.value = '';
+    this.selectedTags = this.tags.map((t) => t.id);
+    this.tagChoice = this.allTags.filter(
+      (x) => !this.selectedTags.some((y) => y === x.id)
+    );
+    this.tagInput.nativeElement.value = "";
     this.tagCtrl.setValue(null);
   }
 
   private _filter(value: string | AssetTag): AssetTag[] {
-    const filterValue: string = (typeof value === 'string') ? value.toLowerCase() : value.name.toLowerCase();
-    return this.tagChoice.filter(tag => tag.name.toLowerCase().includes(filterValue));
+    const filterValue: string =
+      typeof value === "string"
+        ? value.toLowerCase()
+        : value.name.toLowerCase();
+    return this.tagChoice.filter((tag) =>
+      tag.name.toLowerCase().includes(filterValue)
+    );
   }
 
   isDirty(): boolean {
-    return this.tagStatus === 1 ? JSON.stringify(this.originalTags.sort()) !== JSON.stringify(this.selectedTags.sort()) : false;
+    return this.tagStatus === 1
+      ? JSON.stringify(this.originalTags.sort()) !==
+          JSON.stringify(this.selectedTags.sort())
+      : false;
   }
 
   originalValueUpdate() {
@@ -140,11 +158,14 @@ export class AssetTagComponent implements OnInit {
   }
 
   fill() {
-    this.tags = this.allTags.filter(x => this.selectedTags.some(y => y === x.id));
-    this.selectedTags = this.tags.map(t => t.id);
-    this.tagChoice = this.allTags.filter(x => !this.selectedTags.some(y => y === x.id));
+    this.tags = this.allTags.filter((x) =>
+      this.selectedTags.some((y) => y === x.id)
+    );
+    this.selectedTags = this.tags.map((t) => t.id);
+    this.tagChoice = this.allTags.filter(
+      (x) => !this.selectedTags.some((y) => y === x.id)
+    );
     this.tagCtrl.setValue(null);
     this.originalValueUpdate();
   }
-
 }

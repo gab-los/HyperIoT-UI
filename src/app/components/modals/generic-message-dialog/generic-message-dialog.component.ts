@@ -1,24 +1,27 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { DIALOG_DATA, DialogRef } from 'components';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DIALOG_DATA, DialogRef } from "components";
 
 @Component({
-    selector: 'hyt-generic-message-dialog',
-    templateUrl: './generic-message-dialog.component.html',
-    styleUrls: ['./generic-message-dialog.component.scss'],
-    standalone: false
+  selector: "hyt-generic-message-dialog",
+  templateUrl: "./generic-message-dialog.component.html",
+  styleUrls: ["./generic-message-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class GenericMessageDialogComponent implements OnInit {
-
   constructor(
     private dialogRef: DialogRef<void>,
-    @Inject(DIALOG_DATA) public data: { message: string; },
-  ) { }
+    @Inject(DIALOG_DATA) public data: { message: string }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   close() {
     this.dialogRef.close();
   }
-
 }

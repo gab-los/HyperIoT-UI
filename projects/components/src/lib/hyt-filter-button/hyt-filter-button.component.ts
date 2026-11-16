@@ -1,4 +1,9 @@
-import { Component, Input, forwardRef } from "@angular/core";
+import {
+  Component,
+  Input,
+  forwardRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { Logger, LoggerService } from "core";
 
@@ -42,17 +47,18 @@ export interface HytFilterButtonFilter {
  * Component for render filter with faster usability for the user than a dropdown, my reccomandation is to use it when you have max 6 different options
  */
 @Component({
-    selector: "hyt-filter-button",
-    templateUrl: "./hyt-filter-button.component.html",
-    styleUrls: ["./hyt-filter-button.component.scss"],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => HytFilterButtonComponent),
-            multi: true,
-        },
-    ],
-    standalone: false
+  selector: "hyt-filter-button",
+  templateUrl: "./hyt-filter-button.component.html",
+  styleUrls: ["./hyt-filter-button.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => HytFilterButtonComponent),
+      multi: true,
+    },
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytFilterButtonComponent implements ControlValueAccessor {
   private logger: Logger;

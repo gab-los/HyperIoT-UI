@@ -1,19 +1,28 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Area, AreaDevice } from 'core';
-import { AREA_ICONS_OPTIONS } from '../../models/area-icons';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
+import { Area, AreaDevice } from "core";
+import { AREA_ICONS_OPTIONS } from "../../models/area-icons";
 
 @Component({
-    selector: 'hyt-map-device-edit',
-    templateUrl: './map-device-edit.component.html',
-    styleUrls: ['./map-device-edit.component.scss'],
-    standalone: false
+  selector: "hyt-map-device-edit",
+  templateUrl: "./map-device-edit.component.html",
+  styleUrls: ["./map-device-edit.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class MapDeviceEditComponent implements OnInit {
-
   itemInfo: any; //AreaDevice; //| Area;
   _dragEnabled = false;
-  areaMapIconsOptions = AREA_ICONS_OPTIONS.get('MAP');
+  areaMapIconsOptions = AREA_ICONS_OPTIONS.get("MAP");
   itemRemoveCB: (itemInfo: AreaDevice | Area) => void;
   iconChangeCB: (icon: string) => void;
   itemUpdateCB: (itemInfo: AreaDevice | Area) => void;
@@ -23,17 +32,15 @@ export class MapDeviceEditComponent implements OnInit {
   private _originalFormValue;
   editMode = false;
   itemInfoForm = new UntypedFormGroup({
-    deviceIcon: new UntypedFormControl('', Validators.required),
-    latitude: new UntypedFormControl('', Validators.required),
-    longitude: new UntypedFormControl('', Validators.required),
+    deviceIcon: new UntypedFormControl("", Validators.required),
+    latitude: new UntypedFormControl("", Validators.required),
+    longitude: new UntypedFormControl("", Validators.required),
   });
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-  ) { }
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.areaMapIconsOptions = AREA_ICONS_OPTIONS.get('MAP');
+    this.areaMapIconsOptions = AREA_ICONS_OPTIONS.get("MAP");
     this.resetItem();
   }
 
@@ -94,5 +101,4 @@ export class MapDeviceEditComponent implements OnInit {
     event.stopPropagation();
     this.subAreaOpenCB(this.itemInfo);
   }
-
 }

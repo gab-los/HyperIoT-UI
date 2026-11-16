@@ -1,22 +1,40 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { HUserService, HUser, HDevicesService, Area_Service, HProjectService, BrandingService, BrandingActions, BrandingSelectors, Dashboard, UserSiteSettingSelectors, UserSiteSettingActions } from 'core';
-import { AuthenticationHttpErrorHandlerService } from '../../../services/errorHandler/authentication-http-error-handler.service';
-import { HYTError } from 'src/app/services/errorHandler/models/models';
-import { Router } from '@angular/router';
-import { HyperiotLogoMobilePath, HyperiotLogoPath } from 'src/app/constants';
-import { forkJoin, map, take, } from 'rxjs';
-import { Store } from '@ngrx/store';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
+import {
+  HUserService,
+  HUser,
+  HDevicesService,
+  Area_Service,
+  HProjectService,
+  BrandingService,
+  BrandingActions,
+  BrandingSelectors,
+  Dashboard,
+  UserSiteSettingSelectors,
+  UserSiteSettingActions,
+} from "core";
+import { AuthenticationHttpErrorHandlerService } from "../../../services/errorHandler/authentication-http-error-handler.service";
+import { HYTError } from "src/app/services/errorHandler/models/models";
+import { Router } from "@angular/router";
+import { HyperiotLogoMobilePath, HyperiotLogoPath } from "src/app/constants";
+import { forkJoin, map, take } from "rxjs";
+import { Store } from "@ngrx/store";
 
 @Component({
-    selector: 'hyt-profile',
-    templateUrl: './profile.component.html',
-    styleUrls: ['./profile.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-profile",
+  templateUrl: "./profile.component.html",
+  styleUrls: ["./profile.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProfileComponent implements OnInit {
-
   DashboardTypeEnum = Dashboard.DashboardTypeEnum;
 
   errors: HYTError[] = [];
@@ -105,9 +123,9 @@ export class ProfileComponent implements OnInit {
   confirmPassword: string;
 
   platformCounters = {
-    projects: '',
-    areas: '',
-    devices: '',
+    projects: "",
+    areas: "",
+    devices: "",
   };
 
   initialLogoPath;
@@ -119,7 +137,7 @@ export class ProfileComponent implements OnInit {
 
   logoErrorMessage = {
     showError: false,
-    message: ''
+    message: "",
   };
 
   get isBrandedTheme() {
@@ -135,7 +153,10 @@ export class ProfileComponent implements OnInit {
   }
 
   get colorSchemaChanged() {
-    return JSON.stringify(this.initialBrandingForm.value) != JSON.stringify(this.brandingForm.value);
+    return (
+      JSON.stringify(this.initialBrandingForm.value) !=
+      JSON.stringify(this.brandingForm.value)
+    );
   }
 
   /**
@@ -152,8 +173,7 @@ export class ProfileComponent implements OnInit {
     private hProjectService: HProjectService,
     private brandingService: BrandingService,
     private store: Store
-  ) {
-  }
+  ) {}
 
   /**
    * This is an angular lifecycle hook that executes certain operations on initialization of the application.
@@ -164,56 +184,57 @@ export class ProfileComponent implements OnInit {
     this.changePasswordForm = this.fb.group({});
 
     this.brandingForm = this.fb.group({
-      primaryColor: [''],
-      secondaryColor: [''],
+      primaryColor: [""],
+      secondaryColor: [""],
     });
 
-    this.store.select(UserSiteSettingSelectors.selectUserSiteSetting)
-      .pipe(
-        take(1)
-      )
-      .subscribe(({
-        defaultProjectsDashboardDataSource,
-        defaultAreasDashboardDataSource,
-      }) => {
-        this.defaultDashboardSettings = this.fb.group({
+    this.store
+      .select(UserSiteSettingSelectors.selectUserSiteSetting)
+      .pipe(take(1))
+      .subscribe(
+        ({
           defaultProjectsDashboardDataSource,
-          defaultAreasDashboardDataSource
-        });
-      });
+          defaultAreasDashboardDataSource,
+        }) => {
+          this.defaultDashboardSettings = this.fb.group({
+            defaultProjectsDashboardDataSource,
+            defaultAreasDashboardDataSource,
+          });
+        }
+      );
 
-    this.defaultDashboardSettings.controls.defaultProjectsDashboardDataSource
-      .valueChanges
-      .subscribe((defaultProjectsDashboardDataSource) => {
+    this.defaultDashboardSettings.controls.defaultProjectsDashboardDataSource.valueChanges.subscribe(
+      (defaultProjectsDashboardDataSource) => {
         this.store.dispatch(
           UserSiteSettingActions.updatePartialSettings({
             userSiteSetting: {
               defaultProjectsDashboardDataSource,
-            }
+            },
           })
         );
-      });
+      }
+    );
 
-    this.defaultDashboardSettings.controls.defaultAreasDashboardDataSource
-      .valueChanges
-      .subscribe((defaultAreasDashboardDataSource) => {
+    this.defaultDashboardSettings.controls.defaultAreasDashboardDataSource.valueChanges.subscribe(
+      (defaultAreasDashboardDataSource) => {
         this.store.dispatch(
           UserSiteSettingActions.updatePartialSettings({
             userSiteSetting: {
               defaultAreasDashboardDataSource,
-            }
+            },
           })
         );
-      });
+      }
+    );
 
-    if (localStorage.getItem('user') !== null) {
-      this.user = JSON.parse(localStorage.getItem('user'));
+    if (localStorage.getItem("user") !== null) {
+      this.user = JSON.parse(localStorage.getItem("user"));
       this.userId = this.user.id;
       this.cd.detectChanges();
       this.personalInfoForm.get("username").setValue(this.user.username);
       this.personalInfoForm.get("username").disable();
     } else {
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(["/auth/login"]);
     }
 
     this.loadGeneralData();
@@ -227,11 +248,11 @@ export class ProfileComponent implements OnInit {
     this.loading = true;
     const modifiedUser: HUser = {
       id: this.user.id,
-      username: this.personalInfoForm.get('username').value,
-      email: this.personalInfoForm.get('email').value,
-      name: this.personalInfoForm.get('name').value,
-      lastname: this.personalInfoForm.get('lastname').value,
-      entityVersion: this.user.entityVersion
+      username: this.personalInfoForm.get("username").value,
+      email: this.personalInfoForm.get("email").value,
+      name: this.personalInfoForm.get("name").value,
+      lastname: this.personalInfoForm.get("lastname").value,
+      entityVersion: this.user.entityVersion,
     };
 
     this.hUserService
@@ -264,19 +285,26 @@ export class ProfileComponent implements OnInit {
     this.newPassword = this.changePasswordForm.value.newPassword;
     this.confirmPassword = this.changePasswordForm.value.confirmPassword;
 
-    this.hUserService.changeHUserPassword(this.userId, this.oldPassword, this.newPassword, this.confirmPassword).subscribe(
-      res => {
-        this.passwordChanged = true;
-        this.loading = false;
-      },
-      err => {
-        this.errors = this.httperrorHandler.handle(err);
-        this.loading = false;
-        this.passwordChanged = false;
-        this.wentWrong = true;
-        this.changePasswordForm.reset();
-      }
-    );
+    this.hUserService
+      .changeHUserPassword(
+        this.userId,
+        this.oldPassword,
+        this.newPassword,
+        this.confirmPassword
+      )
+      .subscribe(
+        (res) => {
+          this.passwordChanged = true;
+          this.loading = false;
+        },
+        (err) => {
+          this.errors = this.httperrorHandler.handle(err);
+          this.loading = false;
+          this.passwordChanged = false;
+          this.wentWrong = true;
+          this.changePasswordForm.reset();
+        }
+      );
   }
 
   keyDownFunction(event): void {
@@ -291,10 +319,10 @@ export class ProfileComponent implements OnInit {
    */
   notValidPif(): boolean {
     return (
-      this.personalInfoForm.get('username').invalid ||
-      this.personalInfoForm.get('email').invalid ||
-      this.personalInfoForm.get('name').invalid ||
-      this.personalInfoForm.get('lastname').invalid
+      this.personalInfoForm.get("username").invalid ||
+      this.personalInfoForm.get("email").invalid ||
+      this.personalInfoForm.get("name").invalid ||
+      this.personalInfoForm.get("lastname").invalid
     );
   }
 
@@ -303,24 +331,22 @@ export class ProfileComponent implements OnInit {
    */
   notValidCpf(): boolean {
     return (
-      this.changePasswordForm.get('oldPassword').invalid ||
-      this.changePasswordForm.get('newPassword').invalid ||
-      this.changePasswordForm.get('confirmPassword').invalid
+      this.changePasswordForm.get("oldPassword").invalid ||
+      this.changePasswordForm.get("newPassword").invalid ||
+      this.changePasswordForm.get("confirmPassword").invalid
     );
   }
 
   initUpload() {
-    let fileInput = document.getElementById('logo-file-input');
-    if (fileInput)
-      fileInput.click();
-    else
-      console.error('ERROR: cannot find file input');
+    let fileInput = document.getElementById("logo-file-input");
+    if (fileInput) fileInput.click();
+    else console.error("ERROR: cannot find file input");
   }
 
   handleLogoInput(files: FileList) {
     this.logoErrorMessage = {
       showError: false,
-      message: ''
+      message: "",
     };
     const file = files.item(0);
     this.fileToUpload = file;
@@ -328,7 +354,7 @@ export class ProfileComponent implements OnInit {
     reader.onload = (event: any) => {
       this.logoPath = event.target.result;
       this.logoMobilePath = event.target.result;
-    }
+    };
     reader.readAsDataURL(file);
   }
 
@@ -348,7 +374,7 @@ export class ProfileComponent implements OnInit {
   restoreDefaultTheme(logoFileInput) {
     this.logoErrorMessage = {
       showError: false,
-      message: ''
+      message: "",
     };
     if (this.brandingService.isBrandedTheme) {
       this.store.dispatch(BrandingActions.reset());
@@ -359,46 +385,53 @@ export class ProfileComponent implements OnInit {
       logoFileInput.value = null;
       this.resetColorSchema();
     }
-
   }
 
   saveTheme() {
     this.logoErrorMessage = {
       showError: false,
-      message: ''
+      message: "",
     };
 
     const colorSchema = this.brandingForm.value;
 
     if (this.fileToUpload) {
-      this.store.dispatch(BrandingActions.updateAll({
-        brandingTheme: {
-          file: this.fileToUpload,
-          fileBase64: this.logoPath,
-          colorSchema,
-        }
-      }));
+      this.store.dispatch(
+        BrandingActions.updateAll({
+          brandingTheme: {
+            file: this.fileToUpload,
+            fileBase64: this.logoPath,
+            colorSchema,
+          },
+        })
+      );
     } else {
-      this.store.dispatch(BrandingActions.updateAll({
-        brandingTheme: {
-          fileBase64: this.logoPath,
-          colorSchema,
-        }
-      }));
-
+      this.store.dispatch(
+        BrandingActions.updateAll({
+          brandingTheme: {
+            fileBase64: this.logoPath,
+            colorSchema,
+          },
+        })
+      );
     }
-
   }
 
   loadGeneralData() {
     forkJoin({
-      projects: this.hProjectService.findAllHProjectPaginated(1).pipe(map(res => res.numPages)),
-      areas: this.areasService.findAllAreaPaginated(1).pipe(map(res => res.numPages)),
-      devices: this.hDevicesService.findAllHDevicePaginated(1).pipe(map(res => res.numPages))
+      projects: this.hProjectService
+        .findAllHProjectPaginated(1)
+        .pipe(map((res) => res.numPages)),
+      areas: this.areasService
+        .findAllAreaPaginated(1)
+        .pipe(map((res) => res.numPages)),
+      devices: this.hDevicesService
+        .findAllHDevicePaginated(1)
+        .pipe(map((res) => res.numPages)),
     }).subscribe({
       next: (value) => {
         this.platformCounters = value;
-      }
+      },
     });
 
     this.brandingService.logoPath$.subscribe({
@@ -408,7 +441,8 @@ export class ProfileComponent implements OnInit {
         this.logoPath = standard;
         this.logoMobilePath = mobile;
         this.fileToUpload = null;
-        (document.getElementById('logo-file-input') as HTMLInputElement).value = null;
+        (document.getElementById("logo-file-input") as HTMLInputElement).value =
+          null;
       },
     });
 
@@ -419,7 +453,7 @@ export class ProfileComponent implements OnInit {
           secondaryColor: [colorSchema.secondaryColor],
         });
         this.resetColorSchema();
-      }
+      },
     });
 
     this.store.select(BrandingSelectors.selectError).subscribe({
@@ -428,18 +462,17 @@ export class ProfileComponent implements OnInit {
           case BrandingActions.updateFailure.type:
             this.logoErrorMessage = {
               showError: true,
-              message: $localize`:@@HYT_saving_branding_theme_error:Saving branding theme error`
+              message: $localize`:@@HYT_saving_branding_theme_error:Saving branding theme error`,
             };
             break;
           case BrandingActions.resetFailure.type:
             this.logoErrorMessage = {
               showError: true,
-              message: $localize`:@@HYT_restoring_default_theme_error:Restoring default theme error`
+              message: $localize`:@@HYT_restoring_default_theme_error:Restoring default theme error`,
             };
             break;
         }
-      }
+      },
     });
   }
-
 }

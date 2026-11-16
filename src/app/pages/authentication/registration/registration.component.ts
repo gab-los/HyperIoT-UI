@@ -1,23 +1,28 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { HUserService, HUser, LoggerService, Logger } from 'core';
-import { AuthenticationHttpErrorHandlerService } from 'src/app/services/errorHandler/authentication-http-error-handler.service';
-import { HYTError } from 'src/app/services/errorHandler/models/models';
-import { SubmissionStatus } from '../models/pageStatus';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
+import { HUserService, HUser, LoggerService, Logger } from "core";
+import { AuthenticationHttpErrorHandlerService } from "src/app/services/errorHandler/authentication-http-error-handler.service";
+import { HYTError } from "src/app/services/errorHandler/models/models";
+import { SubmissionStatus } from "../models/pageStatus";
 
 /**
  * RegistrationComponent is a component of AuthenticationModule.
  * It is used to hallow the user to create his own account.
  */
 @Component({
-    selector: 'hyt-registration',
-    templateUrl: './registration.component.html',
-    styleUrls: ['./registration.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-registration",
+  templateUrl: "./registration.component.html",
+  styleUrls: ["./registration.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class RegistrationComponent implements OnInit {
-
   /**
    * error is used to handle errors in the template
    */
@@ -50,7 +55,7 @@ export class RegistrationComponent implements OnInit {
     private loggerService: LoggerService
   ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('RegistrationComponent');
+    this.logger.registerClass("RegistrationComponent");
   }
 
   /**
@@ -77,23 +82,23 @@ export class RegistrationComponent implements OnInit {
       lastname: this.registrationForm.value.lastName,
       username: this.registrationForm.value.username,
       email: this.registrationForm.value.email,
-      password: this.registrationForm.value['huser-password'],
-      passwordConfirm: this.registrationForm.value['huser-passwordConfirm'],
-      entityVersion: 1
+      password: this.registrationForm.value["huser-password"],
+      passwordConfirm: this.registrationForm.value["huser-passwordConfirm"],
+      entityVersion: 1,
     };
 
     this.hUserService.register(user).subscribe(
-      res => {
+      (res) => {
         this.registrationStatus = SubmissionStatus.Submitted;
       },
-      err => {
+      (err) => {
         this.errors = this.httperrorHandler.handleRegistration(err);
-        this.errors.forEach(e => {
-          if (e.container !== 'general') {
+        this.errors.forEach((e) => {
+          if (e.container !== "general") {
             this.registrationForm.get(e.container).setErrors({
               validateInjectedError: {
-                valid: false
-              }
+                valid: false,
+              },
             });
           }
         });
@@ -108,12 +113,12 @@ export class RegistrationComponent implements OnInit {
    */
   notValid(): boolean {
     return (
-      this.registrationForm.get('name').invalid ||
-      this.registrationForm.get('lastName').invalid ||
-      this.registrationForm.get('username').invalid ||
-      this.registrationForm.get('email').invalid ||
-      this.registrationForm.get('huser-password').invalid ||
-      this.registrationForm.get('huser-passwordConfirm').invalid ||
+      this.registrationForm.get("name").invalid ||
+      this.registrationForm.get("lastName").invalid ||
+      this.registrationForm.get("username").invalid ||
+      this.registrationForm.get("email").invalid ||
+      this.registrationForm.get("huser-password").invalid ||
+      this.registrationForm.get("huser-passwordConfirm").invalid ||
       this.checked === false
     );
   }
@@ -123,7 +128,8 @@ export class RegistrationComponent implements OnInit {
    * @param field The field to check for errors
    */
   getError(field: string): string {
-    return (this.errors.find(x => x.container === field)) ? this.errors.find(x => x.container === field).message : null;
+    return this.errors.find((x) => x.container === field)
+      ? this.errors.find((x) => x.container === field).message
+      : null;
   }
-
 }

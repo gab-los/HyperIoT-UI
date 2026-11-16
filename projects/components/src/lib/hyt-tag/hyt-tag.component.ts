@@ -1,14 +1,22 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
-    selector: 'hyt-tag',
-    templateUrl: './hyt-tag.component.html',
-    styleUrls: ['./hyt-tag.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-tag",
+  templateUrl: "./hyt-tag.component.html",
+  styleUrls: ["./hyt-tag.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTagComponent implements OnInit {
-
   @Input() color: string;
   @Input() textColor: string;
 
@@ -45,10 +53,9 @@ export class HytTagComponent implements OnInit {
 
   @Output() clickFn: EventEmitter<any> = new EventEmitter();
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   click(event: any) {
     this.clickFn.emit(event);
@@ -61,5 +68,4 @@ export class HytTagComponent implements OnInit {
   removedFn(event: any) {
     this.removed.emit(event);
   }
-
 }

@@ -1,8 +1,28 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, HostListener, ElementRef } from '@angular/core';
-import moment from 'moment';
-import { CalendarContextData, HytDatePickerService } from '../services/hyt-date-picker.service';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  HostListener,
+  ElementRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import moment from "moment";
+import {
+  CalendarContextData,
+  HytDatePickerService,
+} from "../services/hyt-date-picker.service";
 
-export type TimeStep = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'millisecond';
+export type TimeStep =
+  | "year"
+  | "month"
+  | "day"
+  | "hour"
+  | "minute"
+  | "second"
+  | "millisecond";
 
 interface CalElement {
   action: () => void;
@@ -24,20 +44,20 @@ interface CalendarContext {
 }
 
 @Component({
-    selector: 'hyt-picker-pop-up',
-    templateUrl: './picker-pop-up.component.html',
-    styleUrls: ['./picker-pop-up.component.css'],
-    standalone: false
+  selector: "hyt-picker-pop-up",
+  templateUrl: "./picker-pop-up.component.html",
+  styleUrls: ["./picker-pop-up.component.css"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PickerPopUpComponent implements OnInit, OnChanges {
-
   model: CalendarContext;
 
   @Input()
   dateInput: moment.Moment;
 
   @Input()
-  lowView: TimeStep = 'second';
+  lowView: TimeStep = "second";
 
   @Input()
   show = false;
@@ -52,23 +72,26 @@ export class PickerPopUpComponent implements OnInit, OnChanges {
   popUpEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   colspanMap = {
-    'year': '2',
-    'month': '2',
-    'day': '5',
-    'hour': '2',
-    'minute': '4',
-    'second': '4',
-    'millisecond': '4'
-  }
-  
+    year: "2",
+    month: "2",
+    day: "5",
+    hour: "2",
+    minute: "4",
+    second: "4",
+    millisecond: "4",
+  };
+
   /**
    * On document click if the clicked element is neither the picker nor the button set picker component to show=false
    * @param event
    */
-  @HostListener('document:click', ['$event'])
+  @HostListener("document:click", ["$event"])
   clickout(event) {
-    const btn = document.getElementById('hyt-date-picker-button')
-    if (event.target.parentElement?.contains(this.eRef.nativeElement) || event.target.parentElement?.contains(btn)) {
+    const btn = document.getElementById("hyt-date-picker-button");
+    if (
+      event.target.parentElement?.contains(this.eRef.nativeElement) ||
+      event.target.parentElement?.contains(btn)
+    ) {
       this.show = false;
       this.popUpEvent.emit(this.show);
     }
@@ -77,47 +100,50 @@ export class PickerPopUpComponent implements OnInit, OnChanges {
   constructor(
     private calendarService: HytDatePickerService,
     private eRef: ElementRef
-  ) { }
+  ) {}
 
   ngOnInit() {
-    moment.locale(this.languageCode)
+    moment.locale(this.languageCode);
   }
 
   ngOnChanges() {
-    this.buildModel('year', moment(new Date()).startOf('year'));
+    this.buildModel("year", moment(new Date()).startOf("year"));
   }
 
   public buildModel(step: any, mom: moment.Moment): void {
-
-    const calendarContextData: CalendarContextData = this.calendarService.getContextDataByStep(step);
+    const calendarContextData: CalendarContextData =
+      this.calendarService.getContextDataByStep(step);
     mom.startOf(calendarContextData.toPrevious);
 
     const hRows: CalendarRow[] = [];
     const defHeader: CalElement[] = [];
     defHeader.push({
-      label: '<',
-      action: () => this.buildModel(step, calendarContextData.subtract(mom))
+      label: "<",
+      action: () => this.buildModel(step, calendarContextData.subtract(mom)),
     });
     defHeader.push({
       label: calendarContextData.headerFormat(mom),
       action: () =>
-        (step === 'year') ?
-          {} :
-          this.buildModel(calendarContextData.toPrevious, moment(mom).startOf(calendarContextData.toPrevious)),
-      colspan: this.colspanMap[step]
+        step === "year"
+          ? {}
+          : this.buildModel(
+              calendarContextData.toPrevious,
+              moment(mom).startOf(calendarContextData.toPrevious)
+            ),
+      colspan: this.colspanMap[step],
     });
     defHeader.push({
-      label: '>',
-      action: () => this.buildModel(step, calendarContextData.add(mom))
+      label: ">",
+      action: () => this.buildModel(step, calendarContextData.add(mom)),
     });
     hRows.push({ elements: defHeader });
-    if (step === 'day') {
+    if (step === "day") {
       hRows.push({ elements: [] });
       for (let i = 0; i < 7; i++) {
         hRows[1].elements.push({
-          label: mom.clone().day(i).format('ddd'),
-          action: () => { },
-          class: 'h-row-day'
+          label: mom.clone().day(i).format("ddd"),
+          action: () => {},
+          class: "h-row-day",
         });
       }
     }
@@ -129,33 +155,64 @@ export class PickerPopUpComponent implements OnInit, OnChanges {
       for (let k = 0; k < calendarContextData.bcols; k++) {
         let isOtherMonth = false;
         if (step === "day") {
-          const day = mom.clone().set(step, calendarContextData.bcols * i + k + ((step === 'year') ? this.getYearStart(mom) : 0)).format(calendarContextData.elementFormat);
+          const day = mom
+            .clone()
+            .set(
+              step,
+              calendarContextData.bcols * i +
+                k +
+                (step === "year" ? this.getYearStart(mom) : 0)
+            )
+            .format(calendarContextData.elementFormat);
           const numberDay = new Number(day).valueOf();
           if (numberDay == 1) {
             dayOneChecked = !dayOneChecked;
           }
-          isOtherMonth = (!dayOneChecked) ? true : false;
+          isOtherMonth = !dayOneChecked ? true : false;
         }
         bRows[i].elements.push({
-          action: () => (step !== this.lowView) ? this.buildModel(
-            calendarContextData.toNext,
-            mom.clone().set(step, calendarContextData.bcols * i + k + ((step === 'year') ? this.getYearStart(mom) : 0))
-          ) : this.emitValue(mom.clone().set(step, calendarContextData.bcols * i + k + ((step === 'year') ? this.getYearStart(mom) : 0))),
-          label: mom.clone().set(
-            step,
-            calendarContextData.bcols * i + k + ((step === 'year') ? this.getYearStart(mom) : 0)
-          ).format(calendarContextData.elementFormat),
+          action: () =>
+            step !== this.lowView
+              ? this.buildModel(
+                  calendarContextData.toNext,
+                  mom
+                    .clone()
+                    .set(
+                      step,
+                      calendarContextData.bcols * i +
+                        k +
+                        (step === "year" ? this.getYearStart(mom) : 0)
+                    )
+                )
+              : this.emitValue(
+                  mom
+                    .clone()
+                    .set(
+                      step,
+                      calendarContextData.bcols * i +
+                        k +
+                        (step === "year" ? this.getYearStart(mom) : 0)
+                    )
+                ),
+          label: mom
+            .clone()
+            .set(
+              step,
+              calendarContextData.bcols * i +
+                k +
+                (step === "year" ? this.getYearStart(mom) : 0)
+            )
+            .format(calendarContextData.elementFormat),
           selectable: !isOtherMonth,
-          class: `b-row-${step}${(isOtherMonth) ? ' disabled' : ''}`
+          class: `b-row-${step}${isOtherMonth ? " disabled" : ""}`,
         });
       }
     }
 
     this.model = {
       headRows: hRows,
-      bodyRows: bRows
+      bodyRows: bRows,
     };
-
   }
 
   getYearStart(m) {
@@ -163,7 +220,7 @@ export class PickerPopUpComponent implements OnInit, OnChanges {
     while (mom.year() % 10 !== 0) {
       mom.year(mom.year() - 1);
     }
-    return mom.clone().subtract(1, 'year').year();
+    return mom.clone().subtract(1, "year").year();
   }
 
   emitValue(output) {
@@ -171,5 +228,4 @@ export class PickerPopUpComponent implements OnInit, OnChanges {
     // TODO update visible in hyt-date-picker
     this.show = false;
   }
-
 }

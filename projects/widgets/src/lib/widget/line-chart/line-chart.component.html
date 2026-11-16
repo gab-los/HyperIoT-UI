@@ -1,58 +1,51 @@
 <hyperiot-base-widget-template>
+  <header-widget>
+    <hyperiot-common-toolbar
+      #toolbar
+      widgetName="{{ widget.name }}"
+      (action)="onToolbarAction($event)"
+      [toolbarIsVisible]="isToolbarVisible"
+      [config]="initToolbarConfig"
+    >
+    </hyperiot-common-toolbar>
+  </header-widget>
 
-    <header-widget>
-      <hyperiot-common-toolbar
-        #toolbar
-        widgetName="{{widget.name}}"
-        (action)="onToolbarAction($event)"
-        [toolbarIsVisible]="isToolbarVisible"
-        [config]="initToolbarConfig">
-      </hyperiot-common-toolbar>
-    </header-widget>
+  <content-widget class="relative-content">
+    @if (!isConfigured) {
+    <div class="configure-notice">
+      <strong i18n="@@HYT_common_not_configured"
+        >Click 'Settings' button to configure.</strong
+      >
+    </div>
+    } @else { @if (!graph ||!graph?.data || graph?.data.length === 0) {
+    <hyperiot-loader> </hyperiot-loader>
+    } @else {
+    <plotly-plot
+      #lineChartPlotly
+      divId="widget-{{ widget.id }}{{ isToolbarVisible }}"
+      [data]="$safeNavigationMigration(graph?.data)"
+      [layout]="$safeNavigationMigration(graph?.layout)"
+      [useResizeHandler]="true"
+      [updateOnLayoutChange]="false"
+      [config]="chartConfig"
+      (initialized)="subscribeAndInit()"
+    >
+    </plotly-plot>
 
-    <content-widget class="relative-content">
-      @if (!isConfigured) {
-      <div class="configure-notice">
-        <strong i18n="@@HYT_common_not_configured">Click 'Settings' button to configure.</strong>
-      </div>
-      } @else {
-        @if (!graph ||!graph?.data || graph?.data.length === 0) {
-        <hyperiot-loader>
-        </hyperiot-loader>
-        } @else {
-          <plotly-plot
-            #lineChartPlotly
-            divId="widget-{{widget.id}}{{isToolbarVisible}}"
-            [data]="graph?.data"
-            [layout]="graph?.layout"
-            [useResizeHandler]="true"
-            [updateOnLayoutChange]="false"
-            [config]="chartConfig"
-            (initialized)="subscribeAndInit()"
-          >
-          </plotly-plot>
-
-          @if (!noRangeSelected() && (graph && graph?.data && graph?.data[0]?.y?.length === 0)) {
-          <div class="loading-overlay">
-            <p i18n="@@HYT_noData">No data to display</p>
-          </div>
-          }
-
-          @if (noRangeSelected()) {
-          <div class="loading-overlay">
-            <p i18n="@@HYT_noRangeSelected">Select a range to display the graph... </p>
-          </div>
-          }
-
-          @if (isLoadingData()) {
-          <div class="loading-overlay">
-            <p>Loading data...</p>
-            <mat-spinner  strokeWidth="4" diameter="44"></mat-spinner>
-          </div>
-          }
-        }
-      }
-
-    </content-widget>
-
-  </hyperiot-base-widget-template>
+    @if (!noRangeSelected() && (graph && graph?.data &&
+    graph?.data[0]?.y?.length === 0)) {
+    <div class="loading-overlay">
+      <p i18n="@@HYT_noData">No data to display</p>
+    </div>
+    } @if (noRangeSelected()) {
+    <div class="loading-overlay">
+      <p i18n="@@HYT_noRangeSelected">Select a range to display the graph...</p>
+    </div>
+    } @if (isLoadingData()) {
+    <div class="loading-overlay">
+      <p>Loading data...</p>
+      <mat-spinner strokeWidth="4" diameter="44"></mat-spinner>
+    </div>
+    } } }
+  </content-widget>
+</hyperiot-base-widget-template>

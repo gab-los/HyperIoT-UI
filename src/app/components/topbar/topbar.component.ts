@@ -4,18 +4,20 @@ import {
   ViewEncapsulation,
   HostListener,
   Input,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { HyperiotLogoMobilePath, HyperiotLogoPath } from "src/app/constants";
 import { ToggleSidebarService } from "src/app/services/toggleSidebar/toggle-sidebar.service";
 import { environment } from "src/environments/environment";
-import { DashboardConfigService } from 'widgets';
+import { DashboardConfigService } from "widgets";
 
 @Component({
-    selector: "hyt-topbar",
-    templateUrl: "./topbar.component.html",
-    styleUrls: ["./topbar.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-topbar",
+  templateUrl: "./topbar.component.html",
+  styleUrls: ["./topbar.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class TopbarComponent implements OnInit {
   feVersion = environment.version;
@@ -29,10 +31,10 @@ export class TopbarComponent implements OnInit {
     xs: 575,
   };
 
-  @Input('preview-mode') previewMode = false;
+  @Input("preview-mode") previewMode = false;
 
-  @Input('logoPath') logoPath = HyperiotLogoPath;
-  @Input('logoMobilePath') logoMobilePath = HyperiotLogoMobilePath;
+  @Input("logoPath") logoPath = HyperiotLogoPath;
+  @Input("logoMobilePath") logoMobilePath = HyperiotLogoMobilePath;
 
   constructor(private toggleSidebarService: ToggleSidebarService) {}
 

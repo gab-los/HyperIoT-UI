@@ -1,18 +1,45 @@
-import { Component, OnInit, Injector, Optional } from '@angular/core';
-import { DataChannel, DataPacketFilter, Logger, LoggerService, PacketData } from 'core';
-import { PlotlyService } from 'angular-plotly.js';
-import { BaseGenericComponent } from '../../base/base-generic/base-generic.component';
-import { asyncScheduler, bufferTime, filter, map, merge, skip, take } from 'rxjs';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
-import { TimeSeries } from '../../data/time-series';
+import {
+  Component,
+  OnInit,
+  Injector,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  DataChannel,
+  DataPacketFilter,
+  Logger,
+  LoggerService,
+  PacketData,
+} from "core";
+import { PlotlyService } from "angular-plotly.js";
+import { BaseGenericComponent } from "../../base/base-generic/base-generic.component";
+import {
+  asyncScheduler,
+  bufferTime,
+  filter,
+  map,
+  merge,
+  skip,
+  take,
+} from "rxjs";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
+import { TimeSeries } from "../../data/time-series";
 
 @Component({
-    selector: 'hyperiot-histogram-chart',
-    templateUrl: './histogram-chart.component.html',
-    styleUrls: ['../../../../../../src/assets/widgets/styles/widget-commons.css', './histogram-chart.component.css'],
-    standalone: false
+  selector: "hyperiot-histogram-chart",
+  templateUrl: "./histogram-chart.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./histogram-chart.component.css",
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class HistogramChartComponent extends BaseGenericComponent implements OnInit {
+export class HistogramChartComponent
+  extends BaseGenericComponent
+  implements OnInit
+{
   /**
    * DataChannel to subscribe to retrieve data
    */
@@ -37,16 +64,16 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
   /**
    * Var updated based on the toolbar action selected
    */
-  action: string = '';
-  
+  action: string = "";
+
   //Fields that are now set statically but will eventually be filled with that from wizard config
 
   /**
    * Color specifics for each trace
    */
   colorSettings: object = {
-    temperature: 'red',
-    humidity: 'darkblue'
+    temperature: "red",
+    humidity: "darkblue",
   };
   /**
    * Opacity specifics for each trace
@@ -55,14 +82,14 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
   /**
    * String used to specify chart display (overlay and stack)
    */
-  barmode: string = 'overlay';
+  barmode: string = "overlay";
   /**
    * Specify if data display should be based on count, sum or avg
    */
-  operation: string = 'count';
+  operation: string = "count";
   // verticalOrientation and categorized cannot be both true at the same time because categories won't work
   /**
-   * Regulates the data display which can be horizontal or vertical 
+   * Regulates the data display which can be horizontal or vertical
    */
   verticalOrientation: boolean = false;
   /**
@@ -72,14 +99,16 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
   /**
    * ValuesAxis and CategoryAxis used to specify axis
    */
-  valuesAxis: string = !this.verticalOrientation || this.categorized ? 'y' : 'x';
-  categoryAxis: string = 'x';
+  valuesAxis: string =
+    !this.verticalOrientation || this.categorized ? "y" : "x";
+  categoryAxis: string = "x";
 
   protected logger: Logger;
   constructor(
-    injector: Injector, 
+    injector: Injector,
     @Optional() public plotly: PlotlyService,
-    protected loggerService: LoggerService) {
+    protected loggerService: LoggerService
+  ) {
     super(injector, loggerService);
     this.logger = new Logger(this.loggerService);
     this.logger.registerClass(HistogramChartComponent.name);
@@ -111,11 +140,11 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
     this.graph.layout = {};
     this.graph.data = [];
     this.graph.config = {};
-    
+
     asyncScheduler.schedule(() => {
       this.setTimeSeries();
       this.setChartLayout();
-    })
+    });
   }
 
   /**
@@ -125,12 +154,18 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
     this.subscribeDataChannel();
     this.computePacketData(this.initData);
     const resizeObserver = new ResizeObserver((entries) => {
-      const graph = this.plotly.getInstanceByDivId(`widget-${this.widget.id}${this.isToolbarVisible}`);
+      const graph = this.plotly.getInstanceByDivId(
+        `widget-${this.widget.id}${this.isToolbarVisible}`
+      );
       if (graph) {
         this.plotly.resize(graph);
       }
     });
-    resizeObserver.observe(document.querySelector(`#widget-${this.widget.id}${this.isToolbarVisible}`));
+    resizeObserver.observe(
+      document.querySelector(
+        `#widget-${this.widget.id}${this.isToolbarVisible}`
+      )
+    );
   }
 
   /**
@@ -143,29 +178,29 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
       true
     );
 
-    this.dataChannel = this.dataService.addDataChannel(
-      +this.widget.id,
-      [dataPacketFilter]
-    );
+    this.dataChannel = this.dataService.addDataChannel(+this.widget.id, [
+      dataPacketFilter,
+    ]);
 
     const firstElement = this.dataChannel.subject.pipe(
-      map(dataChunk => dataChunk.data),
+      map((dataChunk) => dataChunk.data),
       bufferTime(0.1),
       take(1),
       filter((data) => data.length !== 0),
-      map(data => [].concat.apply([], data) as PacketData[])
+      map((data) => [].concat.apply([], data) as PacketData[])
     );
 
     const followingElements = this.dataChannel.subject.pipe(
-      map(dataChunk => dataChunk.data),
+      map((dataChunk) => dataChunk.data),
       skip(1),
       bufferTime(this.widget.config.refreshIntervalMillis || 0),
       filter((data) => data.length !== 0),
-      map(data => [].concat.apply([], data) as PacketData[])
+      map((data) => [].concat.apply([], data) as PacketData[])
     );
-    
-    this.dataSubscription = merge(firstElement, followingElements).subscribe( eventData => this.computePacketData(eventData));
-    
+
+    this.dataSubscription = merge(firstElement, followingElements).subscribe(
+      (eventData) => this.computePacketData(eventData)
+    );
   }
 
   /**
@@ -173,13 +208,13 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
    * @param packetData: PacketData[]
    */
   computePacketData(packetData: PacketData[]) {
-    this.logger.debug('computePacketData -> packetData: ', packetData);
+    this.logger.debug("computePacketData -> packetData: ", packetData);
     super.computePacketData(packetData);
     if (packetData.length === 0) {
       return;
     }
     this.allData = this.allData.concat(packetData);
-    packetData.forEach(datum => {
+    packetData.forEach((datum) => {
       this.convertAndBufferData(datum);
     });
     this.renderData(packetData);
@@ -194,7 +229,7 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
       if (this.chartData.some((x) => x.name === k)) {
         this.bufferData(
           this.chartData.find((x) => x.name === k),
-          element['timestamp-default'],
+          element["timestamp-default"],
           element[k]
         );
       }
@@ -219,81 +254,127 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
    */
   async renderData(packetData: PacketData) {
     const Plotly = await this.plotly.getPlotly();
-    const graph: any = this.plotly.getInstanceByDivId(`widget-${this.widget.id}${this.isToolbarVisible}`);
+    const graph: any = this.plotly.getInstanceByDivId(
+      `widget-${this.widget.id}${this.isToolbarVisible}`
+    );
     let data = {};
     try {
-      this.logger.debug('renderData: packetData: ', packetData);
-      this.logger.debug('renderData: graph data status before updating or extending traces: ', graph.data);
+      this.logger.debug("renderData: packetData: ", packetData);
+      this.logger.debug(
+        "renderData: graph data status before updating or extending traces: ",
+        graph.data
+      );
       if (graph) {
-        if (graph.data[0].x && graph.data[0].x.length > 0 || graph.data[0].y && graph.data[0].y.length > 0) {
+        if (
+          (graph.data[0].x && graph.data[0].x.length > 0) ||
+          (graph.data[0].y && graph.data[0].y.length > 0)
+        ) {
           // Adding new data to exisisting chart
           packetData.forEach((pack) => {
             Object.keys(pack).forEach((k) => {
-              if (Object.values(this.widget.config.packetFields).find(val => val === k)) {
+              if (
+                Object.values(this.widget.config.packetFields).find(
+                  (val) => val === k
+                )
+              ) {
                 data = {};
                 data[this.valuesAxis] = [[pack[k]]];
-                if (!this.verticalOrientation && this.categorized) { data[this.categoryAxis] = [[this.firstLetterUpperCase(k)]]}
-                Plotly.extendTraces(graph, data, [graph.data.indexOf(graph.data.find((el) => el.name.toLowerCase() == k))]);
+                if (!this.verticalOrientation && this.categorized) {
+                  data[this.categoryAxis] = [[this.firstLetterUpperCase(k)]];
+                }
+                Plotly.extendTraces(graph, data, [
+                  graph.data.indexOf(
+                    graph.data.find((el) => el.name.toLowerCase() == k)
+                  ),
+                ]);
               }
-            })
-          })
+            });
+          });
         } else {
           // Adding data to empty chart
           packetData.forEach((pack) => {
             Object.keys(pack).forEach((k) => {
-              if (Object.values(this.widget.config.packetFields).find(val => val === k)) {
-                let trace = graph.data.find(trace => trace.name.toLowerCase() == k);
+              if (
+                Object.values(this.widget.config.packetFields).find(
+                  (val) => val === k
+                )
+              ) {
+                let trace = graph.data.find(
+                  (trace) => trace.name.toLowerCase() == k
+                );
                 let index = graph.data.indexOf(trace);
                 data = { ...graph.data };
                 data[index][this.valuesAxis].push(pack[k]);
-                if (!this.verticalOrientation && this.categorized) { data[index][this.categoryAxis].push(this.firstLetterUpperCase(trace.name)) }
+                if (!this.verticalOrientation && this.categorized) {
+                  data[index][this.categoryAxis].push(
+                    this.firstLetterUpperCase(trace.name)
+                  );
+                }
               }
-            })
+            });
           });
           Plotly.react(graph, data);
         }
       }
-    } catch(e) {
-      this.logger.error('renderData impossible to add data to chart', e);
+    } catch (e) {
+      this.logger.error("renderData impossible to add data to chart", e);
     }
   }
 
   /**
    * Init the chart with no data
    */
-  setChartLayout() {    
+  setChartLayout() {
     let trace: any = {};
     Object.values(this.widget.config.packetFields).forEach((field: string) => {
-      trace =
-      {
-        type: 'histogram',
+      trace = {
+        type: "histogram",
         histfunc: this.operation,
-        name:  this.firstLetterUpperCase(field),
+        name: this.firstLetterUpperCase(field),
         marker: {
-          color: this.colorSettings[Object.keys(this.colorSettings).find((k) => k === field)]
+          color:
+            this.colorSettings[
+              Object.keys(this.colorSettings).find((k) => k === field)
+            ],
         },
-        opacity: this.opacity
+        opacity: this.opacity,
       };
       trace[this.valuesAxis] = [];
-      if (!this.verticalOrientation && this.categorized) { trace[this.categoryAxis] = [this.firstLetterUpperCase(field)] };
+      if (!this.verticalOrientation && this.categorized) {
+        trace[this.categoryAxis] = [this.firstLetterUpperCase(field)];
+      }
       this.graph.data.push(trace);
     });
-    let title = '';
+    let title = "";
     Object.values(this.widget.config.packetFields).forEach((field: string) => {
-      title = title.concat( Object.values(this.widget.config.packetFields).indexOf(field) !== 0 ? ' - '
-        : '' , this.firstLetterUpperCase(field));
+      title = title.concat(
+        Object.values(this.widget.config.packetFields).indexOf(field) !== 0
+          ? " - "
+          : "",
+        this.firstLetterUpperCase(field)
+      );
     });
     this.graph.layout = {
       font: { color: "darkblue", family: "Exo" },
       title: title,
       showlegend: false,
-      xaxis: { range: [0, null], title: this.categorized ? '' : $localize`:@@HYT_value:Value`, 'visible': true},
-      yaxis: { range: [0, null], title: this.firstLetterUpperCase(this.operation), 'visible': true},
-      margin: { t: 55, r: 35, l: 55, b: 45 }
+      xaxis: {
+        range: [0, null],
+        title: this.categorized ? "" : $localize`:@@HYT_value:Value`,
+        visible: true,
+      },
+      yaxis: {
+        range: [0, null],
+        title: this.firstLetterUpperCase(this.operation),
+        visible: true,
+      },
+      margin: { t: 55, r: 35, l: 55, b: 45 },
     };
-    if (this.barmode !== '') { this.graph.layout['barmode'] = this.barmode }
+    if (this.barmode !== "") {
+      this.graph.layout["barmode"] = this.barmode;
+    }
     this.graph.config = { responsive: true };
-    this.logger.debug('graph initial status: ', this.graph);
+    this.logger.debug("graph initial status: ", this.graph);
   }
 
   /**
@@ -302,7 +383,7 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
    * @returns formatted string
    */
   firstLetterUpperCase(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1)
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   /**
@@ -323,18 +404,18 @@ export class HistogramChartComponent extends BaseGenericComponent implements OnI
 
   /**
    * Called when one of the toolbar options is pressed and emits the correct event
-   * @param action 
+   * @param action
    */
   onToolbarAction(action: string) {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:play':
+      case "toolbar:play":
         this.play();
         break;
-      case 'toolbar:pause':
+      case "toolbar:pause":
         this.pause();
         break;
-      case 'toolbar:fullscreen':
+      case "toolbar:fullscreen":
         widgetAction.value = this.allData;
         break;
     }

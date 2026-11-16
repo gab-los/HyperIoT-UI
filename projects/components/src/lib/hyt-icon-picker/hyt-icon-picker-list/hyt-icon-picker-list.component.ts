@@ -1,21 +1,26 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { DialogRef } from '../../hyt-dialog/dialog-ref';
-import { DIALOG_DATA } from '../../hyt-dialog/dialog-tokens';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DialogRef } from "../../hyt-dialog/dialog-ref";
+import { DIALOG_DATA } from "../../hyt-dialog/dialog-tokens";
 
 @Component({
-    selector: 'hyt-icon-picker-list',
-    templateUrl: './hyt-icon-picker-list.component.html',
-    styleUrls: ['./hyt-icon-picker-list.component.scss'],
-    standalone: false
+  selector: "hyt-icon-picker-list",
+  templateUrl: "./hyt-icon-picker-list.component.html",
+  styleUrls: ["./hyt-icon-picker-list.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytIconPickerListComponent implements OnInit {
-
   allIcons: string[] = [];
   filteredIcons: string[] = [];
 
-  selectedIcon: string = '';
+  selectedIcon: string = "";
 
-  filterValue = '';
+  filterValue = "";
 
   hytIconList = [
     "hyt-icon icon-hyt_action",
@@ -2251,21 +2256,25 @@ export class HytIconPickerListComponent implements OnInit {
     "zoom_in",
     "zoom_out",
     "zoom_out_map",
-  ]
+  ];
 
   constructor(
     private dialogRef: DialogRef<any>,
-    @Inject(DIALOG_DATA) public data: string,
-  ) { }
+    @Inject(DIALOG_DATA) public data: string
+  ) {}
 
   ngOnInit(): void {
-    this.allIcons = this.hytIconList.concat(this.faIconList).concat(this.matIconList);
+    this.allIcons = this.hytIconList
+      .concat(this.faIconList)
+      .concat(this.matIconList);
     this.selectedIcon = this.data;
     this.filterIconList();
   }
 
   filterIconList() {
-    this.filteredIcons = this.allIcons.filter(icon => icon.includes(this.filterValue));
+    this.filteredIcons = this.allIcons.filter((icon) =>
+      icon.includes(this.filterValue)
+    );
   }
 
   onIconSelected(icon) {
@@ -2274,14 +2283,13 @@ export class HytIconPickerListComponent implements OnInit {
   }
 
   deselectIcon() {
-    this.selectedIcon = '';
-    this.dismissModal('');
+    this.selectedIcon = "";
+    this.dismissModal("");
   }
 
   dismissModal(result: string) {
     this.dialogRef.close(result);
   }
-
 
   close() {
     this.dialogRef.close(this.selectedIcon);

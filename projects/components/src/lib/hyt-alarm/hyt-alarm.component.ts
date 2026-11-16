@@ -1,18 +1,28 @@
-import { Component, Input, Output, EventEmitter, Inject, LOCALE_ID, ChangeDetectorRef } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  Inject,
+  LOCALE_ID,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { HytAlarm, Logger, LoggerService } from "core";
-import moment from 'moment';
+import moment from "moment";
 
 export enum AlarmBtnClicked {
-  UPDATE= "update",
-  DOCS= "docs",
-  GOTO= "goto",
+  UPDATE = "update",
+  DOCS = "docs",
+  GOTO = "goto",
 }
 
 @Component({
-    selector: "hyt-alarm",
-    templateUrl: "./hyt-alarm.component.html",
-    styleUrls: ["./hyt-alarm.component.scss"],
-    standalone: false
+  selector: "hyt-alarm",
+  templateUrl: "./hyt-alarm.component.html",
+  styleUrls: ["./hyt-alarm.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytAlarmComponent {
   btnClicked = AlarmBtnClicked;
@@ -43,13 +53,16 @@ export class HytAlarmComponent {
    */
   @Output() btnClick = new EventEmitter<HytAlarm.LiveAlarm>();
 
-
-  constructor(loggerService: LoggerService, @Inject(LOCALE_ID) private locale: string, private cdr: ChangeDetectorRef) {
+  constructor(
+    loggerService: LoggerService,
+    @Inject(LOCALE_ID) private locale: string,
+    private cdr: ChangeDetectorRef
+  ) {
     this.logger = new Logger(loggerService);
     this.logger.registerClass("HytAlarmComponent");
     /** Using setTimeout for avoid the ExpressionChangedAfterItHasBeenCheckedError */
-    setTimeout(()=>{
-      moment.locale(this.locale || 'en');
+    setTimeout(() => {
+      moment.locale(this.locale || "en");
       this.cdr.detectChanges();
     }, 0);
   }
@@ -58,41 +71,42 @@ export class HytAlarmComponent {
    * Emit the event that a button has been clicked
    */
   onClick(btnType: AlarmBtnClicked) {
-    this.logger.debug(
-      "Primary button clicked, value emitted",
-      this.alarm
-    );
+    this.logger.debug("Primary button clicked, value emitted", this.alarm);
     this.btnClick.emit(this.alarm);
   }
   /**
    * Get the date when the alarm is fired
    */
-  get date(){
-    return moment(this.alarm.event.lastFiredTimestamp).format(this.dateFormat)
+  get date() {
+    return moment(this.alarm.event.lastFiredTimestamp).format(this.dateFormat);
   }
 
   /**
    * Print text description of the status of the alarm
    */
-  get alarmStatus(){
-    return this.alarm.event.alarmState == "UP" ? $localize`:@@HYT_alarm_status_active:Active` : $localize`:@@HYT_ai_user_label:Inactive`;
+  get alarmStatus() {
+    return this.alarm.event.alarmState == "UP"
+      ? $localize`:@@HYT_alarm_status_active:Active`
+      : $localize`:@@HYT_ai_user_label:Inactive`;
   }
   /**
    * Return text description of the severity of the alarm
    */
-  get alarmSeverityLabel(){
-    return this.severityLabel.has(this.alarm.event.severity) ? this.severityLabel.get(this.alarm.event.severity) : "None";
+  get alarmSeverityLabel() {
+    return this.severityLabel.has(this.alarm.event.severity)
+      ? this.severityLabel.get(this.alarm.event.severity)
+      : "None";
   }
   /**
    * Enable documentation button, setted to false cuz not implemented atm
    */
-  get isDocumentationAvaible(){
+  get isDocumentationAvaible() {
     return false;
   }
   /**
    * Display description when the alarm was fired(es: two minutes ago)
    */
-  get timeFromNow(){
+  get timeFromNow() {
     return moment(this.alarm.event.lastFiredTimestamp).fromNow();
   }
 }

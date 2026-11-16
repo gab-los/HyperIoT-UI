@@ -1,8 +1,25 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormControl, ValidationErrors, Validators } from '@angular/forms';
-import { DialogRef, DIALOG_DATA, SelectOptionGroup, HytSelectComponent } from 'components';
-import { DataExport } from '../models/data-export.model';
-import { Store } from '@ngrx/store';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  AbstractControl,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  ValidationErrors,
+  Validators,
+} from "@angular/forms";
+import {
+  DialogRef,
+  DIALOG_DATA,
+  SelectOptionGroup,
+  HytSelectComponent,
+} from "components";
+import { DataExport } from "../models/data-export.model";
+import { Store } from "@ngrx/store";
 import {
   DataExportNotificationActions,
   DataExportNotificationStore,
@@ -11,13 +28,28 @@ import {
   HProjectService,
   Logger,
   LoggerService,
-  NotificationManagerService
-} from 'core';
-import { catchError, concatMap, finalize, forkJoin, interval, Observable, of, Subject, switchMap, takeWhile, throwError } from 'rxjs';
-import { DATETIME_PICKER_PROVIDERS, timeRangeValidator } from '../../datetime-picker.config';
-import moment from 'moment';
-import { HttpClient } from '@angular/common/http';
-import saveAs from 'file-saver';
+  NotificationManagerService,
+} from "core";
+import {
+  catchError,
+  concatMap,
+  finalize,
+  forkJoin,
+  interval,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeWhile,
+  throwError,
+} from "rxjs";
+import {
+  DATETIME_PICKER_PROVIDERS,
+  timeRangeValidator,
+} from "../../datetime-picker.config";
+import moment from "moment";
+import { HttpClient } from "@angular/common/http";
+import saveAs from "file-saver";
 
 type ExportHPacketData = {
   processedRecords: number;
@@ -31,34 +63,38 @@ type ExportHPacketData = {
 };
 
 @Component({
-    selector: 'hyperiot-data-export',
-    templateUrl: './data-export.component.html',
-    styleUrls: ['./data-export.component.scss'],
-    providers: DATETIME_PICKER_PROVIDERS,
-    standalone: false
+  selector: "hyperiot-data-export",
+  templateUrl: "./data-export.component.html",
+  styleUrls: ["./data-export.component.scss"],
+  providers: DATETIME_PICKER_PROVIDERS,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DataExportComponent implements OnInit {
-
   readonly maxLength = 255;
 
-  exportErrorList: { hPacketId: number, exportId: string }[] = [];
+  exportErrorList: { hPacketId: number; exportId: string }[] = [];
 
   exportInProgress = false;
 
-  form = this.fb.group({
-    startTime: [null, Validators.required],
-    endTime: [null, Validators.required],
-    exportName: [
-      null, [
-        Validators.required,
-        Validators.maxLength(this.maxLength),
-        this.exportNameValidator
-      ]
-    ],
-    hPacketFormat: [null, Validators.required],
-  }, { validators: timeRangeValidator });
+  form = this.fb.group(
+    {
+      startTime: [null, Validators.required],
+      endTime: [null, Validators.required],
+      exportName: [
+        null,
+        [
+          Validators.required,
+          Validators.maxLength(this.maxLength),
+          this.exportNameValidator,
+        ],
+      ],
+      hPacketFormat: [null, Validators.required],
+    },
+    { validators: timeRangeValidator }
+  );
 
-  @ViewChild('selectPackets') selectPackets: HytSelectComponent;
+  @ViewChild("selectPackets") selectPackets: HytSelectComponent;
 
   readonly hPacketFormatEnum = HPacket.FormatEnum;
 
@@ -83,7 +119,7 @@ export class DataExportComponent implements OnInit {
     endTime: undefined,
     exportName: undefined,
     hPacketFormat: undefined,
-    hPacket: undefined
+    hPacket: undefined,
   };
 
   hPacketListSelectOption: SelectOptionGroup[] = [];
@@ -100,8 +136,10 @@ export class DataExportComponent implements OnInit {
   private data: DataExport | DataExportNotificationStore.DataExportNotification;
 
   readonly selectPacketsLabel = $localize`:@@HYT_select_packets:Select one or more Packets`;
-  readonly countSelectedPackets = (hPacketCount: number) => $localize`:@@HYT_count_packets_selected:Selected ${hPacketCount} packets`;
-  readonly exportDownloadError = (hPacketId: number) => $localize`:@@HYT_export_download_error:An error occurred while downloading the packet ${hPacketId}`;
+  readonly countSelectedPackets = (hPacketCount: number) =>
+    $localize`:@@HYT_count_packets_selected:Selected ${hPacketCount} packets`;
+  readonly exportDownloadError = (hPacketId: number) =>
+    $localize`:@@HYT_export_download_error:An error occurred while downloading the packet ${hPacketId}`;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -111,7 +149,8 @@ export class DataExportComponent implements OnInit {
     private hPacketService: HPacketService,
     private httpClient: HttpClient,
     private notificationManagerService: NotificationManagerService,
-    @Inject(DIALOG_DATA) data: DataExport | DataExportNotificationStore.DataExportNotification,
+    @Inject(DIALOG_DATA)
+    data: DataExport | DataExportNotificationStore.DataExportNotification,
     loggerService: LoggerService
   ) {
     this.logger = new Logger(loggerService);
@@ -121,14 +160,15 @@ export class DataExportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentProjectId = 'exportParams' in this.data
-      ? this.data.exportParams.hProjectId
-      : this.data.projectId;
+    this.currentProjectId =
+      "exportParams" in this.data
+        ? this.data.exportParams.hProjectId
+        : this.data.projectId;
 
     this.loadHPackets();
 
     const data = this.data;
-    if ('timeInterval' in data) {
+    if ("timeInterval" in data) {
       const { timeInterval } = data;
 
       this.initialFormValue = {
@@ -140,15 +180,15 @@ export class DataExportComponent implements OnInit {
       this.form.patchValue({
         ...this.initialFormValue,
       });
-    } else if ('exportParams' in data) {
+    } else if ("exportParams" in data) {
       const {
         exportParams: {
           startTime,
           endTime,
           exportName,
           hPacketFormat,
-          hPacket
-        }
+          hPacket,
+        },
       } = data;
 
       this.initialFormValue = {
@@ -156,7 +196,7 @@ export class DataExportComponent implements OnInit {
         endTime: moment(endTime).toDate(),
         exportName,
         hPacketFormat,
-        hPacket
+        hPacket,
       };
 
       this.addPacketSelectedList(hPacket);
@@ -165,7 +205,9 @@ export class DataExportComponent implements OnInit {
     }
   }
 
-  private exportNameValidator(control: AbstractControl): ValidationErrors | null {
+  private exportNameValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
     if (control.value === null) {
       return;
     }
@@ -173,7 +215,10 @@ export class DataExportComponent implements OnInit {
     const exportName: string = control.value;
     const notAllowedChars = /[?!.]|[;<>=&`'"()]|(--)|(\*|\/)/;
 
-    if (exportName && (exportName.includes(' ') || notAllowedChars.test(exportName))) {
+    if (
+      exportName &&
+      (exportName.includes(" ") || notAllowedChars.test(exportName))
+    ) {
       return { charNotAllowed: true };
     }
 
@@ -198,10 +243,10 @@ export class DataExportComponent implements OnInit {
     const hPacketFormat = this.hPacketFormat.value as HPacket.FormatEnum;
 
     const exportFormat = new Map<HPacket.FormatEnum, string>([
-      [HPacket.FormatEnum.CSV, '.csv'],
-      [HPacket.FormatEnum.JSON, '.json'],
-      [HPacket.FormatEnum.TEXT, '.txt'],
-      [HPacket.FormatEnum.XML, '.xml'],
+      [HPacket.FormatEnum.CSV, ".csv"],
+      [HPacket.FormatEnum.JSON, ".json"],
+      [HPacket.FormatEnum.TEXT, ".txt"],
+      [HPacket.FormatEnum.XML, ".xml"],
     ]);
 
     for (let index = 0; index < this.hPacketListSelected.length; index++) {
@@ -209,107 +254,137 @@ export class DataExportComponent implements OnInit {
 
       const hPacketId = hPacket.id;
 
-      const fullFileName = this.hPacketListSelected.length > 1
-        ? `${exportName}-${index}${exportFormat.get(hPacketFormat)}`
-        : `${exportName}${exportFormat.get(hPacketFormat)}`;
+      const fullFileName =
+        this.hPacketListSelected.length > 1
+          ? `${exportName}-${index}${exportFormat.get(hPacketFormat)}`
+          : `${exportName}${exportFormat.get(hPacketFormat)}`;
 
-      this.hProjectsService.exportHPacketData(
-        hProjectId,
-        hPacketId,
-        hPacketFormat,
-        exportName,
-        startTimeInMills,
-        endTimeInMills
-      ).pipe(
-        switchMap(({ exportId }: ExportHPacketData) =>
-          interval(500)
-            .pipe(
-              switchMap(() => this.hProjectsService.getExportStatus(exportId)
-                .pipe(
+      this.hProjectsService
+        .exportHPacketData(
+          hProjectId,
+          hPacketId,
+          hPacketFormat,
+          exportName,
+          startTimeInMills,
+          endTimeInMills
+        )
+        .pipe(
+          switchMap(({ exportId }: ExportHPacketData) =>
+            interval(500).pipe(
+              switchMap(() =>
+                this.hProjectsService.getExportStatus(exportId).pipe(
                   catchError((error) => {
-                    this.logger.error('getExportStatus:', error);
+                    this.logger.error("getExportStatus:", error);
                     return throwError(() => error);
-                  }),
-                )),
-              takeWhile(({ completed, hasErrors }: ExportHPacketData) => !(completed || hasErrors), true),
-            )
-        ),
-        concatMap((status: ExportHPacketData) => {
-          if (status.completed) {
-            return forkJoin({
-              blob: this.httpClient.get(
-                `/hyperiot/hprojects/export/download/${encodeURIComponent(status.exportId)}`,
-                {
-                  responseType: 'blob'
-                }
+                  })
+                )
               ),
-              status: of(status)
-            });
-          } else if (status.hasErrors) {
-            return throwError(() => status);
-          } else {
-            return of(status);
-          }
-        })
-      ).subscribe({
-        next: (exportData: ExportHPacketData | { blob: Blob; status: ExportHPacketData; }) => {
-          const { processedRecords, totalRecords, exportId, started, hasErrors, errorMessages } = 'blob' in exportData
-            ? exportData.status
-            : exportData;
-
-          if (started) {
-            if (hasErrors) {
-              this.exportErrorList.push({ hPacketId, exportId });
-              this.logger.error('Error:', errorMessages);
-              this.exportErrorList.push({ hPacketId, exportId });
-              this.logger.error('Error:', errorMessages);
+              takeWhile(
+                ({ completed, hasErrors }: ExportHPacketData) =>
+                  !(completed || hasErrors),
+                true
+              )
+            )
+          ),
+          concatMap((status: ExportHPacketData) => {
+            if (status.completed) {
+              return forkJoin({
+                blob: this.httpClient.get(
+                  `/hyperiot/hprojects/export/download/${encodeURIComponent(
+                    status.exportId
+                  )}`,
+                  {
+                    responseType: "blob",
+                  }
+                ),
+                status: of(status),
+              });
+            } else if (status.hasErrors) {
+              return throwError(() => status);
             } else {
-              const progress = this.percentageRecordsProcessed(processedRecords, totalRecords);
+              return of(status);
+            }
+          })
+        )
+        .subscribe({
+          next: (
+            exportData:
+              | ExportHPacketData
+              | { blob: Blob; status: ExportHPacketData }
+          ) => {
+            const {
+              processedRecords,
+              totalRecords,
+              exportId,
+              started,
+              hasErrors,
+              errorMessages,
+            } = "blob" in exportData ? exportData.status : exportData;
 
-              const notification: DataExportNotificationStore.DataExportNotification = {
-                exportParams: {
-                  exportId,
-                  hProjectId,
-                  hPacket,
-                  hPacketFormat,
-                  exportName,
-                  startTime,
-                  endTime
-                },
-                exportInfo: {
-                  fullFileName,
-                  progress,
-                  downloadDate: progress < 100 ? undefined : new Date()
-                }
-              };
+            if (started) {
+              if (hasErrors) {
+                this.exportErrorList.push({ hPacketId, exportId });
+                this.logger.error("Error:", errorMessages);
+                this.exportErrorList.push({ hPacketId, exportId });
+                this.logger.error("Error:", errorMessages);
+              } else {
+                const progress = this.percentageRecordsProcessed(
+                  processedRecords,
+                  totalRecords
+                );
 
-              this.store.dispatch(DataExportNotificationActions.addOrUpdateNotification({ notification }));
+                const notification: DataExportNotificationStore.DataExportNotification =
+                  {
+                    exportParams: {
+                      exportId,
+                      hProjectId,
+                      hPacket,
+                      hPacketFormat,
+                      exportName,
+                      startTime,
+                      endTime,
+                    },
+                    exportInfo: {
+                      fullFileName,
+                      progress,
+                      downloadDate: progress < 100 ? undefined : new Date(),
+                    },
+                  };
 
-              if ('blob' in exportData) {
-                try {
-                  saveAs(exportData.blob, fullFileName);
-                  this.dialogRef.close();
-                } catch (error) {
-                  this.exportInProgress = false;
-                  this.form.enable();
-                  this.exportErrorList.push({ hPacketId, exportId });
-                  this.logger.error('Export download error', error);
+                this.store.dispatch(
+                  DataExportNotificationActions.addOrUpdateNotification({
+                    notification,
+                  })
+                );
+
+                if ("blob" in exportData) {
+                  try {
+                    saveAs(exportData.blob, fullFileName);
+                    this.dialogRef.close();
+                  } catch (error) {
+                    this.exportInProgress = false;
+                    this.form.enable();
+                    this.exportErrorList.push({ hPacketId, exportId });
+                    this.logger.error("Export download error", error);
+                  }
                 }
               }
             }
-          }
-        },
-        error: (err) => {
-          this.exportInProgress = false;
-          this.form.enable();
-          this.exportErrorList.push({ hPacketId, exportId: null });
-          this.logger.error('Export error', err);
-        }
-      });
+          },
+          error: (err) => {
+            this.exportInProgress = false;
+            this.form.enable();
+            this.exportErrorList.push({ hPacketId, exportId: null });
+            this.logger.error("Export error", err);
+          },
+        });
     }
   }
 
-  private percentageRecordsProcessed(processedRecords: number, totalRecords: number) {
+  private percentageRecordsProcessed(
+    processedRecords: number,
+    totalRecords: number
+  ) {
     return processedRecords >= totalRecords
       ? 100
       : Math.round((processedRecords / totalRecords) * 100);
@@ -319,8 +394,9 @@ export class DataExportComponent implements OnInit {
     this.loadingHPackets = true;
     this.hPacketsLoadError = false;
 
-    this.hPacketService.findAllHPacketByProjectIdAndType(this.currentProjectId, 'INPUT,IO')
-      .pipe(finalize(() => this.loadingHPackets = false))
+    this.hPacketService
+      .findAllHPacketByProjectIdAndType(this.currentProjectId, "INPUT,IO")
+      .pipe(finalize(() => (this.loadingHPackets = false)))
       .subscribe({
         next: (hPacketList: HPacket[]) => {
           // one group for each device, in the order returned by the BE
@@ -333,22 +409,22 @@ export class DataExportComponent implements OnInit {
             if (!groups.has(device.id)) {
               groups.set(device.id, {
                 name: device.deviceName,
-                icon: 'icon-hyt_device',
+                icon: "icon-hyt_device",
                 options: [],
               });
             }
             groups.get(device.id).options.push({
               value: hPacket,
               label: hPacket.name,
-              icon: 'icon-hyt_packets',
+              icon: "icon-hyt_packets",
             });
           });
           this.hPacketListSelectOption = [...groups.values()];
         },
         error: (err) => {
-          this.logger.error('findAllHPacketByProjectIdAndType:', err);
+          this.logger.error("findAllHPacketByProjectIdAndType:", err);
           this.hPacketsLoadError = true;
-        }
+        },
       });
   }
 
@@ -365,7 +441,7 @@ export class DataExportComponent implements OnInit {
 
     this.clearSelectPackets();
 
-    if ('exportParams' in this.data) {
+    if ("exportParams" in this.data) {
       this.addPacketSelectedList(this.initialFormValue.hPacket);
     }
 
@@ -384,11 +460,12 @@ export class DataExportComponent implements OnInit {
   }
 
   removeHPacket({ id }: HPacket): void {
-    const index = this.hPacketListSelected.findIndex((hPacket) => hPacket.id === id);
+    const index = this.hPacketListSelected.findIndex(
+      (hPacket) => hPacket.id === id
+    );
 
     if (index >= 0) {
       this.hPacketListSelected.splice(index, 1);
     }
   }
-
 }

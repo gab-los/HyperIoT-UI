@@ -1,23 +1,45 @@
-import { Component, OnDestroy, ElementRef, ViewChild, Input, Injector, OnInit, OnChanges, AfterViewInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
+import {
+  Component,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+  Input,
+  Injector,
+  OnInit,
+  OnChanges,
+  AfterViewInit,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { Observable, Subscription } from "rxjs";
 
-import { Option, SelectOption } from 'components';
+import { Option, SelectOption } from "components";
 
-import { Algorithm, AlgorithmConfig, AlgorithmService, HProject, HProjectAlgorithm, HProjectAlgorithmConfig, HProjectAlgorithmsService } from 'core';
+import {
+  Algorithm,
+  AlgorithmConfig,
+  AlgorithmService,
+  HProject,
+  HProjectAlgorithm,
+  HProjectAlgorithmConfig,
+  HProjectAlgorithmsService,
+} from "core";
 
-import { ProjectFormEntity, LoadingStatusEnum } from '../project-form-entity';
-import { CronOptions } from 'components';
-import { SummaryListItem } from '../../project-detail/generic-summary-list/generic-summary-list.component';
-import { StatisticInputDefinitionComponent } from './statistic-input-definition/statistic-input-definition.component';
+import { ProjectFormEntity, LoadingStatusEnum } from "../project-form-entity";
+import { CronOptions } from "components";
+import { SummaryListItem } from "../../project-detail/generic-summary-list/generic-summary-list.component";
+import { StatisticInputDefinitionComponent } from "./statistic-input-definition/statistic-input-definition.component";
 
 @Component({
-    selector: "hyt-project-statistics-form",
-    templateUrl: "./project-statistics-form.component.html",
-    styleUrls: ["./project-statistics-form.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-project-statistics-form",
+  templateUrl: "./project-statistics-form.component.html",
+  styleUrls: ["./project-statistics-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProjectStatisticsFormComponent
   extends ProjectFormEntity
@@ -98,7 +120,7 @@ export class ProjectStatisticsFormComponent
     cronExpressionFC: new UntypedFormControl({
       value: this.cronExpression,
       disabled: this.isCronDisabled,
-    })
+    }),
   });
 
   activeOptions: Option[] = [
@@ -118,7 +140,7 @@ export class ProjectStatisticsFormComponent
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
-    super(injector,cdr);
+    super(injector, cdr);
     this.formTemplateId = "container-statistic-form";
     this.hideDelete = true;
     this.longDefinition = this.entitiesService.statistic.longDefinition;
@@ -137,7 +159,7 @@ export class ProjectStatisticsFormComponent
   }
 
   ngOnInit() {
-    this.algorithmsService.findAllAlgorithm('STATISTICS').subscribe((res) => {
+    this.algorithmsService.findAllAlgorithm("STATISTICS").subscribe((res) => {
       this.algorithmList = res;
       this.algorithmOptions = this.algorithmList.map((algorithm) => ({
         value: algorithm,
@@ -329,7 +351,8 @@ export class ProjectStatisticsFormComponent
     const baseConfig: AlgorithmConfig = JSON.parse(
       this.selectedAlgorithm.baseConfig
     );
-    const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const timezoneId =
+      Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     this.config.output = baseConfig.output;
 
     hProjectAlgorithm.config = JSON.stringify(this.config);

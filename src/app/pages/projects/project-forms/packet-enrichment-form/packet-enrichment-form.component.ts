@@ -1,51 +1,72 @@
-import { Component, ElementRef, Injector, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Option, RuleDefinitionComponent, SelectOption } from 'components';
-import { HPacket, HPacketService, HProject, Rule, RuleEngineService } from 'core';
-import { Observable, Subscription, of } from 'rxjs';
-import { map, switchMap, filter } from 'rxjs/operators';
-import { EnrichmentsService } from 'src/app/services/enrichments/enrichments.service';
-import { SummaryListItem } from '../../project-detail/generic-summary-list/generic-summary-list.component';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Option, RuleDefinitionComponent, SelectOption } from "components";
+import {
+  HPacket,
+  HPacketService,
+  HProject,
+  Rule,
+  RuleEngineService,
+} from "core";
+import { Observable, Subscription, of } from "rxjs";
+import { map, switchMap, filter } from "rxjs/operators";
+import { EnrichmentsService } from "src/app/services/enrichments/enrichments.service";
+import { SummaryListItem } from "../../project-detail/generic-summary-list/generic-summary-list.component";
 // TODO: find a bettere placement for PageStatusEnum
-import { LoadingStatusEnum, ProjectFormEntity } from '../project-form-entity';
-import { AssetCategoryComponent } from './asset-category/asset-category.component';
-import { AssetTagComponent } from './asset-tag/asset-tag.component';
-import { EnrichmentType } from './enrichment-type.enum';
-import { FourierTransformComponent } from './fourier-transform/fourier-transform.component';
-import { UntypedFormControl } from '@angular/forms';
-import { ComputeFieldRuleComponent } from './compute-field-rule/compute-field-rule.component';
+import { LoadingStatusEnum, ProjectFormEntity } from "../project-form-entity";
+import { AssetCategoryComponent } from "./asset-category/asset-category.component";
+import { AssetTagComponent } from "./asset-tag/asset-tag.component";
+import { EnrichmentType } from "./enrichment-type.enum";
+import { FourierTransformComponent } from "./fourier-transform/fourier-transform.component";
+import { UntypedFormControl } from "@angular/forms";
+import { ComputeFieldRuleComponent } from "./compute-field-rule/compute-field-rule.component";
 
 @Component({
-    selector: 'hyt-packet-enrichment-form',
-    templateUrl: './packet-enrichment-form.component.html',
-    styleUrls: ['./packet-enrichment-form.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-packet-enrichment-form",
+  templateUrl: "./packet-enrichment-form.component.html",
+  styleUrls: ["./packet-enrichment-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class PacketEnrichmentFormComponent extends ProjectFormEntity implements OnInit, OnDestroy {
-
+export class PacketEnrichmentFormComponent
+  extends ProjectFormEntity
+  implements OnInit, OnDestroy
+{
   entityFormMap = {
-    'rule-name': {
-      field: 'name'
+    "rule-name": {
+      field: "name",
     },
-    'rule-description': {
-      field: 'description'
-    }
+    "rule-description": {
+      field: "description",
+    },
   };
 
-  @ViewChild('ruleDef')
+  @ViewChild("ruleDef")
   ruleDefinitionComponent: RuleDefinitionComponent;
 
-  @ViewChild('assetTag')
+  @ViewChild("assetTag")
   assetTagComponent: AssetTagComponent;
 
-  @ViewChild('assetCategory')
+  @ViewChild("assetCategory")
   assetCategoryComponent: AssetCategoryComponent;
 
-  @ViewChild('fourierTransform')
+  @ViewChild("fourierTransform")
   fourierTransformComponent: FourierTransformComponent;
 
-  @ViewChild('computeFieldRule')
+  @ViewChild("computeFieldRule")
   computeFieldRuleComponent: ComputeFieldRuleComponent;
 
   enrichmentTypes = EnrichmentType;
@@ -57,16 +78,35 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   project: HProject = {} as HProject;
 
   enrichmentRules: SelectOption[] = [
-    { value: EnrichmentType.ADD_CATEGORY_ENRICHMENT, label: $localize`:@@HYT_categories:Categories` },
-    { value: EnrichmentType.ADD_TAG_ENRICHMENT, label: $localize`:@@HYT_tags:Tags` },
-    { value: EnrichmentType.VALIDATION_ENRICHMENT, label: $localize`:@@HYT_validation:Validation` },
-    { value: EnrichmentType.FOURIER_TRANSFORM_ENRICHMENT, label: $localize`:@@HYT_fourier_transform:FourierTransform` },
-    { value: EnrichmentType.COMPUTE_FIELD_RULE_ACTION, label: $localize`:@@HYT_compute_field_rule_action:Compute Field Rule Action` }
+    {
+      value: EnrichmentType.ADD_CATEGORY_ENRICHMENT,
+      label: $localize`:@@HYT_categories:Categories`,
+    },
+    {
+      value: EnrichmentType.ADD_TAG_ENRICHMENT,
+      label: $localize`:@@HYT_tags:Tags`,
+    },
+    {
+      value: EnrichmentType.VALIDATION_ENRICHMENT,
+      label: $localize`:@@HYT_validation:Validation`,
+    },
+    {
+      value: EnrichmentType.FOURIER_TRANSFORM_ENRICHMENT,
+      label: $localize`:@@HYT_fourier_transform:FourierTransform`,
+    },
+    {
+      value: EnrichmentType.COMPUTE_FIELD_RULE_ACTION,
+      label: $localize`:@@HYT_compute_field_rule_action:Compute Field Rule Action`,
+    },
   ];
 
   activeOptions: Option[] = [
-    { value: "true", label: $localize`:@@HYT_enrichment_active:ACTIVE`, checked: true },
-    { value: "false", label: $localize`:@@HYT_enrichment_disabled:DISABLED` }
+    {
+      value: "true",
+      label: $localize`:@@HYT_enrichment_active:ACTIVE`,
+      checked: true,
+    },
+    { value: "false", label: $localize`:@@HYT_enrichment_disabled:DISABLED` },
     // { value: '', label: $localize`:@@HYT_start_statistic:START STATISTIC` }
   ];
 
@@ -95,7 +135,7 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
     private enrichmentService: EnrichmentsService
   ) {
     super(injector, cdr);
-    this.formTemplateId = 'container-enrichment-form';
+    this.formTemplateId = "container-enrichment-form";
     this.longDefinition = this.entitiesService.enrichment.longDefinition;
     this.formTitle = this.entitiesService.enrichment.formTitle;
     this.icon = this.entitiesService.enrichment.icon;
@@ -103,23 +143,29 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   }
 
   ngOnInit() {
-    this.form.addControl('ruleDefinition', new UntypedFormControl(''));
-    this.activatedRouteSubscription = this.activatedRoute.params.subscribe(routeParams => {
-      this.packetId = +(this.activatedRoute.snapshot.params.packetId);
-      if (this.packetId) {
-        this.loadData().subscribe(res => { });
+    this.form.addControl("ruleDefinition", new UntypedFormControl(""));
+    this.activatedRouteSubscription = this.activatedRoute.params.subscribe(
+      (routeParams) => {
+        this.packetId = +this.activatedRoute.snapshot.params.packetId;
+        if (this.packetId) {
+          this.loadData().subscribe((res) => {});
+        }
       }
-    });
+    );
 
-    this.activatedRoute.url.pipe(
-      filter((val) => val.length === 2 && val[0].path === 'packet-enrichments'),
-      switchMap((val) => {
-        return this.packetService.findHPacket(+val[1].path)
-      })
-    ).subscribe((el) => {
-      this.enrichmentService.emitDeviceName(el.device.deviceName);
-      this.enrichmentService.emitPacket(this.packetId);
-    })
+    this.activatedRoute.url
+      .pipe(
+        filter(
+          (val) => val.length === 2 && val[0].path === "packet-enrichments"
+        ),
+        switchMap((val) => {
+          return this.packetService.findHPacket(+val[1].path);
+        })
+      )
+      .subscribe((el) => {
+        this.enrichmentService.emitDeviceName(el.device.deviceName);
+        this.enrichmentService.emitPacket(this.packetId);
+      });
   }
 
   ngOnDestroy() {
@@ -142,19 +188,27 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
         switch (this.selectedEnrichmentType) {
           case EnrichmentType.ADD_CATEGORY_ENRICHMENT:
             if (this.assetCategoryComponent) {
-              this.assetCategoryComponent.selectedCategories = JSON.parse(type) ? JSON.parse(type).categoryIds : null;
+              this.assetCategoryComponent.selectedCategories = JSON.parse(type)
+                ? JSON.parse(type).categoryIds
+                : null;
               this.assetCategoryComponent.getAssetCategories();
             } else {
-              this.assetCategories = JSON.parse(type) ? JSON.parse(type).categoryIds : null;
+              this.assetCategories = JSON.parse(type)
+                ? JSON.parse(type).categoryIds
+                : null;
             }
             break;
 
           case EnrichmentType.ADD_TAG_ENRICHMENT:
             if (this.assetTagComponent) {
-              this.assetTagComponent.selectedTags = JSON.parse(type) ? JSON.parse(type).tagIds : null;
+              this.assetTagComponent.selectedTags = JSON.parse(type)
+                ? JSON.parse(type).tagIds
+                : null;
               this.assetTagComponent.getAssetTags();
             } else {
-              this.assetTags = JSON.parse(type) ? JSON.parse(type).tagIds : null;
+              this.assetTags = JSON.parse(type)
+                ? JSON.parse(type).tagIds
+                : null;
             }
             break;
 
@@ -167,9 +221,9 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
             break;
         }
 
-        this.form.get('rule-type').setValue(this.selectedEnrichmentType);
-        this.form.get('active').setValue(typeJSON.active);
-        this.form.get('ruleDefinition').setValue({
+        this.form.get("rule-type").setValue(this.selectedEnrichmentType);
+        this.form.get("active").setValue(typeJSON.active);
+        this.form.get("ruleDefinition").setValue({
           ruleDefinition: this.entity.ruleDefinition,
           rulePrettyDefinition: this.entity.rulePrettyDefinition,
         });
@@ -180,7 +234,7 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
       });
     };
     const canDeactivate = this.canDeactivate();
-    if (typeof canDeactivate === 'boolean' && canDeactivate === true) {
+    if (typeof canDeactivate === "boolean" && canDeactivate === true) {
       proceedWithEdit();
     } else {
       (canDeactivate as Observable<any>).subscribe((res) => {
@@ -199,43 +253,55 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   }
 
   delete(successCallback, errorCallback) {
-    this.rulesService.deleteRule(this.entity.id).subscribe((res) => {
-      this.resetErrors();
-      this.resetForm();
-      this.showCancel = false;
-      this.updateSummaryList();
-      if (successCallback) { successCallback(); }
-    }, (err) => {
-      if (errorCallback) { errorCallback(); }
-    });
+    this.rulesService.deleteRule(this.entity.id).subscribe(
+      (res) => {
+        this.resetErrors();
+        this.resetForm();
+        this.showCancel = false;
+        this.updateSummaryList();
+        if (successCallback) {
+          successCallback();
+        }
+      },
+      (err) => {
+        if (errorCallback) {
+          errorCallback();
+        }
+      }
+    );
   }
 
   loadData(packetId?: number) {
-    if (packetId) { this.packetId = packetId; }
-    return this.packetService.findHPacket(this.packetId).pipe(map((p => {
-      this.project = p.device.project;
-      // load allPackets for ruleDefinition
-      this.packetService.findAllHPacketByProjectIdAndType(this.project.id, 'INPUT,IO').subscribe(
-        res => this.allPackets = res,
-      );
-      this.packet = p;
-      this.updateSummaryList();
-      this.entityEvent.emit({
-        event: 'treeview:focus',
-        id: p.id, type: 'packet-enrichments'
-      });
-      return p;
-    })));
+    if (packetId) {
+      this.packetId = packetId;
+    }
+    return this.packetService.findHPacket(this.packetId).pipe(
+      map((p) => {
+        this.project = p.device.project;
+        // load allPackets for ruleDefinition
+        this.packetService
+          .findAllHPacketByProjectIdAndType(this.project.id, "INPUT,IO")
+          .subscribe((res) => (this.allPackets = res));
+        this.packet = p;
+        this.updateSummaryList();
+        this.entityEvent.emit({
+          event: "treeview:focus",
+          id: p.id,
+          type: "packet-enrichments",
+        });
+        return p;
+      })
+    );
   }
 
   buildJActions(): string {
-    let jac = '';
-    switch (this.form.get('rule-type').value) {
+    let jac = "";
+    switch (this.form.get("rule-type").value) {
       case EnrichmentType.ADD_CATEGORY_ENRICHMENT:
         jac = JSON.stringify({
           actionName: EnrichmentType.ADD_CATEGORY_ENRICHMENT,
           categoryIds: this.assetCategoryComponent.selectedCategories,
-          active: this.form.get("active").value
+          active: this.form.get("active").value,
         });
         break;
 
@@ -243,24 +309,24 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
         jac = JSON.stringify({
           actionName: EnrichmentType.ADD_TAG_ENRICHMENT,
           tagIds: this.assetTagComponent.selectedTags,
-          active: this.form.get("active").value
+          active: this.form.get("active").value,
         });
         break;
 
       case EnrichmentType.VALIDATION_ENRICHMENT:
         jac = JSON.stringify({
           actionName: EnrichmentType.VALIDATION_ENRICHMENT,
-          active: this.form.get("active").value
+          active: this.form.get("active").value,
         });
         break;
 
       case EnrichmentType.FOURIER_TRANSFORM_ENRICHMENT:
-        this.ruleConfig['active'] = this.form.get("active").value;
+        this.ruleConfig["active"] = this.form.get("active").value;
         jac = JSON.stringify(this.ruleConfig);
         break;
 
       case EnrichmentType.COMPUTE_FIELD_RULE_ACTION:
-        this.ruleConfig['active'] = this.form.get("active").value;
+        this.ruleConfig["active"] = this.form.get("active").value;
         jac = JSON.stringify(this.ruleConfig);
         break;
     }
@@ -273,16 +339,17 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
 
     const rule = this.entity;
     Object.assign(rule, {
-      name: this.form.get('rule-name').value,
-      ruleDefinition: this.form.get('ruleDefinition').value.ruleDefinition,
-      rulePrettyDefinition: this.form.get('ruleDefinition').value.rulePrettyDefinition,
-      description: this.form.get('rule-description').value,
+      name: this.form.get("rule-name").value,
+      ruleDefinition: this.form.get("ruleDefinition").value.ruleDefinition,
+      rulePrettyDefinition:
+        this.form.get("ruleDefinition").value.rulePrettyDefinition,
+      description: this.form.get("rule-description").value,
       project: {
-        id: this.project.id
+        id: this.project.id,
       },
       packet: this.packet,
       jsonActions: this.buildJActions(),
-      type: 'ENRICHMENT'
+      type: "ENRICHMENT",
     });
 
     delete rule.actions;
@@ -325,16 +392,27 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   }
 
   updateSummaryList() {
-    this.rulesService.findAllRuleByPacketId(this.packet.id).subscribe((rules: Rule[]) => {
-      this.summaryList = {
-        title: this.formTitle,
-        list: rules.filter((i) => {
-          if (i.type === Rule.TypeEnum.ENRICHMENT) {
-            return i;
-          }
-        }).map((r) => ({ name: r.name, description: r.description, data: r }) as SummaryListItem)
-      };
-    });
+    this.rulesService
+      .findAllRuleByPacketId(this.packet.id)
+      .subscribe((rules: Rule[]) => {
+        this.summaryList = {
+          title: this.formTitle,
+          list: rules
+            .filter((i) => {
+              if (i.type === Rule.TypeEnum.ENRICHMENT) {
+                return i;
+              }
+            })
+            .map(
+              (r) =>
+                ({
+                  name: r.name,
+                  description: r.description,
+                  data: r,
+                } as SummaryListItem)
+            ),
+        };
+      });
   }
 
   enrichmentTypeChanged(event) {
@@ -345,7 +423,7 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
 
   changeEventActive(event) {
     if (event) {
-      this.form.get('active').setValue(event);
+      this.form.get("active").setValue(event);
     }
   }
 
@@ -354,11 +432,15 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   }
 
   tagDirty(): boolean {
-    return this.assetCategoryComponent ? this.assetCategoryComponent.isDirty() : false;
+    return this.assetCategoryComponent
+      ? this.assetCategoryComponent.isDirty()
+      : false;
   }
 
   fftDirty(): boolean {
-    return this.fourierTransformComponent ? this.fourierTransformComponent.isDirty() : false;
+    return this.fourierTransformComponent
+      ? this.fourierTransformComponent.isDirty()
+      : false;
   }
 
   computeFieldRuleActionDirty(): boolean {
@@ -366,44 +448,53 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
   }
 
   isValid(): boolean {
-    return super.isValid() && !this.invalidRules()
-      && (
-        this.fourierTransformComponent?.isValid() ||
-        this.computeFieldRuleComponent?.isValid()
-      );
+    return (
+      super.isValid() &&
+      !this.invalidRules() &&
+      (this.fourierTransformComponent?.isValid() ||
+        this.computeFieldRuleComponent?.isValid())
+    );
   }
 
   isDirty(): boolean {
-    return this.editMode &&
-      (
-        super.isDirty() ||
+    return (
+      this.editMode &&
+      (super.isDirty() ||
         this.ruleDefinitionComponent?.isDirty() ||
         this.categoryDirty() ||
         this.tagDirty() ||
         this.fftDirty() ||
-        this.computeFieldRuleActionDirty()
-      );
+        this.computeFieldRuleActionDirty())
+    );
   }
 
   private invalidRules(): boolean {
-    return this.ruleDefinitionComponent ? this.ruleDefinitionComponent.isInvalid() : false;
+    return this.ruleDefinitionComponent
+      ? this.ruleDefinitionComponent.isInvalid()
+      : false;
   }
 
   setErrors(err) {
     if (err.error && err.error.type) {
       switch (err.error.type) {
-        case 'it.acsoftware.hyperiot.base.exception.HyperIoTDuplicateEntityException': {
-          this.validationError = [{ "message": $localize`:@@HYT_unavailable_rule_name:Unavailable rule name`, "field": 'rule-name', "invalidValue": '' }];
-          this.form.get('rule-name').setErrors({
+        case "it.acsoftware.hyperiot.base.exception.HyperIoTDuplicateEntityException": {
+          this.validationError = [
+            {
+              message: $localize`:@@HYT_unavailable_rule_name:Unavailable rule name`,
+              field: "rule-name",
+              invalidValue: "",
+            },
+          ];
+          this.form.get("rule-name").setErrors({
             validateInjectedError: {
-              valid: false
-            }
+              valid: false,
+            },
           });
           this.loadingStatus = LoadingStatusEnum.Ready;
           break;
         }
 
-        case 'it.acsoftware.hyperiot.base.exception.HyperIoTValidationException': {
+        case "it.acsoftware.hyperiot.base.exception.HyperIoTValidationException": {
           super.setErrors(err);
           break;
         }
@@ -416,6 +507,4 @@ export class PacketEnrichmentFormComponent extends ProjectFormEntity implements 
       this.loadingStatus = LoadingStatusEnum.Error;
     }
   }
-
 }
-

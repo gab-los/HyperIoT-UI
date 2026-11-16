@@ -1,28 +1,55 @@
-import { Component, Injector, OnDestroy, OnInit, Optional } from '@angular/core';
-import { BaseGenericComponent } from '../../base/base-generic/base-generic.component';
-import { PlotlyService } from 'angular-plotly.js';
-import { LoggerService, Logger, DataChannel, DataPacketFilter, PacketData } from 'core';
-import { asyncScheduler, bufferTime, concatMap, filter, map, reduce, scan, startWith, Subject, Subscription, switchMap, withLatestFrom } from 'rxjs';
-import { WidgetAction } from '../../base/base-widget/model/widget.model';
-import { linearRegression } from 'simple-statistics';
-import { DashboardEventService } from '../../dashboard/services/dashboard-event.service';
+import {
+  Component,
+  Injector,
+  OnDestroy,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { BaseGenericComponent } from "../../base/base-generic/base-generic.component";
+import { PlotlyService } from "angular-plotly.js";
+import {
+  LoggerService,
+  Logger,
+  DataChannel,
+  DataPacketFilter,
+  PacketData,
+} from "core";
+import {
+  asyncScheduler,
+  bufferTime,
+  concatMap,
+  filter,
+  map,
+  reduce,
+  scan,
+  startWith,
+  Subject,
+  Subscription,
+  switchMap,
+  withLatestFrom,
+} from "rxjs";
+import { WidgetAction } from "../../base/base-widget/model/widget.model";
+import { linearRegression } from "simple-statistics";
+import { DashboardEventService } from "../../dashboard/services/dashboard-event.service";
 import { ServiceType } from "../../service/model/service-type";
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe } from "@angular/common";
 
 @Component({
-    selector: 'hyperiot-trend-gauge-chart',
-    templateUrl: './trend-gauge-chart.component.html',
-    styleUrls: [
-        '../../../../../../src/assets/widgets/styles/widget-commons.css',
-        './trend-gauge-chart.component.css'
-    ],
-    providers: [
-        DecimalPipe
-    ],
-    standalone: false
+  selector: "hyperiot-trend-gauge-chart",
+  templateUrl: "./trend-gauge-chart.component.html",
+  styleUrls: [
+    "../../../../../../src/assets/widgets/styles/widget-commons.css",
+    "./trend-gauge-chart.component.css",
+  ],
+  providers: [DecimalPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class TrendGaugeChartComponent extends BaseGenericComponent implements OnInit, OnDestroy {
-
+export class TrendGaugeChartComponent
+  extends BaseGenericComponent
+  implements OnInit, OnDestroy
+{
   /**
    * Container for the graph specifics
    */
@@ -37,7 +64,7 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
 
   /**
    * Field selected in configuration
-  */
+   */
   private field: string;
 
   private labelField: string;
@@ -47,29 +74,31 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
   private offControllerSubscription: Subscription;
 
   get plotlyInstance() {
-    return this.plotly.getInstanceByDivId(`widget-${this.widget.id}${this.isToolbarVisible}`);
+    return this.plotly.getInstanceByDivId(
+      `widget-${this.widget.id}${this.isToolbarVisible}`
+    );
   }
 
   readonly gauge = {
     axis: {
       range: [-1, 1],
-      tickcolor: 'black'
+      tickcolor: "black",
     },
     bar: {
-      color: 'transparent',
+      color: "transparent",
     },
-    bgcolor: 'white',
-    bordercolor: 'black',
+    bgcolor: "white",
+    bordercolor: "black",
     borderwidth: 2,
     steps: [],
     threshold: {
       line: {
-        color: 'blue',
-        width: 4
+        color: "blue",
+        width: 4,
       },
       thickness: 0.75,
-      value: undefined
-    }
+      value: undefined,
+    },
   };
 
   private lastValue: string;
@@ -95,13 +124,12 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
 
     this.configure();
 
-    this.dashboardEvent.timelineEvent
-      .subscribe({
-        next: async (res) => {
-          this.loadingOfflineData = false;
-          await this.reset();
-        }
-      })
+    this.dashboardEvent.timelineEvent.subscribe({
+      next: async (res) => {
+        this.loadingOfflineData = false;
+        await this.reset();
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -151,7 +179,9 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
 
     const hPacketFieldId = Object.keys(this.widget.config.packetFields)[0];
     this.field = this.widget.config.packetFields[hPacketFieldId];
-    this.labelField = this.widget.config.fieldAliases[hPacketFieldId] || this.widget.config.packetFields[hPacketFieldId];
+    this.labelField =
+      this.widget.config.fieldAliases[hPacketFieldId] ||
+      this.widget.config.packetFields[hPacketFieldId];
   }
 
   /**
@@ -159,7 +189,7 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
    * @param packetData
    */
   async computePacketData(packetData: PacketData[]) {
-    this.logger.debug('computePacketData -> packetData: ', packetData);
+    this.logger.debug("computePacketData -> packetData: ", packetData);
 
     const value = this.slope([...packetData]);
 
@@ -170,11 +200,10 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
    * Slope in mathematics refers to the measure of the steepness or incline of a line
    */
   private slope(packetData: PacketData[]): number {
-    const regressionData = packetData
-      .map((datum, index) => [
-        index,
-        parseFloat(datum[this.field])
-      ]);
+    const regressionData = packetData.map((datum, index) => [
+      index,
+      parseFloat(datum[this.field]),
+    ]);
 
     const lr = linearRegression(regressionData);
     return lr.m;
@@ -190,23 +219,24 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
     if (graph) {
       const Plotly = await this.plotly.getPlotly();
 
-      if (typeof value === 'number') {
+      if (typeof value === "number") {
         let currentValue = value;
-        let symbol = '';
+        let symbol = "";
         if (value === Infinity || value > 1) {
           currentValue = 1;
-          symbol = '> ';
+          symbol = "> ";
         } else if (value === -Infinity || value < -1) {
           currentValue = -1;
-          symbol = '< ';
+          symbol = "< ";
         }
 
-        this.lastValue = symbol + this.decimalPipe.transform(currentValue, '1.1-2');
-        if (this.lastValue === 'null') {
-          this.lastValue = 'ND';
+        this.lastValue =
+          symbol + this.decimalPipe.transform(currentValue, "1.1-2");
+        if (this.lastValue === "null") {
+          this.lastValue = "ND";
         }
       } else {
-        this.lastValue = value ? value : 'ND';
+        this.lastValue = value ? value : "ND";
       }
 
       const gauge = this.gauge;
@@ -215,12 +245,14 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
       Plotly.update(
         graph,
         {
-          gauge
+          gauge,
         },
         this.graph.layout
       );
 
-      const oldValueOnlyNumber = graph.querySelector(".indicatorlayer .numbers text");
+      const oldValueOnlyNumber = graph.querySelector(
+        ".indicatorlayer .numbers text"
+      );
       if (oldValueOnlyNumber) {
         oldValueOnlyNumber.textContent = this.lastValue;
       }
@@ -232,8 +264,8 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
    */
   private setChartLayout(): void {
     this.graph.data.push({
-      type: 'indicator',
-      mode: 'gauge+number',
+      type: "indicator",
+      mode: "gauge+number",
       value: undefined,
       title: {
         text: (() => {
@@ -241,7 +273,7 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
           return title.charAt(0).toUpperCase() + title.slice(1);
         })(),
         font: {
-          size: this.widget.config.title.fontSize
+          size: this.widget.config.title.fontSize,
         },
       },
       gauge: (() => {
@@ -251,13 +283,13 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
         gauge.threshold.value = undefined;
 
         return gauge;
-      })()
+      })(),
     });
 
     this.graph.layout = {
       font: {
         color: this.widget.config.textColor,
-        family: 'Exo'
+        family: "Exo",
       },
       showlegend: false,
       autosize: true,
@@ -266,12 +298,12 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
         t: 35,
         b: 5,
         l: 35,
-        r: 35
-      }
+        r: 35,
+      },
     };
 
     this.graph.config = {
-      responsive: true
+      responsive: true,
     };
   }
 
@@ -300,7 +332,9 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
         this.plotly.resize(graph);
 
         setTimeout(() => {
-          const oldValueOnlyNumber = graph.querySelector(".indicatorlayer .numbers text");
+          const oldValueOnlyNumber = graph.querySelector(
+            ".indicatorlayer .numbers text"
+          );
           if (oldValueOnlyNumber) {
             oldValueOnlyNumber.textContent = this.lastValue;
           }
@@ -326,9 +360,14 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
       // setting negative id to fullscreen offline widget channel to prevent updating original widget
       // TODO channelId should be a proper string
       this.channelId = -this.channelId;
-      this.dataChannel = this.dataService.copyDataChannel(this.channelId, -this.channelId);
+      this.dataChannel = this.dataService.copyDataChannel(
+        this.channelId,
+        -this.channelId
+      );
     } else {
-      this.dataChannel = this.dataService.addDataChannel(this.channelId, [dataPacketFilter]);
+      this.dataChannel = this.dataService.addDataChannel(this.channelId, [
+        dataPacketFilter,
+      ]);
     }
 
     this.dataSubscription = this.dataChannel.subject
@@ -337,8 +376,9 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
         bufferTime(this.widget.config.refreshIntervalMillis || 0),
         filter((data) => data.length !== 0),
         map((data) => [].concat.apply([], data)),
-        withLatestFrom(this.dataChannel.controller.$totalCount),
-      ).subscribe({
+        withLatestFrom(this.dataChannel.controller.$totalCount)
+      )
+      .subscribe({
         next: async ([eventData, totalCount]) => {
           this.loadingOfflineData = true;
 
@@ -347,18 +387,20 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
           if (totalCount === this.accumulator.length) {
             this.loadingOfflineData = false;
 
-            const filtered = this.accumulator.filter((datum) => datum?.[this.field]);
+            const filtered = this.accumulator.filter(
+              (datum) => datum?.[this.field]
+            );
             await this.computePacketData(filtered);
 
             this.accumulator.length = 0;
           }
-        }
+        },
       });
 
     if (this.serviceType === ServiceType.OFFLINE) {
       this.logger.debug("subscribeAndInit - OFFLINE Service");
-      this.offControllerSubscription = this.dataChannel.controller.$totalCount
-        .subscribe({
+      this.offControllerSubscription =
+        this.dataChannel.controller.$totalCount.subscribe({
           next: async (res: number) => {
             if (this.isToolbarVisible) {
               if (res > 0) {
@@ -366,14 +408,14 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
               } else {
                 await this.renderData(undefined);
               }
-            } else { // if fullscreen
+            } else {
+              // if fullscreen
               await this.renderData(this.initData);
             }
-          }
+          },
         });
     }
   }
-
 
   /**
    * Called when one of the toolbar options is pressed and emits the correct event
@@ -382,15 +424,15 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
   onToolbarAction(action: string): void {
     const widgetAction: WidgetAction = { widget: this.widget, action };
     switch (action) {
-      case 'toolbar:play':
+      case "toolbar:play":
         this.play();
         break;
 
-      case 'toolbar:pause':
+      case "toolbar:pause":
         this.pause();
         break;
 
-      case 'toolbar:fullscreen':
+      case "toolbar:fullscreen":
         widgetAction.value = this.lastValue;
         break;
     }
@@ -404,5 +446,4 @@ export class TrendGaugeChartComponent extends BaseGenericComponent implements On
       !this.dataService["isRangeSelected"]
     );
   }
-
 }

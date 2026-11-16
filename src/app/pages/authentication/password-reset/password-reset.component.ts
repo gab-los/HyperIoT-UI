@@ -1,24 +1,29 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { HUserService, HUserPasswordReset, Logger, LoggerService } from 'core';
-import { ActivatedRoute } from '@angular/router';
-import { HYTError } from 'src/app/services/errorHandler/models/models';
-import { AuthenticationHttpErrorHandlerService } from 'src/app/services/errorHandler/authentication-http-error-handler.service';
-import { SubmissionStatus } from '../models/pageStatus';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormGroup } from "@angular/forms";
+import { HUserService, HUserPasswordReset, Logger, LoggerService } from "core";
+import { ActivatedRoute } from "@angular/router";
+import { HYTError } from "src/app/services/errorHandler/models/models";
+import { AuthenticationHttpErrorHandlerService } from "src/app/services/errorHandler/authentication-http-error-handler.service";
+import { SubmissionStatus } from "../models/pageStatus";
 
 /**
  * PasswordResetComponent is a component of AuthenticationModule.
  * It is used to hallow the user to reset his account password.
  */
 @Component({
-    selector: 'hyt-password-reset',
-    templateUrl: './password-reset.component.html',
-    styleUrls: ['./password-reset.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-password-reset",
+  templateUrl: "./password-reset.component.html",
+  styleUrls: ["./password-reset.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PasswordResetComponent implements OnInit {
-
   /**
    * the user email extrapolated from the url
    */
@@ -59,24 +64,20 @@ export class PasswordResetComponent implements OnInit {
     private loggerService: LoggerService
   ) {
     this.logger = new Logger(this.loggerService);
-    this.logger.registerClass('PasswordResetComponent');
-   }
+    this.logger.registerClass("PasswordResetComponent");
+  }
 
   /**
    * ngOnInit() builds the password-reset form and sets the email and reset code extracted from the url
    */
   ngOnInit() {
-
     this.recoverPassForm = new UntypedFormGroup({});
 
-    this.route.paramMap.subscribe(
-      (p) => {
-        this.logger.debug('data:', p);
-        this.email = p.get('email');
-        this.code = p.get('code');
-      }
-    );
-
+    this.route.paramMap.subscribe((p) => {
+      this.logger.debug("data:", p);
+      this.email = p.get("email");
+      this.code = p.get("code");
+    });
   }
 
   /**
@@ -85,26 +86,25 @@ export class PasswordResetComponent implements OnInit {
    * the email and the reset-password code.
    */
   resetPwd() {
-
     const pwdReset: HUserPasswordReset = {
       password: this.recoverPassForm.value.password,
       passwordConfirm: this.recoverPassForm.value.confPassword,
       email: this.email,
-      resetCode: this.code
+      resetCode: this.code,
     };
 
     this.hUserService.resetPassword1(pwdReset).subscribe(
-      res => {
-        this.logger.debug('', res);
-        this.pwdResetStatus = SubmissionStatus.Submitted; },
-      err => {
+      (res) => {
+        this.logger.debug("", res);
+        this.pwdResetStatus = SubmissionStatus.Submitted;
+      },
+      (err) => {
         const k: HYTError[] = this.httperrorHandler.handlePwdRecovery(err);
         for (const e of k) {
           this.error = e.message;
         }
         this.pwdResetStatus = SubmissionStatus.Error;
       }
-
     );
   }
 
@@ -113,7 +113,6 @@ export class PasswordResetComponent implements OnInit {
    * This function is used by the template.
    */
   notValid(): boolean {
-    return this.recoverPassForm.get('email').invalid;
+    return this.recoverPassForm.get("email").invalid;
   }
-
 }

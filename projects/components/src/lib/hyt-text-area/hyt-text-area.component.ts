@@ -1,6 +1,24 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, forwardRef, Output, EventEmitter } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormControl, Validators, FormGroupDirective, NgForm, UntypedFormGroup } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  forwardRef,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  UntypedFormControl,
+  Validators,
+  FormGroupDirective,
+  NgForm,
+  UntypedFormGroup,
+} from "@angular/forms";
+import { ErrorStateMatcher } from "@angular/material/core";
 
 /**
  * Custom provider for NG_VALUE_ACCESSOR
@@ -8,25 +26,33 @@ import { ErrorStateMatcher } from '@angular/material/core';
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => HytTextAreaComponent),
-  multi: true
+  multi: true,
 };
 
 /**
  * Error when invalid control is dirty, touched, or submitted
  */
 export class CustomErrorStateMatcherArea implements ErrorStateMatcher {
-  isErrorState(control: UntypedFormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(
+    control: UntypedFormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
     const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+    return !!(
+      control &&
+      control.invalid &&
+      (control.dirty || control.touched || isSubmitted)
+    );
   }
 }
 
 @Component({
-    selector: "hyt-text-area",
-    templateUrl: "./hyt-text-area.component.html",
-    styleUrls: ["./hyt-text-area.component.scss"],
-    providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR],
-    standalone: false
+  selector: "hyt-text-area",
+  templateUrl: "./hyt-text-area.component.html",
+  styleUrls: ["./hyt-text-area.component.scss"],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytTextAreaComponent implements OnInit, ControlValueAccessor {
   /**
@@ -85,7 +111,10 @@ export class HytTextAreaComponent implements OnInit, ControlValueAccessor {
       this.errMsgRequired = this.errorMsgRequired;
     }
 
-    this.formControl = new UntypedFormControl("", Validators.compose(validators));
+    this.formControl = new UntypedFormControl(
+      "",
+      Validators.compose(validators)
+    );
     if (this.fieldValue) {
       this.formControl.setValue(this.fieldValue);
     }

@@ -1,23 +1,32 @@
-import { Component, OnInit, Input , Output , EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { AlarmEvent } from 'core';
-import { Option } from 'components';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { AlarmEvent } from "core";
+import { Option } from "components";
 
 @Component({
-    selector: 'hyt-alarm-events-table',
-    templateUrl: './alarm-events-table.component.html',
-    styleUrls: ['./alarm-events-table.component.scss'],
-    standalone: false
+  selector: "hyt-alarm-events-table",
+  templateUrl: "./alarm-events-table.component.html",
+  styleUrls: ["./alarm-events-table.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AlarmEventsTableComponent implements OnChanges {
-
-  @Input() alarmEventsList   : AlarmEvent[];
+  @Input() alarmEventsList: AlarmEvent[];
   @Output() deleteAlarmEvent: EventEmitter<Number> = new EventEmitter();
   @Output() editAlarmEvent: EventEmitter<Number> = new EventEmitter();
 
   severityList: Option[] = [
     {
       label: "Critical",
-      value: "3"
+      value: "3",
     },
     {
       label: "High",
@@ -33,28 +42,26 @@ export class AlarmEventsTableComponent implements OnChanges {
       checked: true,
     },
   ];
-  displayedColumns : string[] = ['name', 'description', 'severity', 'actions'];
+  displayedColumns: string[] = ["name", "description", "severity", "actions"];
 
-  constructor() { }
+  constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', this.alarmEventsList);
+    console.log("changes", this.alarmEventsList);
   }
 
-  editEvent(indexToremove : number) {
-    if(indexToremove >= 0){
+  editEvent(indexToremove: number) {
+    if (indexToremove >= 0) {
       this.editAlarmEvent.emit(indexToremove);
     }
   }
 
-  deleteEvent(indexToremove : number) {
-    if(indexToremove >= 0){
+  deleteEvent(indexToremove: number) {
+    if (indexToremove >= 0) {
       this.deleteAlarmEvent.emit(indexToremove);
     }
   }
 
-getSeverityLabel(value : number){
-  return this.severityList.find( x => x.value === value.toString())?.label;
-}
-
-
+  getSeverityLabel(value: number) {
+    return this.severityList.find((x) => x.value === value.toString())?.label;
+  }
 }

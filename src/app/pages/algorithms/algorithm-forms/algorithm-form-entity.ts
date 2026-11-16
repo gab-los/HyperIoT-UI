@@ -1,260 +1,270 @@
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
 
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 
-import {OnInit, Output, EventEmitter, Injector, AfterViewInit, ChangeDetectorRef, Component} from '@angular/core';
-import { DeleteConfirmDialogComponent } from 'src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component';
-import { EntitiesService } from 'src/app/services/entities/entities.service';
-import { DialogService } from 'components';
-import { AlgorithmService } from 'src/app/services/algorithms/algorithm.service';
-import { MatRadioChange } from '@angular/material/radio';
+import {
+  OnInit,
+  Output,
+  EventEmitter,
+  Injector,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { DeleteConfirmDialogComponent } from "src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component";
+import { EntitiesService } from "src/app/services/entities/entities.service";
+import { DialogService } from "components";
+import { AlgorithmService } from "src/app/services/algorithms/algorithm.service";
+import { MatRadioChange } from "@angular/material/radio";
 
 export enum LoadingStatusEnum {
-    Ready,
-    Loading,
-    Saving,
-    Error
+  Ready,
+  Loading,
+  Saving,
+  Error,
 }
 @Component({
-    selector: 'hyt-algorithm-form-entity',
-    template: '',
-    standalone: false
+  selector: "hyt-algorithm-form-entity",
+  template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 // tslint:disable-next-line:component-class-suffix
 export abstract class AlgorithmFormEntity implements OnInit, AfterViewInit {
-    @Output() entityEvent = new EventEmitter<any>();
+  @Output() entityEvent = new EventEmitter<any>();
 
-    entity: any = {};
-    entityFormMap: any;
-    form: UntypedFormGroup;
-    formTitle = 'Algorithm Form Entity';
-    private originalValue = '{}';
-    protected validationError = [];
+  entity: any = {};
+  entityFormMap: any;
+  form: UntypedFormGroup;
+  formTitle = "Algorithm Form Entity";
+  private originalValue = "{}";
+  protected validationError = [];
 
-    // the following 5 fields should implemented by a specific interface
-    isProjectEntity = true;
-    editMode = false;
-    hideDelete = false;
-    showSave = true;
-    showCancel = false;
-    formTemplateId = '';
-    longDefinition = 'entity long definition';
-    icon = '';
+  // the following 5 fields should implemented by a specific interface
+  isProjectEntity = true;
+  editMode = false;
+  hideDelete = false;
+  showSave = true;
+  showCancel = false;
+  formTemplateId = "";
+  longDefinition = "entity long definition";
+  icon = "";
 
-    LoadingStatus = LoadingStatusEnum;
-    loadingStatus = LoadingStatusEnum.Ready;
+  LoadingStatus = LoadingStatusEnum;
+  loadingStatus = LoadingStatusEnum.Ready;
 
-    unsavedChangesCallback;
+  unsavedChangesCallback;
 
-    protected formBuilder: UntypedFormBuilder;
-    protected dialog: DialogService;
-    protected entitiesService: EntitiesService;
-	protected algorithmService: AlgorithmService;
+  protected formBuilder: UntypedFormBuilder;
+  protected dialog: DialogService;
+  protected entitiesService: EntitiesService;
+  protected algorithmService: AlgorithmService;
 
-    constructor(
-        injector: Injector,
-        private cd: ChangeDetectorRef
-    ) {
-        this.formBuilder = injector.get(UntypedFormBuilder);
-        this.entitiesService = injector.get(EntitiesService);
-        this.dialog = injector.get(DialogService);
-        this.form = this.formBuilder.group({});
-		this.algorithmService = injector.get(AlgorithmService);
-    }
+  constructor(injector: Injector, private cd: ChangeDetectorRef) {
+    this.formBuilder = injector.get(UntypedFormBuilder);
+    this.entitiesService = injector.get(EntitiesService);
+    this.dialog = injector.get(DialogService);
+    this.form = this.formBuilder.group({});
+    this.algorithmService = injector.get(AlgorithmService);
+  }
 
-    ngOnInit() {
-        this.entity = { ...this.newEntity() };
-    }
+  ngOnInit() {
+    this.entity = { ...this.newEntity() };
+  }
 
-    ngAfterViewInit() {
-        this.cd.detectChanges();
-        this.buildHintMessages();
-    }
+  ngAfterViewInit() {
+    this.cd.detectChanges();
+    this.buildHintMessages();
+  }
 
-    private buildHintMessages() {
-        const hintElements =
-            // (this.formView.nativeElement as Element)
-            document.querySelectorAll(`#${this.formTemplateId} [hintMessage]`);
+  private buildHintMessages() {
+    const hintElements =
+      // (this.formView.nativeElement as Element)
+      document.querySelectorAll(`#${this.formTemplateId} [hintMessage]`);
 
-        hintElements.forEach((el: Element) => {
-            const message = el.getAttribute('hintMessage');
-            const tmp = el.querySelector('.hyt-input,mat-select');
-            if (tmp == null) {
-                return;
-            }
-            el = tmp;
-            el.addEventListener('focus', () => {
-                this.entityEvent.emit({
-                    event: 'hint:show',
-                    message
-                });
-            });
-            el.addEventListener('blur', () => {
-                this.entityEvent.emit({
-                    event: 'hint:hide'
-                });
-            });
-            // TODO: remove listeners on ngOnDestroy()
-            // TODO: remove listeners on ngOnDestroy()
-            // TODO: remove listeners on ngOnDestroy()
-            // TODO: remove listeners on ngOnDestroy()
+    hintElements.forEach((el: Element) => {
+      const message = el.getAttribute("hintMessage");
+      const tmp = el.querySelector(".hyt-input,mat-select");
+      if (tmp == null) {
+        return;
+      }
+      el = tmp;
+      el.addEventListener("focus", () => {
+        this.entityEvent.emit({
+          event: "hint:show",
+          message,
         });
-    }
-
-    canDeactivate(): Observable<any> | boolean {
-        if (this.isDirty() && typeof this.unsavedChangesCallback === 'function') {
-            return this.unsavedChangesCallback();
-        }
-        return true;
-    }
-
-    cancel(): void { }
-
-    protected circularFix = (key: any, value: any) => {
-        if (value instanceof MatRadioChange) {
-            // TODO: maybe this should be fixed in HyperIoT components library (hyt-radio-button)
-            return value.value || value;
-        }
-        return value;
-    }
-
-    clone(entity?: any): any {
-        console.log();
-        const cloned = { ...entity };
-        cloned.id = 0;
-        cloned.entityVersion = 1;
-        cloned.name = `${cloned.name} (copy)`;
-        this.edit(cloned);
-        this.originalValue = '';
-        return cloned;
-    }
-
-    delete(successCallback: any, errorCallback: any): void { }
-
-    edit(entity?: any, readyCallback?) {
-        if (entity) {
-            this.entity = { ...entity };
-        }
-        Object.keys(this.entityFormMap).forEach((key) => {
-            if (this.form.get(key)) {
-                this.form.get(key)
-                    .setValue(this.entity[this.entityFormMap[key].field]);
-            }
+      });
+      el.addEventListener("blur", () => {
+        this.entityEvent.emit({
+          event: "hint:hide",
         });
-        if (readyCallback) {
-            readyCallback();
+      });
+      // TODO: remove listeners on ngOnDestroy()
+      // TODO: remove listeners on ngOnDestroy()
+      // TODO: remove listeners on ngOnDestroy()
+      // TODO: remove listeners on ngOnDestroy()
+    });
+  }
+
+  canDeactivate(): Observable<any> | boolean {
+    if (this.isDirty() && typeof this.unsavedChangesCallback === "function") {
+      return this.unsavedChangesCallback();
+    }
+    return true;
+  }
+
+  cancel(): void {}
+
+  protected circularFix = (key: any, value: any) => {
+    if (value instanceof MatRadioChange) {
+      // TODO: maybe this should be fixed in HyperIoT components library (hyt-radio-button)
+      return value.value || value;
+    }
+    return value;
+  };
+
+  clone(entity?: any): any {
+    console.log();
+    const cloned = { ...entity };
+    cloned.id = 0;
+    cloned.entityVersion = 1;
+    cloned.name = `${cloned.name} (copy)`;
+    this.edit(cloned);
+    this.originalValue = "";
+    return cloned;
+  }
+
+  delete(successCallback: any, errorCallback: any): void {}
+
+  edit(entity?: any, readyCallback?) {
+    if (entity) {
+      this.entity = { ...entity };
+    }
+    Object.keys(this.entityFormMap).forEach((key) => {
+      if (this.form.get(key)) {
+        this.form.get(key).setValue(this.entity[this.entityFormMap[key].field]);
+      }
+    });
+    if (readyCallback) {
+      readyCallback();
+    }
+    this.resetForm();
+  }
+
+  protected getUser = () => {
+    let currentUser;
+    if (localStorage.getItem("user")) {
+      currentUser = JSON.parse(localStorage.getItem("user"));
+    }
+    return { id: currentUser.id, entityVersion: currentUser.entityVersion };
+  };
+
+  isDirty(): boolean {
+    return this.originalValue === "{}"
+      ? false
+      : this.serialize() !== this.originalValue;
+  }
+
+  isNew() {
+    return !this.entity || !this.entity.id;
+  }
+
+  isValid(): boolean {
+    let invalid = false;
+    Object.keys(this.form.controls).forEach((field) => {
+      invalid = invalid || this.form.get(field).invalid;
+    });
+    return !invalid;
+  }
+
+  load(): void {}
+
+  loadEmpty(): void {}
+
+  newEntity() {
+    const entity = {};
+    // create default entity object
+    if (this.entityFormMap) {
+      const keys = Object.keys(this.entityFormMap);
+      keys.map((k) => {
+        const f = this.entityFormMap[k];
+        if (f.field) {
+          entity[f.field] = f.default;
         }
-        this.resetForm();
+      });
     }
+    return entity;
+  }
 
-    protected getUser = () => {
-        let currentUser;
-        if (localStorage.getItem('user')) {
-            currentUser = JSON.parse(localStorage.getItem('user'));
-        }
-        return { id: currentUser.id, entityVersion: currentUser.entityVersion };
-    }
+  save(successCallback: any, errorCallback: any): void {}
 
-    isDirty(): boolean {
-        return (this.originalValue === '{}') ? false : this.serialize() !== this.originalValue;
-    }
+  getError(field) {
+    const err = this.validationError.find((e) => e.field === field);
+    return err && err.message;
+  }
 
-    isNew() {
-        return !this.entity || !this.entity.id;
-    }
+  openDeleteDialog(successCallback?: any, errorCallback?: any) {
+    const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
+      data: {
+        title: $localize`:@@HYT_delete_item_question:Do you really want to delete this item?`,
+        message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone`,
+      },
+    });
+    dialogRef.dialogRef.afterClosed().subscribe((result) => {
+      if (result === "delete") {
+        this.delete(successCallback, errorCallback);
+      }
+    });
+  }
 
-    isValid(): boolean {
-        let invalid = false;
-        Object.keys(this.form.controls).forEach((field) => {
-            invalid = invalid || this.form.get(field).invalid;
-        });
-        return !invalid;
-    }
+  resetForm() {
+    this.originalValue = this.serialize();
+    // this.buildHintMessages();
+  }
 
-    load(): void { }
+  resetErrors() {
+    this.validationError = [];
+  }
 
-    loadEmpty(): void { }
-
-    newEntity() {
-        const entity = {};
-        // create default entity object
+  setErrors(err) {
+    if (err.error && err.error.validationErrors) {
+      this.validationError = err.error.validationErrors;
+      this.validationError.map((e) => {
+        // TODO: this is a temporary patch to deal
+        // TODO: with wrong field names in error response
         if (this.entityFormMap) {
-            const keys = Object.keys(this.entityFormMap);
-            keys.map((k) => {
-                const f = this.entityFormMap[k];
-                if (f.field) {
-                    entity[f.field] = f.default;
-                }
-            });
-        }
-        return entity;
-    }
-
-    save(successCallback: any, errorCallback: any): void { }
-
-    getError(field) {
-        const err = this.validationError.find((e) => e.field === field);
-        return err && err.message;
-    }
-
-    openDeleteDialog(successCallback?: any, errorCallback?: any) {
-        const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
-            data: { title: $localize`:@@HYT_delete_item_question:Do you really want to delete this item?`, message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone`}
-        });
-        dialogRef.dialogRef.afterClosed().subscribe((result) => {
-            if (result === 'delete') {
-                this.delete(successCallback, errorCallback);
+          const keys = Object.keys(this.entityFormMap);
+          for (const k of keys) {
+            if (this.entityFormMap[k].field === e.field) {
+              e.field = k;
+              break;
             }
-        });
-    }
-
-    resetForm() {
-        this.originalValue = this.serialize();
-        // this.buildHintMessages();
-    }
-
-    resetErrors() {
-        this.validationError = [];
-    }
-
-    setErrors(err) {
-        if (err.error && err.error.validationErrors) {
-            this.validationError = err.error.validationErrors;
-            this.validationError.map((e) => {
-                // TODO: this is a temporary patch to deal
-                // TODO: with wrong field names in error response
-                if (this.entityFormMap) {
-                    const keys = Object.keys(this.entityFormMap);
-                    for (const k of keys) {
-                        if (this.entityFormMap[k].field === e.field) {
-                            e.field = k;
-                            break;
-                        }
-                    }
-                }
-                // ^^^^^^
-                this.form.get(e.field).setErrors({
-                    validateInjectedError: {
-                        valid: false
-                    }
-                });
-            });
-            this.loadingStatus = LoadingStatusEnum.Ready;
-        } else {
-            this.loadingStatus = LoadingStatusEnum.Error;
+          }
         }
-    }
-
-    private serialize() {
-        const keys = Object.keys(this.form.value);
-        keys.sort((a, b) => {
-            return a > b ? 1 : (a === b ? 0 : -1);
+        // ^^^^^^
+        this.form.get(e.field).setErrors({
+          validateInjectedError: {
+            valid: false,
+          },
         });
-        const copy = {};
-        keys.forEach((k) => {
-            copy[k] = this.form.value[k];
-        });
-        return JSON.stringify(copy, this.circularFix);
+      });
+      this.loadingStatus = LoadingStatusEnum.Ready;
+    } else {
+      this.loadingStatus = LoadingStatusEnum.Error;
     }
+  }
 
+  private serialize() {
+    const keys = Object.keys(this.form.value);
+    keys.sort((a, b) => {
+      return a > b ? 1 : a === b ? 0 : -1;
+    });
+    const copy = {};
+    keys.forEach((k) => {
+      copy[k] = this.form.value[k];
+    });
+    return JSON.stringify(copy, this.circularFix);
+  }
 }

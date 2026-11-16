@@ -1,8 +1,18 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 
-import { GridStackNode, GridStackOptions, GridStackWidget } from 'gridstack';
-import { elementCB, GridstackComponent } from 'gridstack/dist/angular';
+import { GridStackNode, GridStackOptions, GridStackWidget } from "gridstack";
+import { elementCB, GridstackComponent } from "gridstack/dist/angular";
 
 import {
   Dashboard,
@@ -10,38 +20,44 @@ import {
   HPacket,
   PacketData,
   RealtimeDataService,
-} from 'core';
+} from "core";
 
-import { ConfirmDialogService, DialogService } from 'components';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import { WidgetAction, WidgetConfig } from '../../base/base-widget/model/widget.model';
-import { ServiceType } from '../../service/model/service-type';
-import { DashboardConfigService } from '../dashboard-config.service';
-import { WidgetSelection } from '../model/dashboard.model';
-import { WidgetFullscreenDialogComponent } from '../widget-fullscreen-dialog/widget-fullscreen-dialog.component';
-import { WidgetSettingsDialogComponent } from '../widget-settings-dialog/widget-settings-dialog.component';
+import { ConfirmDialogService, DialogService } from "components";
+import { Observable, Subject, Subscription } from "rxjs";
+import { map, takeUntil } from "rxjs/operators";
+import {
+  WidgetAction,
+  WidgetConfig,
+} from "../../base/base-widget/model/widget.model";
+import { ServiceType } from "../../service/model/service-type";
+import { DashboardConfigService } from "../dashboard-config.service";
+import { WidgetSelection } from "../model/dashboard.model";
+import { WidgetFullscreenDialogComponent } from "../widget-fullscreen-dialog/widget-fullscreen-dialog.component";
+import { WidgetSettingsDialogComponent } from "../widget-settings-dialog/widget-settings-dialog.component";
 
 enum PageStatus {
   Loading = 0,
   Standard = 1,
   New = 2,
-  Error = -1
+  Error = -1,
 }
 
 @Component({
-    selector: 'hyperiot-dashboard-widgets-layout',
-    templateUrl: './widgets-layout.component.html',
-    styleUrls: ['./widgets-layout.component.scss'],
-    encapsulation: ViewEncapsulation.Emulated,
-    standalone: false
+  selector: "hyperiot-dashboard-widgets-layout",
+  templateUrl: "./widgets-layout.component.html",
+  styleUrls: ["./widgets-layout.component.scss"],
+  encapsulation: ViewEncapsulation.Emulated,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
   widgetReadyCounter = 0;
 
-  @ViewChild(WidgetSettingsDialogComponent, { static: true }) widgetSetting: WidgetSettingsDialogComponent;
+  @ViewChild(WidgetSettingsDialogComponent, { static: true })
+  widgetSetting: WidgetSettingsDialogComponent;
 
-  @ViewChild(GridstackComponent, { static: false }) gridstackComponent: GridstackComponent;
+  @ViewChild(GridstackComponent, { static: false })
+  gridstackComponent: GridstackComponent;
 
   @Input() dashboardValue: Dashboard;
 
@@ -87,21 +103,22 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
    * How widgets are placed when the grid has fewer columns than the saved layout:
    * 'list' keeps the reading order (may leave gaps), 'compact' puts each widget in the first free slot
    */
-  private readonly SHRINK_LAYOUT: 'list' | 'compact' = 'list';
+  private readonly SHRINK_LAYOUT: "list" | "compact" = "list";
 
   readonly gridOptions: GridStackOptions = {
     column: this.MAX_COLS,
     cellHeight: this.CELL_HEIGHT,
     margin: this.ITEM_MARGIN,
     minRow: 1,
-    mode: 'top', // widgets move up to fill empty space
-    handle: '.toolbar-title',
-    resizable: { handles: 'e,se,s,sw,w' },
+    mode: "top", // widgets move up to fill empty space
+    handle: ".toolbar-title",
+    resizable: { handles: "e,se,s,sw,w" },
     columnOpts: {
       columnMax: this.MAX_COLS,
       // with a function gridstack restores its cached positions when the grid gets wider,
       // and calls it only for the widgets it has to place
-      layout: (column, oldColumn, placed, toPlace) => this.reflowWidgets(column, placed, toPlace),
+      layout: (column, oldColumn, placed, toPlace) =>
+        this.reflowWidgets(column, placed, toPlace),
       // grid width -> columns, keeps every column at least ~140px wide
       breakpoints: [
         { w: 1400, c: 8 },
@@ -127,8 +144,8 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     private configService: DashboardConfigService,
     private activatedRoute: ActivatedRoute,
     private dialogService: DialogService,
-    private confirmDialogService: ConfirmDialogService,
-  ) { }
+    private confirmDialogService: ConfirmDialogService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -153,7 +170,8 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
       this.streamSubscription = null;
     }
 
-    this.configService.getDashboard(this.dashboardValue.id)
+    this.configService
+      .getDashboard(this.dashboardValue.id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (d: Dashboard) => {
@@ -161,8 +179,8 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
 
           this.dashboardType = this.dashboardEntity.dashboardType;
           this.projectId = this.dashboardEntity.hproject.id;
-          this.streamSubscription = this.realtimeDataService.eventStream
-            .subscribe((p) => {
+          this.streamSubscription =
+            this.realtimeDataService.eventStream.subscribe((p) => {
               const packet = p.data;
               const remoteTimestamp = this.getTimestampFieldValue(packet);
               this.topologyResTimeChange.emit({ timeMs: remoteTimestamp });
@@ -177,36 +195,38 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
                 this.lastSavedSnapshot = this.getDashboardSnapshot();
 
                 this.pageStatus = PageStatus.Standard;
-              }
+              },
             });
         },
         error: (err) => {
           console.error(err);
           this.pageStatus = PageStatus.Error;
-        }
+        },
       });
   }
 
   private getWidgetsMapped(widgets: any): Observable<any> {
-    const obs: Observable<any> = new Observable(subscriber => {
+    const obs: Observable<any> = new Observable((subscriber) => {
       subscriber.next(widgets);
     });
 
-    return obs.pipe(map(
-      (data: any[]) => {
-        const config = [];
-        // Normalize data received from server
-        data.map((w: DashboardWidget) => {
-          const widget = JSON.parse(w.widgetConf);
-          widget.projectId = +this.projectId;
-          widget.id = w.id;
-          widget.entityVersion = w.entityVersion;
-          config.push(widget);
-        });
-        return config;
-      },
-      (error: any) => console.error(error)
-    ));
+    return obs.pipe(
+      map(
+        (data: any[]) => {
+          const config = [];
+          // Normalize data received from server
+          data.map((w: DashboardWidget) => {
+            const widget = JSON.parse(w.widgetConf);
+            widget.projectId = +this.projectId;
+            widget.id = w.id;
+            widget.entityVersion = w.entityVersion;
+            config.push(widget);
+          });
+          return config;
+        },
+        (error: any) => console.error(error)
+      )
+    );
   }
 
   // Grid events
@@ -224,7 +244,10 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     return node;
   }
 
-  private createGridNode(widget: WidgetConfig, autoPosition = false): GridStackWidget {
+  private createGridNode(
+    widget: WidgetConfig,
+    autoPosition = false
+  ): GridStackWidget {
     return {
       id: String(widget.id),
       x: widget.x,
@@ -273,11 +296,18 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
    * @param placed widgets already positioned by gridstack from its cache, the placed widgets are added here
    * @param toPlace widgets to position
    */
-  private reflowWidgets(column: number, placed: GridStackNode[], toPlace: GridStackNode[]): void {
+  private reflowWidgets(
+    column: number,
+    placed: GridStackNode[],
+    toPlace: GridStackNode[]
+  ): void {
     // the saved layout fits in the grid: use it as it is.
     // Needed when widening: gridstack caches the loaded layout by its own width (e.g. 8 columns),
     // so going back to 10 columns finds no cache and calls this function
-    const savedWidth = Math.max(0, ...this.dashboard.map(({ x, cols }) => (x ?? 0) + (cols ?? 1)));
+    const savedWidth = Math.max(
+      0,
+      ...this.dashboard.map(({ x, cols }) => (x ?? 0) + (cols ?? 1))
+    );
     if (column >= savedWidth) {
       toPlace.forEach((node) => {
         const widget = this.dashboard.find(({ id }) => String(id) === node.id);
@@ -312,11 +342,16 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     placed.forEach(occupy);
 
     const items = toPlace
-      .map((node) => ({ node, widget: this.dashboard.find(({ id }) => String(id) === node.id) }))
+      .map((node) => ({
+        node,
+        widget: this.dashboard.find(({ id }) => String(id) === node.id),
+      }))
       .sort((a, b) => {
         const ay = a.widget?.y ?? a.node.y ?? 0;
         const by = b.widget?.y ?? b.node.y ?? 0;
-        return ay !== by ? ay - by : (a.widget?.x ?? a.node.x ?? 0) - (b.widget?.x ?? b.node.x ?? 0);
+        return ay !== by
+          ? ay - by
+          : (a.widget?.x ?? a.node.x ?? 0) - (b.widget?.x ?? b.node.x ?? 0);
       });
 
     // cells are scanned in reading order: index = y * column + x
@@ -324,8 +359,11 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     items.forEach(({ node, widget }) => {
       const w = Math.min(widget?.cols ?? node.w, column);
       const h = node.h;
-      let index = this.SHRINK_LAYOUT === 'list' ? nextIndex : 0;
-      while (index % column + w > column || !isFree(index % column, Math.floor(index / column), w, h)) {
+      let index = this.SHRINK_LAYOUT === "list" ? nextIndex : 0;
+      while (
+        (index % column) + w > column ||
+        !isFree(index % column, Math.floor(index / column), w, h)
+      ) {
         index++;
       }
 
@@ -340,11 +378,11 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
 
   onDragStart({ el }: elementCB): void {
     // adding class to set specific cursor and to prevent tooltip to show during drag
-    el.querySelector('.toolbar-title')?.classList.add('dragging');
+    el.querySelector(".toolbar-title")?.classList.add("dragging");
   }
 
   onDragStop({ el }: elementCB): void {
-    el.querySelector('.toolbar-title')?.classList.remove('dragging');
+    el.querySelector(".toolbar-title")?.classList.remove("dragging");
   }
 
   /** Applies to the grid a size set by the widget configuration (e.g. ECG, defibrillator) */
@@ -360,9 +398,13 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
   onWidgetSettingClose(event: any) {
     // The operation is being done exclusively for the ECG because the widget uses a new functionality that allows it to
     // change size based on the configuration. Later we will have to handle it in a more general way
-    const configuredWidget = this.dashboard.find(widget => widget.id === this.currentWidgetIdSetting);
-    if (configuredWidget?.type === 'ecg') {
-      this.dashboard[this.dashboard.indexOf(configuredWidget)] = { ...configuredWidget };
+    const configuredWidget = this.dashboard.find(
+      (widget) => widget.id === this.currentWidgetIdSetting
+    );
+    if (configuredWidget?.type === "ecg") {
+      this.dashboard[this.dashboard.indexOf(configuredWidget)] = {
+        ...configuredWidget,
+      };
     }
     this.saveDashboard();
 
@@ -372,7 +414,7 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
 
   onWidgetAction(data: WidgetAction) {
     switch (data.action) {
-      case 'toolbar:close':
+      case "toolbar:close":
         if (!this.removingWidget) {
           const removeWidget = () => {
             this.removingWidget = true;
@@ -380,49 +422,56 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
               this.widgetLayoutEvent.emit();
               this.removingWidget = false;
             });
-          }
+          };
 
-          if (JSON.parse(localStorage.getItem('confirm-delete-widget-dismissed-' + this.dashboardValue.id))) {
+          if (
+            JSON.parse(
+              localStorage.getItem(
+                "confirm-delete-widget-dismissed-" + this.dashboardValue.id
+              )
+            )
+          ) {
             removeWidget();
           } else {
             const confirmDialog = this.confirmDialogService.open({
               text: $localize`:@@HYT_widget_delete_confirm:Attention, the widget and its configuration will be permanently deleted. Proceed?`,
               dismissable: $localize`:@@HYT_widget_delete_confirm_dismiss:Don't request confirmation for this dashboard anymore`,
             });
-            confirmDialog.dialogRef
-              .afterClosed()
-              .subscribe(res => {
-                if (res) {
-                  if (res.dismissed) {
-                    localStorage.setItem('confirm-delete-widget-dismissed-' + this.dashboardValue.id, JSON.stringify(true));
-                  }
-                  if (res.result === 'accept') {
-                    removeWidget();
-                  }
+            confirmDialog.dialogRef.afterClosed().subscribe((res) => {
+              if (res) {
+                if (res.dismissed) {
+                  localStorage.setItem(
+                    "confirm-delete-widget-dismissed-" + this.dashboardValue.id,
+                    JSON.stringify(true)
+                  );
                 }
-              });
+                if (res.result === "accept") {
+                  removeWidget();
+                }
+              }
+            });
           }
         }
         break;
 
-      case 'toolbar:settings':
+      case "toolbar:settings":
         this.currentWidgetIdSetting = data.widget.id;
         this.openModal(data.widget);
         break;
 
-      case 'toolbar:fullscreen':
+      case "toolbar:fullscreen":
         this.currentWidgetIdSetting = data.widget.id;
         this.openFullScreenModal(data.widget, data.value);
         break;
 
-      case 'widget:ready':
+      case "widget:ready":
         this.widgetReadyCounter++;
         if (this.widgetReadyCounter === this.widgets.length) {
-          this.widgetLayoutEvent.emit('widgetsLayout:ready');
+          this.widgetLayoutEvent.emit("widgetsLayout:ready");
         }
         break;
 
-      case 'widget:auto-save':
+      case "widget:auto-save":
         this.onWidgetSettingClose(data);
         break;
     }
@@ -432,46 +481,46 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     const { areaId, hDeviceId } = this.activatedRoute.snapshot.params;
     const { cols, rows } = widget;
     const modalRef = this.dialogService.open(WidgetSettingsDialogComponent, {
-      width: '800px',
+      width: "800px",
       data: {
         currentWidgetIdSetting: this.currentWidgetIdSetting,
         widget,
         areaId,
-        hDeviceId
-      }
+        hDeviceId,
+      },
     });
 
-    modalRef.dialogRef
-      .afterClosed()
-      .subscribe({
-        next: (event) => {
-          // some settings (e.g. ECG, defibrillator) change the widget size
-          if (widget.cols !== cols || widget.rows !== rows) {
-            this.updateGridItemSize(widget);
-          }
-          this.onWidgetSettingClose(event);
+    modalRef.dialogRef.afterClosed().subscribe({
+      next: (event) => {
+        // some settings (e.g. ECG, defibrillator) change the widget size
+        if (widget.cols !== cols || widget.rows !== rows) {
+          this.updateGridItemSize(widget);
         }
-      });
+        this.onWidgetSettingClose(event);
+      },
+    });
   }
 
   private openFullScreenModal(widget: any, initData: PacketData[] = []) {
     const modalRef = this.dialogService.open(WidgetFullscreenDialogComponent, {
       backgroundClosable: true,
       data: {
-        serviceType: this.dashboardValue.dashboardType === 'REALTIME' ? ServiceType.ONLINE : ServiceType.OFFLINE,
+        serviceType:
+          this.dashboardValue.dashboardType === "REALTIME"
+            ? ServiceType.ONLINE
+            : ServiceType.OFFLINE,
         widget: { ...widget },
         initData,
-      }
+      },
     });
 
-    modalRef.dialogRef.afterClosed()
-      .subscribe(data => {
-        if (data && data?.action == 'widget:setting') {
-          setTimeout(() => {
-            this.openModal(data.widget);
-          }, 100);
-        }
-      });
+    modalRef.dialogRef.afterClosed().subscribe((data) => {
+      if (data && data?.action == "widget:setting") {
+        setTimeout(() => {
+          this.openModal(data.widget);
+        }, 100);
+      }
+    });
   }
 
   private removeItem(widget: WidgetConfig, callback: any): void {
@@ -491,7 +540,7 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.error(err);
-          }
+          },
         });
     } else if (callback) {
       callback();
@@ -509,8 +558,8 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
         y: 0,
         cols: widgetTemplate.cols,
         rows: widgetTemplate.rows,
-        dataUrl: '',
-        dataTableUrl: ''
+        dataUrl: "",
+        dataTableUrl: "",
       };
 
       this.configService
@@ -522,20 +571,31 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
             const node = this.createGridNode(newWidget, true);
             // a widget wider than the visible columns would make gridstack drop its full width layout
             // and save the reduced one, so on a narrow grid it starts as wide as the grid
-            node.w = Math.min(node.w, this.gridstackComponent?.grid?.getColumn() ?? this.MAX_COLS);
+            node.w = Math.min(
+              node.w,
+              this.gridstackComponent?.grid?.getColumn() ?? this.MAX_COLS
+            );
             this.gridNodes.set(newWidget.id, node);
             this.dashboard.push(newWidget);
           },
           error: (err) => {
             console.error(err);
-          }
+          },
         });
     }
   }
 
   private getDashboardSnapshot(): string {
     return JSON.stringify(
-      this.dashboard.map(({ id, x, y, cols, rows, name, config }) => ({ id, x, y, cols, rows, name, config }))
+      this.dashboard.map(({ id, x, y, cols, rows, name, config }) => ({
+        id,
+        x,
+        y,
+        cols,
+        rows,
+        name,
+        config,
+      }))
     );
   }
 
@@ -546,13 +606,12 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     }
     this.lastSavedSnapshot = snapshot;
 
-    this.configService.putConfig(this.dashboardValue.id, this.dashboard)
-      .pipe(
-        takeUntil(this.ngUnsubscribe)
-      )
+    this.configService
+      .putConfig(this.dashboardValue.id, this.dashboard)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res: any) => {
         if (res && res.status_code === 200) {
-          console.log('Dashboard updated');
+          console.log("Dashboard updated");
         }
       });
   }
@@ -561,7 +620,6 @@ export class WidgetsDashboardLayoutComponent implements OnInit, OnDestroy {
     const timestampFieldName = packet.timestampField;
     return packet.fields[timestampFieldName]
       ? packet.fields[timestampFieldName].value.long
-      : packet.fields['timestamp-default'].value.long;
+      : packet.fields["timestamp-default"].value.long;
   }
-
 }

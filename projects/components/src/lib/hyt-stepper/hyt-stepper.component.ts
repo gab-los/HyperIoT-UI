@@ -1,22 +1,34 @@
-import { Component, OnInit, Input, TemplateRef, ViewChild, ElementRef, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  Input,
+  TemplateRef,
+  ViewChild,
+  ElementRef,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
 
 @Component({
-    selector: 'hyt-stepper',
-    templateUrl: './hyt-stepper.component.html',
-    styleUrls: ['./hyt-stepper.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-stepper",
+  templateUrl: "./hyt-stepper.component.html",
+  styleUrls: ["./hyt-stepper.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytStepperComponent implements OnInit {
   /** ViewChild */
-  @ViewChild('stepper') private stepperElement: ElementRef;
+  @ViewChild("stepper") private stepperElement: ElementRef;
 
   /** Function called when click event is triggered */
   @Output() selectionChange: EventEmitter<any> = new EventEmitter();
 
   /** Variable used to display an alert icon if the field is Dirty */
-  @Input() isDirty : boolean[];
+  @Input() isDirty: boolean[];
 
   /** Enable liner stepper */
   @Input() isLinear = false;
@@ -38,13 +50,12 @@ export class HytStepperComponent implements OnInit {
    * constructor
    * @param fb FormBuilder
    */
-  constructor(private fb: UntypedFormBuilder) { }
+  constructor(private fb: UntypedFormBuilder) {}
 
   /**
    * ngOnInit
    */
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   /** Trigger next step */
   next() {
@@ -66,5 +77,4 @@ export class HytStepperComponent implements OnInit {
     const stepper = this.stepperElement as any;
     stepper.selectedIndex = index;
   }
-
 }

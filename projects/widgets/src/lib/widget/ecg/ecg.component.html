@@ -2,7 +2,7 @@
   <header-widget>
     <hyperiot-common-toolbar
       #toolbar
-      widgetName="{{widget.name}}"
+      widgetName="{{ widget.name }}"
       [toolbarIsVisible]="isToolbarVisible"
       (action)="onToolbarAction($event)"
       [config]="{
@@ -11,33 +11,31 @@
         showPlay: true,
         showRefresh: false,
         showTable: false
-      }">
+      }"
+    >
     </hyperiot-common-toolbar>
   </header-widget>
 
   <content-widget>
     @if (!isConfigured) {
     <div class="configure-notice">
-      <strong i18n="@@HYT_common_not_configured">Click 'Settings' button to configure.</strong>
+      <strong i18n="@@HYT_common_not_configured"
+        >Click 'Settings' button to configure.</strong
+      >
     </div>
-    } @else {
-      @if (!graph) {
-      <hyperiot-loader>
-      </hyperiot-loader>
-      } @else {
-        @for (graph of graphsList; track graph) {
-        <div>
-          <plotly-plot
-          divId="widget-{{widget.id}}-{{graph?.key}}-{{isToolbarVisible}}"
-          [data]="graph?.data"
-          [layout]="graph?.layout"
-          [config]="graph?.config"
-          (initialized)="onChartInitialized(graph?.key)">
-        </plotly-plot>
-        </div>
-        }
-      }
-    }
+    } @else { @if (!graph) {
+    <hyperiot-loader> </hyperiot-loader>
+    } @else { @for (graph of graphsList; track graph) {
+    <div>
+      <plotly-plot
+        divId="widget-{{ widget.id }}-{{ graph?.key }}-{{ isToolbarVisible }}"
+        [data]="$safeNavigationMigration(graph?.data)"
+        [layout]="$safeNavigationMigration(graph?.layout)"
+        [config]="$safeNavigationMigration(graph?.config)"
+        (initialized)="onChartInitialized($safeNavigationMigration(graph?.key))"
+      >
+      </plotly-plot>
+    </div>
+    } } }
   </content-widget>
-
 </hyperiot-base-widget-template>

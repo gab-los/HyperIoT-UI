@@ -1,27 +1,35 @@
-import { Component, OnInit, Injector, ViewChild, ViewEncapsulation,ChangeDetectorRef } from '@angular/core';
-import { ProjectFormEntity } from '../project-form-entity';
-import { ElementRef } from '@angular/core';
-import { AssetTag, AssetTagsService } from 'core';
-import { UntypedFormGroup } from '@angular/forms';
-import { SelectOption } from 'components';
-import { Router } from '@angular/router';
-import { AddTagModalComponent } from './add-tag-modal/add-tag-modal.component';
+import {
+  Component,
+  OnInit,
+  Injector,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ProjectFormEntity } from "../project-form-entity";
+import { ElementRef } from "@angular/core";
+import { AssetTag, AssetTagsService } from "core";
+import { UntypedFormGroup } from "@angular/forms";
+import { SelectOption } from "components";
+import { Router } from "@angular/router";
+import { AddTagModalComponent } from "./add-tag-modal/add-tag-modal.component";
 
 export enum TagStatus {
   Default = 0,
   Loaded = 1,
-  Error = -1
+  Error = -1,
 }
 
 @Component({
-    selector: 'hyt-tags-form',
-    templateUrl: './tags-form.component.html',
-    styleUrls: ['./tags-form.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-tags-form",
+  templateUrl: "./tags-form.component.html",
+  styleUrls: ["./tags-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class TagsFormComponent extends ProjectFormEntity implements OnInit {
-
   projectId: number;
 
   tagStatus: TagStatus = TagStatus.Default;
@@ -37,30 +45,30 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
   filteringForm: UntypedFormGroup;
 
   sortOptions: SelectOption[] = [
-    { value: 'none', label: $localize`:@@HYT_none:None` },
-    { value: 'alfabetic-increasing', label: $localize`:@@HYT_a_z:A-Z` },
-    { value: 'alfabetic-decreasing', label: $localize`:@@HYT_z_a:Z-A` },
-    { value: 'date-increasing', label: $localize`:@@HYT_oldest:Oldest` },
-    { value: 'date-decreasing', label: $localize`:@@HYT_newest:Newest` }
+    { value: "none", label: $localize`:@@HYT_none:None` },
+    { value: "alfabetic-increasing", label: $localize`:@@HYT_a_z:A-Z` },
+    { value: "alfabetic-decreasing", label: $localize`:@@HYT_z_a:Z-A` },
+    { value: "date-increasing", label: $localize`:@@HYT_oldest:Oldest` },
+    { value: "date-decreasing", label: $localize`:@@HYT_newest:Newest` },
   ];
 
   valueFilter = {
-    search: '',
-    sort: ''
+    search: "",
+    sort: "",
   };
 
   constructor(
     injector: Injector,
     private router: Router,
     private assetsTagService: AssetTagsService,
-    private cdr:ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {
-    super(injector,cdr);
-    this.formTemplateId = 'container-tag-form';
-    this.formTitle = 'Project Tags';
+    super(injector, cdr);
+    this.formTemplateId = "container-tag-form";
+    this.formTitle = "Project Tags";
     this.showSave = false;
     this.hideDelete = true;
-    this.projectId = +this.router.url.split('/')[2];
+    this.projectId = +this.router.url.split("/")[2];
   }
 
   ngOnInit() {
@@ -72,14 +80,14 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
         this.filteredTags = [...this.allTags];
         this.tagStatus = TagStatus.Loaded;
       },
-      err => {
+      (err) => {
         this.tagStatus = TagStatus.Error;
       }
     );
   }
 
   tagCreated(tag: AssetTag) {
-    const existingTag = this.allTags.find(t => t.id === tag.id);
+    const existingTag = this.allTags.find((t) => t.id === tag.id);
     if (existingTag) {
       existingTag.name = tag.name;
       existingTag.description = tag.description;
@@ -93,9 +101,9 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
   addTagModal() {
     const dialogRef = this.dialog.open(AddTagModalComponent, {
       data: {
-        mode: 'add',
+        mode: "add",
         projectId: this.projectId,
-      }
+      },
     });
     dialogRef.dialogRef.afterClosed().subscribe((res: AssetTag) => {
       if (!res) {
@@ -108,10 +116,10 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
   editTagModal(tag: AssetTag) {
     const dialogRef = this.dialog.open(AddTagModalComponent, {
       data: {
-        mode: 'edit',
+        mode: "edit",
         projectId: this.projectId,
         tag,
-      }
+      },
     });
     dialogRef.dialogRef.afterClosed().subscribe((res: AssetTag) => {
       if (!res) {
@@ -123,11 +131,11 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
 
   delete(tag: AssetTag): void {
     this.assetsTagService.deleteAssetTag(tag.id).subscribe(
-      res => {
-        this.allTags = this.allTags.filter(t => t.id !== tag.id);
+      (res) => {
+        this.allTags = this.allTags.filter((t) => t.id !== tag.id);
         this.search();
       },
-      err => {
+      (err) => {
         //TODO error modal
       }
     );
@@ -146,69 +154,90 @@ export class TagsFormComponent extends ProjectFormEntity implements OnInit {
   }
 
   search() {
-
-    if (this.valueFilter.search && this.valueFilter.search !== '') {
-      if (this.valueFilter.search.split('*').length > 18) {
+    if (this.valueFilter.search && this.valueFilter.search !== "") {
+      if (this.valueFilter.search.split("*").length > 18) {
         this.filteredTags = [];
       } else {
-        const reg = new RegExp(this.valueFilter.search.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.+').replace(/\?/g, '.'), 'i');
-        this.filteredTags = this.allTags.filter(el => (el.name.match(reg)));
+        const reg = new RegExp(
+          this.valueFilter.search
+            .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+            .replace(/\*/g, ".+")
+            .replace(/\?/g, "."),
+          "i"
+        );
+        this.filteredTags = this.allTags.filter((el) => el.name.match(reg));
         this.sort();
       }
     } else {
       this.filteredTags = [...this.allTags];
       this.sort();
     }
-
   }
 
   sort() {
     switch (this.valueFilter.sort) {
-
-      case 'none':
+      case "none":
         this.filteredTags.sort((a, b) => {
-          if (a.id > b.id) { return -1; }
-          if (a.id < b.id) { return 1; }
+          if (a.id > b.id) {
+            return -1;
+          }
+          if (a.id < b.id) {
+            return 1;
+          }
           return 0;
         });
         break;
 
-      case 'alfabetic-increasing':
+      case "alfabetic-increasing":
         this.filteredTags.sort((a, b) => {
-          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) { return -1; }
-          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) { return 1; }
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) {
+            return -1;
+          }
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) {
+            return 1;
+          }
           return 0;
         });
         break;
 
-      case 'alfabetic-decreasing':
+      case "alfabetic-decreasing":
         this.filteredTags.sort((a, b) => {
-          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) { return -1; }
-          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) { return 1; }
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) {
+            return -1;
+          }
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) {
+            return 1;
+          }
           return 0;
         });
         break;
 
-      case 'date-increasing':
+      case "date-increasing":
         this.filteredTags.sort((a, b) => {
-          if (a.id < b.id) { return -1; }
-          if (a.id > b.id) { return 1; }
+          if (a.id < b.id) {
+            return -1;
+          }
+          if (a.id > b.id) {
+            return 1;
+          }
           return 0;
         });
         break;
 
-      case 'date-decreasing':
+      case "date-decreasing":
         this.filteredTags.sort((a, b) => {
-          if (a.id > b.id) { return -1; }
-          if (a.id < b.id) { return 1; }
+          if (a.id > b.id) {
+            return -1;
+          }
+          if (a.id < b.id) {
+            return 1;
+          }
           return 0;
         });
         break;
 
       default:
         break;
-
     }
   }
-
 }

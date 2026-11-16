@@ -1,7 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ControlContainer, NgForm } from '@angular/forms';
-import { SelectOption } from 'components';
-import { HPacket, HPacketField, HPacketFieldsHandlerService } from 'core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ControlContainer, NgForm } from "@angular/forms";
+import { SelectOption } from "components";
+import { HPacket, HPacketField, HPacketFieldsHandlerService } from "core";
 
 export interface PacketField extends HPacketField {
   packetId: number;
@@ -9,13 +16,13 @@ export interface PacketField extends HPacketField {
 }
 
 @Component({
-    selector: 'hyperiot-packet-fields-select',
-    templateUrl: './packet-fields-select.component.html',
-    styleUrls: ['./packet-fields-select.component.css'],
-    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
-    standalone: false
+  selector: "hyperiot-packet-fields-select",
+  templateUrl: "./packet-fields-select.component.html",
+  styleUrls: ["./packet-fields-select.component.css"],
+  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-
 export class PacketFieldsSelectComponent implements OnInit {
   @Input() projectId: number;
   @Input() name: string;
@@ -23,7 +30,8 @@ export class PacketFieldsSelectComponent implements OnInit {
   @Input() isRequired: boolean = false;
 
   @Input() fieldPacket: PacketField;
-  @Output() fieldPacketChange: EventEmitter<PacketField> = new EventEmitter<PacketField>();
+  @Output() fieldPacketChange: EventEmitter<PacketField> =
+    new EventEmitter<PacketField>();
 
   selectedFieldsOptions: number[] = [];
 
@@ -37,12 +45,12 @@ export class PacketFieldsSelectComponent implements OnInit {
 
   constructor(
     public settingsForm: NgForm,
-    private hPacketFieldsHandlerService: HPacketFieldsHandlerService,
-  ) { }
+    private hPacketFieldsHandlerService: HPacketFieldsHandlerService
+  ) {}
 
   ngOnInit(): void {
     if (!this.projectId) {
-      throw new Error('No projectId provided');
+      throw new Error("No projectId provided");
     }
     //TODO if it needs to be modified from outside then we must put it in onchange
     if (this.fieldPacket) {
@@ -52,10 +60,10 @@ export class PacketFieldsSelectComponent implements OnInit {
     if (this.projectPackets) {
       this.hpacketsOptions = this.projectPackets.map((packet) => ({
         value: packet.id,
-        label: packet.name
+        label: packet.name,
       }));
       this.onPacketChange();
-    };
+    }
   }
 
   onPacketChange() {
@@ -63,8 +71,13 @@ export class PacketFieldsSelectComponent implements OnInit {
       return;
     }
     this.selectedFieldsOptions = [];
-    this.selectedPacket = this.projectPackets.find((packet) => packet.id === this.selectedPacketId);
-    if (this.fieldPacket && this.fieldPacket.packetId === this.selectedPacket.id) {
+    this.selectedPacket = this.projectPackets.find(
+      (packet) => packet.id === this.selectedPacketId
+    );
+    if (
+      this.fieldPacket &&
+      this.fieldPacket.packetId === this.selectedPacket.id
+    ) {
       this.selectedFieldsOptions = [this.fieldPacket.id];
     }
     // this.fieldPacketChange.emit(null);
@@ -83,20 +96,27 @@ export class PacketFieldsSelectComponent implements OnInit {
   // }
 
   onPacketFieldChange(selected) {
-    if(selected.length === 0) {
+    if (selected.length === 0) {
       this.fieldPacketChange.emit(null);
       return;
     }
     // const selectedPacket = this.projectPackets.find((packet) => packet.id === this.selectedPacketId);
-    const selectedPacketField = this.hPacketFieldsHandlerService.findFieldFromPacketFieldsTree(this.selectedPacket, selected[0]);
-    const fieldSequence = { };
-    fieldSequence[selectedPacketField.id] = this.hPacketFieldsHandlerService.getStringifiedSequenceFromPacket(this.selectedPacket, selectedPacketField.id);
-    this.fieldPacketChange.emit(Object.assign(
-      selectedPacketField,
-      {
+    const selectedPacketField =
+      this.hPacketFieldsHandlerService.findFieldFromPacketFieldsTree(
+        this.selectedPacket,
+        selected[0]
+      );
+    const fieldSequence = {};
+    fieldSequence[selectedPacketField.id] =
+      this.hPacketFieldsHandlerService.getStringifiedSequenceFromPacket(
+        this.selectedPacket,
+        selectedPacketField.id
+      );
+    this.fieldPacketChange.emit(
+      Object.assign(selectedPacketField, {
         packetId: this.selectedPacketId,
         fieldSequence,
-      }
-    ));
+      })
+    );
   }
 }

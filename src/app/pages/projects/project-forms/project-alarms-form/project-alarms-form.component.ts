@@ -1,29 +1,74 @@
-import { ChangeDetectorRef, Component, ElementRef, Injector, Input, OnChanges, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { ActivatedRoute } from '@angular/router';
-import { DialogService, Option, RuleDefinitionComponent } from 'components';
-import { Alarm, AlarmEvent, AlarmsEventsService, AlarmsService, AssetTag, AssetTagsService, HPacket, HProject, HPacketService, Logger, LoggerService, Rule } from 'core';
-import { ToastrService } from 'ngx-toastr';
-import { Observable, Subject, Subscription, forkJoin, of, switchMap, takeUntil, zip } from 'rxjs';
-import { DeleteConfirmDialogComponent } from 'src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component';
-import { PendingChangesDialogComponent } from 'src/app/components/dialogs/pending-changes-dialog/pending-changes-dialog.component';
-import { GenericErrorModalComponent } from 'src/app/components/modals/generic-error/generic-error-modal.component';
-import { SummaryListItem } from '../../project-detail/generic-summary-list/generic-summary-list.component';
-import { TagStatus } from '../packet-enrichment-form/asset-tag/asset-tag.component';
-import { LoadingStatusEnum, ProjectFormEntity } from '../project-form-entity';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Injector,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
+import {
+  MatAutocomplete,
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteTrigger,
+} from "@angular/material/autocomplete";
+import { MatChipInputEvent } from "@angular/material/chips";
+import { ActivatedRoute } from "@angular/router";
+import { DialogService, Option, RuleDefinitionComponent } from "components";
+import {
+  Alarm,
+  AlarmEvent,
+  AlarmsEventsService,
+  AlarmsService,
+  AssetTag,
+  AssetTagsService,
+  HPacket,
+  HProject,
+  HPacketService,
+  Logger,
+  LoggerService,
+  Rule,
+} from "core";
+import { ToastrService } from "ngx-toastr";
+import {
+  Observable,
+  Subject,
+  Subscription,
+  forkJoin,
+  of,
+  switchMap,
+  takeUntil,
+  zip,
+} from "rxjs";
+import { DeleteConfirmDialogComponent } from "src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component";
+import { PendingChangesDialogComponent } from "src/app/components/dialogs/pending-changes-dialog/pending-changes-dialog.component";
+import { GenericErrorModalComponent } from "src/app/components/modals/generic-error/generic-error-modal.component";
+import { SummaryListItem } from "../../project-detail/generic-summary-list/generic-summary-list.component";
+import { TagStatus } from "../packet-enrichment-form/asset-tag/asset-tag.component";
+import { LoadingStatusEnum, ProjectFormEntity } from "../project-form-entity";
 
 @Component({
-    selector: 'hyt-project-alarms-form',
-    templateUrl: './project-alarms-form.component.html',
-    styleUrls: ['./project-alarms-form.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-project-alarms-form",
+  templateUrl: "./project-alarms-form.component.html",
+  styleUrls: ["./project-alarms-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnInit, OnChanges, OnDestroy {
-
-  @ViewChild('auto', { read: MatAutocompleteTrigger })
+export class ProjectAlarmsFormComponent
+  extends ProjectFormEntity
+  implements OnInit, OnChanges, OnDestroy
+{
+  @ViewChild("auto", { read: MatAutocompleteTrigger })
   triggerAutocompleteInput: MatAutocompleteTrigger;
 
   /** Subject to manage open subscriptions */
@@ -31,15 +76,15 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
 
   entity: Alarm = {} as Alarm;
   entityFormMap = {
-    'alarm-name': {
-      field: 'name'
+    "alarm-name": {
+      field: "name",
     },
-    'alarm-counter': {
-      field: 'counter'
+    "alarm-counter": {
+      field: "counter",
     },
-    'alarm-inhibited': {
-      field: 'inhibited'
-    }
+    "alarm-inhibited": {
+      field: "inhibited",
+    },
   };
   eventToEdit: Rule;
   editEventIndex: number;
@@ -47,22 +92,22 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   alarmName: string;
   severityList: Option[] = [
     {
-      label: 'Critical',
-      value: '3'
+      label: "Critical",
+      value: "3",
     },
     {
-      label: 'High',
-      value: '2',
+      label: "High",
+      value: "2",
     },
     {
-      label: 'Medium',
-      value: '1',
+      label: "Medium",
+      value: "1",
     },
     {
-      label: 'Low',
-      value: '0',
+      label: "Low",
+      value: "0",
       checked: true,
-    }
+    },
   ];
 
   newAlarm: boolean;
@@ -85,8 +130,8 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   private logger: Logger;
 
   inhibitedOptions: Option[] = [
-    { value: 'false', label: 'Enabled', checked: true },
-    { value: 'true', label: 'Inhibited' }
+    { value: "false", label: "Enabled", checked: true },
+    { value: "true", label: "Inhibited" },
   ];
 
   private activatedRouteSubscription: Subscription;
@@ -94,23 +139,24 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   @Input()
   currentProject: HProject;
 
-  @ViewChild('alarmDef')
+  @ViewChild("alarmDef")
   ruleDefinitionComponent: RuleDefinitionComponent;
 
   // the following properties allow tag management
   // at the moment, only one tag can be assigned to each event
-  @ViewChild('tagInput') tagInput: ElementRef<HTMLInputElement>;
-  @ViewChild('auto') matAutocomplete: MatAutocomplete;
+  @ViewChild("tagInput") tagInput: ElementRef<HTMLInputElement>;
+  @ViewChild("auto") matAutocomplete: MatAutocomplete;
   tagStatus: TagStatus = TagStatus.Default;
   allTags: AssetTag[];
-  selectedTags: AssetTag[];  // it is an array to support more tags (in the future)
+  selectedTags: AssetTag[]; // it is an array to support more tags (in the future)
   tagCtrl = new UntypedFormControl();
 
   isActive: boolean; // TODO bind this property to RuleAction object
   addEventMode = false;
   changedAlarmData = false;
 
-  constructor(injector: Injector,
+  constructor(
+    injector: Injector,
     private alarmsService: AlarmsService,
     private alarmEventsService: AlarmsEventsService,
     private activatedRoute: ActivatedRoute,
@@ -121,39 +167,42 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     private hPacketsService: HPacketService,
     private loggerService: LoggerService
   ) {
-
     super(injector, cdr);
-    this.formTemplateId = 'container-alarms';
+    this.formTemplateId = "container-alarms";
     this.longDefinition = this.entitiesService.alarm.longDefinition;
     this.formTitle = this.entitiesService.alarm.formTitle;
     this.icon = this.entitiesService.alarm.icon;
     this.hideDelete = true; // hide 'Delete' button
-    this.isActive = false;  // TODO bind this property to RuleAction object
+    this.isActive = false; // TODO bind this property to RuleAction object
     this.newAlarm = false;
     this.selectedEventId = undefined;
     this.logger = new Logger(this.loggerService);
 
-    this.activatedRouteSubscription = this.activatedRoute.parent.params.subscribe(routeParams => {
-      if (routeParams.projectId) {
-        this.currentProject = { id: routeParams.projectId, entityVersion: null }; // read id of project
-        this.loadData();
-      }
-    });
+    this.activatedRouteSubscription =
+      this.activatedRoute.parent.params.subscribe((routeParams) => {
+        if (routeParams.projectId) {
+          this.currentProject = {
+            id: routeParams.projectId,
+            entityVersion: null,
+          }; // read id of project
+          this.loadData();
+        }
+      });
     this.selectedTags = [];
 
     this.formEvent = this.formBuilder.group({});
   }
 
   ngOnInit(): void {
-    this.formEvent.addControl('ruleDefinition', new UntypedFormControl(''));
+    this.formEvent.addControl("ruleDefinition", new UntypedFormControl(""));
     this.eventListMap = new Map<number, any>();
     this.selectedId = 0;
-    this.logger.debug('Current Project', this.currentProject)
+    this.logger.debug("Current Project", this.currentProject);
     this.getAssetTags();
     this.updateLabel = false;
-    this.hPacketsService.findAllHPacketByProjectIdAndType(this.currentProject.id, 'INPUT,IO').subscribe(
-      res => this.allPackets = res,
-    );
+    this.hPacketsService
+      .findAllHPacketByProjectIdAndType(this.currentProject.id, "INPUT,IO")
+      .subscribe((res) => (this.allPackets = res));
   }
 
   ngOnChanges() {
@@ -181,31 +230,29 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     const input = event.input;
     const value = event.value;
     // Add our tag
-    if ((value || '').trim()) {
-      const tag = this.allTags.find(t => t.name === value.trim());
-      if (tag)
-        this.selectedTags[0] = tag;
-      else
-        this.selectedTags = [];
+    if ((value || "").trim()) {
+      const tag = this.allTags.find((t) => t.name === value.trim());
+      if (tag) this.selectedTags[0] = tag;
+      else this.selectedTags = [];
     }
     // Reset the input value
     if (input) {
-      input.value = '';
+      input.value = "";
     }
     this.tagCtrl.setValue(null);
-
   }
 
   getAssetTags() {
     this.tagStatus = TagStatus.Default;
-    this.assetsTagService.findAllAssetTag()
+    this.assetsTagService
+      .findAllAssetTag()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
-        res => {
+        (res) => {
           this.allTags = res;
           this.tagStatus = TagStatus.Loaded;
         },
-        err => {
+        (err) => {
           this.tagStatus = TagStatus.Error;
         }
       );
@@ -216,24 +263,25 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.logger.debug('selected event viewValue', event.option.viewValue)
-    this.selectedTags[0] = this.allTags.find(tag => tag.name === event.option.viewValue);
-    this.tagInput.nativeElement.value = '';
+    this.logger.debug("selected event viewValue", event.option.viewValue);
+    this.selectedTags[0] = this.allTags.find(
+      (tag) => tag.name === event.option.viewValue
+    );
+    this.tagInput.nativeElement.value = "";
     this.tagCtrl.setValue(null);
   }
   /**
    * END TAGS
    */
 
-
   loadEmpty() {
     this.form.reset();
     this.formEvent.reset();
-    this.entity = { ... this.entitiesService.alarm.emptyModel };
+    this.entity = { ...this.entitiesService.alarm.emptyModel };
   }
 
   edit(alarm?: Alarm, readyCallback?) {
-    this.logger.debug('Edit, alarm:', alarm);
+    this.logger.debug("Edit, alarm:", alarm);
     this.updateSummaryList();
     // Save the alarm id to filter the list
     this.selectedId = alarm.id;
@@ -243,24 +291,27 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     this.addEventMode = false;
     this.formEvent.reset();
     const proceedWithEdit = () => {
-
       this.showCancel = true;
       // Map the eventList
-      let eventList = []
+      let eventList = [];
       for (let el of alarm.alarmEventList) {
-        eventList.push({ "event": el.event, "severity": el.severity, "id": el.id })
+        eventList.push({ event: el.event, severity: el.severity, id: el.id });
       }
 
       this.eventListMap.set(alarm.id, eventList);
 
       super.edit(alarm, () => {
-
         if (this.eventToEdit) {
           // retrieve first tag id of event
-          const oldTagId = this.eventToEdit.tagIds.length > 0 ?
-            this.eventToEdit.tagIds[0] : 0;
+          const oldTagId =
+            this.eventToEdit.tagIds.length > 0 ? this.eventToEdit.tagIds[0] : 0;
           // if tag id exists (i.e. is not equal to 0), find tag object among all tags retrieved from database
-          const oldTag = (oldTagId === 0) ? null : this.allTags.find(tag => tag.id === this.eventToEdit.tagIds[0]);
+          const oldTag =
+            oldTagId === 0
+              ? null
+              : this.allTags.find(
+                  (tag) => tag.id === this.eventToEdit.tagIds[0]
+                );
           // if a tag has been found, set it to selectedTag property (at the moment, only one tag inside array)
           this.selectedTags = oldTag ? [oldTag] : [];
         }
@@ -270,10 +321,10 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
         }
         this.setEventCounter();
       });
-    }
+    };
 
     let canDeactivate = this.canDeactivate();
-    if (typeof canDeactivate === 'boolean' && canDeactivate === true) {
+    if (typeof canDeactivate === "boolean" && canDeactivate === true) {
       proceedWithEdit();
     } else {
       (canDeactivate as Observable<any>).subscribe((res) => {
@@ -282,13 +333,14 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
         }
       });
     }
-  };
+  }
 
   loadData() {
     this.updateSummaryList();
     this.entityEvent.emit({
-      event: 'treeview:focus',
-      id: this.currentProject.id, type: 'project-alarms'
+      event: "treeview:focus",
+      id: this.currentProject.id,
+      type: "project-alarms",
     });
   }
 
@@ -304,8 +356,10 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     this.formEvent.reset();
     this.resetForm();
     this.loadEmpty();
-    this.form.get('alarm-counter').setValidators([Validators.pattern('(?!.*0).*')])
-    this.form.get('alarm-counter').setValue(0);
+    this.form
+      .get("alarm-counter")
+      .setValidators([Validators.pattern("(?!.*0).*")]);
+    this.form.get("alarm-counter").setValue(0);
     this.form.updateValueAndValidity();
   }
 
@@ -320,10 +374,10 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     this.updateLabel = false;
     this.addEventMode = true;
     this.formEvent.reset();
-    this.eventToEdit = { ... this.entitiesService.event.emptyModel };
+    this.eventToEdit = { ...this.entitiesService.event.emptyModel };
     this.eventToEdit.type = Rule.TypeEnum.ALARMEVENT;
     this.selectedTags = [];
-    this.formEvent.get('ruleDefinition').setValue({
+    this.formEvent.get("ruleDefinition").setValue({
       ruleDefinition: this.eventToEdit.ruleDefinition,
       rulePrettyDefinition: this.eventToEdit.rulePrettyDefinition,
     });
@@ -333,34 +387,34 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   / Method to load event from the event's table
   */
   loadEvent(e, index) {
-    this.logger.debug('loadEvent', e);
+    this.logger.debug("loadEvent", e);
     // Set index of map
     this.indexMap = index;
     // Modify user interface for update
     this.updateLabel = true;
     this.addEventMode = true;
     // Upload rule id for current event
-    this.ruleEventId = e.event.id
+    this.ruleEventId = e.event.id;
     // Set pre-existent fields
-    this.formEvent.get('event-name').setValue(e.event.name);
-    this.formEvent.get('event-description').setValue(e.event.description);
-    this.formEvent.get('event-severity').setValue(e.severity.toString());
-    this.eventToEdit = { ... this.entitiesService.event.emptyModel };
+    this.formEvent.get("event-name").setValue(e.event.name);
+    this.formEvent.get("event-description").setValue(e.event.description);
+    this.formEvent.get("event-severity").setValue(e.severity.toString());
+    this.eventToEdit = { ...this.entitiesService.event.emptyModel };
     try {
-      this.selectedEventId = e.id
+      this.selectedEventId = e.id;
+    } catch {
+      this.selectedEventId = undefined;
     }
-    catch {
-      this.selectedEventId = undefined
-    }
-    this.formEvent.get('ruleDefinition').setValue({
+    this.formEvent.get("ruleDefinition").setValue({
       ruleDefinition: e.event.ruleDefinition.toString(),
       rulePrettyDefinition: e.event.rulePrettyDefinition,
     });
     this.eventToEdit.type = Rule.TypeEnum.ALARMEVENT;
     // Empty and load tags
-    this.selectedTags = []
+    this.selectedTags = [];
     if (e.event.tagIds) {
-      for (const tagId of e.event.tagIds) this.selectedTags.push(this.allTags.find(o => o.id === +tagId));
+      for (const tagId of e.event.tagIds)
+        this.selectedTags.push(this.allTags.find((o) => o.id === +tagId));
     }
   }
 
@@ -371,30 +425,41 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     const addEditEvent = {
       id: undefined,
       event: {
-        name: this.formEvent.get('event-name').value,
-        description: this.formEvent.get('event-description').value,
-        ruleDefinition: this.formEvent.get('ruleDefinition').value.ruleDefinition,
-        rulePrettyDefinition: this.formEvent.get('ruleDefinition').value.rulePrettyDefinition,
+        name: this.formEvent.get("event-name").value,
+        description: this.formEvent.get("event-description").value,
+        ruleDefinition:
+          this.formEvent.get("ruleDefinition").value.ruleDefinition,
+        rulePrettyDefinition:
+          this.formEvent.get("ruleDefinition").value.rulePrettyDefinition,
         project: {
           id: this.currentProject.id,
         },
         packet: null,
-        jsonActions: '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
+        jsonActions:
+          '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
         type: Rule.TypeEnum.ALARMEVENT,
-        tagIds: this.selectedTags.map(o => o.id),
+        tagIds: this.selectedTags.map((o) => o.id),
       },
-      severity: this.formEvent.get('event-severity').value,
-    }
+      severity: this.formEvent.get("event-severity").value,
+    };
 
     // Case 1: new alarm
     if (this.newAlarm === true) {
-      this.toastr.info($localize`:@@HYT_remember_changes:Remember to save the alarm to maintain the changes`, $localize`:@@HYT_severity_saved:Severity saved!`);
+      this.toastr.info(
+        $localize`:@@HYT_remember_changes:Remember to save the alarm to maintain the changes`,
+        $localize`:@@HYT_severity_saved:Severity saved!`
+      );
       // Update eventListMap for all the 5 possibles scenario:
-      if (this.indexMap != undefined && this.selectedId > 0) this.eventListMap.get(this.selectedId)[this.indexMap] = addEditEvent;
-      else if (!this.indexMap && this.selectedId > 0) this.eventListMap.get(this.selectedId).push(addEditEvent);
-      else if (this.indexMap != undefined && this.selectedId == -1) this.eventListMap.get(-1)[this.indexMap] = addEditEvent;
-      else if (!this.indexMap && this.selectedId == 0) { this.eventListMap.set(-1, [addEditEvent]); this.selectedId = -1; }
-      else this.eventListMap.get(-1).push(addEditEvent);
+      if (this.indexMap != undefined && this.selectedId > 0)
+        this.eventListMap.get(this.selectedId)[this.indexMap] = addEditEvent;
+      else if (!this.indexMap && this.selectedId > 0)
+        this.eventListMap.get(this.selectedId).push(addEditEvent);
+      else if (this.indexMap != undefined && this.selectedId == -1)
+        this.eventListMap.get(-1)[this.indexMap] = addEditEvent;
+      else if (!this.indexMap && this.selectedId == 0) {
+        this.eventListMap.set(-1, [addEditEvent]);
+        this.selectedId = -1;
+      } else this.eventListMap.get(-1).push(addEditEvent);
       this.setEventCounter();
       this.formEvent.reset();
       if (this.addAnother) {
@@ -407,7 +472,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
       const obj = {
         alarm: {
           id: this.selectedId,
-          entityVersion: 0
+          entityVersion: 0,
         },
         event: {
           name: addEditEvent.event.name,
@@ -416,36 +481,44 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
           rulePrettyDefinition: addEditEvent.event.rulePrettyDefinition,
           project: {
             id: this.currentProject.id,
-            entityVersion: this.currentProject.entityVersion
+            entityVersion: this.currentProject.entityVersion,
           },
           packet: null,
-          jsonActions: '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
+          jsonActions:
+            '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
           type: Rule.TypeEnum.ALARMEVENT,
-          tagIds: this.selectedTags.map(o => o.id),
-          entityVersion: 0
+          tagIds: this.selectedTags.map((o) => o.id),
+          entityVersion: 0,
         },
         severity: addEditEvent.severity,
-        entityVersion: 0
-      } as AlarmEvent
+        entityVersion: 0,
+      } as AlarmEvent;
 
-      this.alarmEventsService.saveAlarmEvent(obj)
+      this.alarmEventsService
+        .saveAlarmEvent(obj)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
           next: (res) => {
-            this.logger.debug('SaveEvent, new event added', res);
+            this.logger.debug("SaveEvent, new event added", res);
             this.updateSummaryList();
-            this.toastr.success($localize`:@@HYT_severity_new_desc:New severity saved correctly`, $localize`:@@HYT_severity_new:New severity!`);
+            this.toastr.success(
+              $localize`:@@HYT_severity_new_desc:New severity saved correctly`,
+              $localize`:@@HYT_severity_new:New severity!`
+            );
             addEditEvent.id = res.id;
 
-            if (this.form.touched === true) this.toastr.info($localize`:@@HYT_alarm_still_changes:You still have to save the alarm changes`,
-              $localize`:@@HYT_severity_remember:Remember!`);
+            if (this.form.touched === true)
+              this.toastr.info(
+                $localize`:@@HYT_alarm_still_changes:You still have to save the alarm changes`,
+                $localize`:@@HYT_severity_remember:Remember!`
+              );
             this.formEvent.reset();
             if (this.addAnother) {
               this.addEvent(true);
             } else this.addEventMode = false;
           },
           error: (err) => {
-            this.logger.error('Error while saving event', err);
+            this.logger.error("Error while saving event", err);
             if (err.error) {
               this.setErrors(err);
             } else {
@@ -456,7 +529,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
+          },
         });
     }
 
@@ -465,7 +538,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
       const obj = {
         alarm: {
           id: this.selectedId,
-          entityVersion: 0
+          entityVersion: 0,
         },
         id: this.selectedEventId,
         event: {
@@ -476,42 +549,52 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
           rulePrettyDefinition: addEditEvent.event.rulePrettyDefinition,
           project: {
             id: this.currentProject.id,
-            entityVersion: this.currentProject.entityVersion
+            entityVersion: this.currentProject.entityVersion,
           },
           packet: null,
-          jsonActions: '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
+          jsonActions:
+            '["{\\"actionName\\": \\"it.acsoftware.hyperiot.alarm.service.actions.NoAlarmAction\\", \\"active\\": true}"]',
           type: Rule.TypeEnum.ALARMEVENT,
-          tagIds: this.selectedTags.map(o => o.id),
-          entityVersion: 0
+          tagIds: this.selectedTags.map((o) => o.id),
+          entityVersion: 0,
         },
         severity: addEditEvent.severity,
-        entityVersion: 0
-      } as AlarmEvent
-      this.alarmEventsService.updateAlarmEvent(obj)
+        entityVersion: 0,
+      } as AlarmEvent;
+      this.alarmEventsService
+        .updateAlarmEvent(obj)
         .pipe(
           takeUntil(this.ngUnsubscribe),
           switchMap((res) => {
-            const alarmEvents = this.alarmEventsService.findAllAlarmEventByAlarmId(obj.alarm.id)
-            return zip(of(res), alarmEvents)
+            const alarmEvents =
+              this.alarmEventsService.findAllAlarmEventByAlarmId(obj.alarm.id);
+            return zip(of(res), alarmEvents);
           })
         )
         .subscribe({
           next: (res) => {
-            this.logger.debug('SaveEvent, event updated', res[0])
+            this.logger.debug("SaveEvent, event updated", res[0]);
             this.updateSummaryList();
-            this.toastr.success($localize`:@@HYT_severity_updated_desc:Severity updated correctly`, $localize`:@@HYT_severity_updated:Severity updated!`);
+            this.toastr.success(
+              $localize`:@@HYT_severity_updated_desc:Severity updated correctly`,
+              $localize`:@@HYT_severity_updated:Severity updated!`
+            );
             if (this.form.touched === true)
-              this.toastr.info($localize`:@@HYT_alarm_still_changes:You still have to save the alarm changes`, $localize`:@@HYT_severity_remember:Remember!`);
+              this.toastr.info(
+                $localize`:@@HYT_alarm_still_changes:You still have to save the alarm changes`,
+                $localize`:@@HYT_severity_remember:Remember!`
+              );
 
             // addAnother boolean
-            if (this.addAnother == undefined || !this.addAnother) this.addEventMode = false;
+            if (this.addAnother == undefined || !this.addAnother)
+              this.addEventMode = false;
             else {
               this.addAnother = false;
               this.addEvent(true);
             }
           },
           error: (err) => {
-            this.logger.error('Error while updating event', err[0]);
+            this.logger.error("Error while updating event", err[0]);
             if (err && err.error) {
               this.setErrors(err);
             } else {
@@ -522,8 +605,8 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
-        })
+          },
+        });
     }
   }
 
@@ -532,16 +615,17 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   */
   removeEvent(index: number) {
     if (this.eventsAlarm[index]) {
-      this.alarmEventsService.deleteAlarmEvent(this.eventsAlarm[index].id)
+      this.alarmEventsService
+        .deleteAlarmEvent(this.eventsAlarm[index].id)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
           next: (res) => {
-            this.logger.debug('removeEvent', res);
+            this.logger.debug("removeEvent", res);
             this.updateSummaryList();
             this.setEventCounter();
             this.addEventMode = false;
             this.eventsAlarm.splice(index, 1);
-            this.eventsAlarm = [... this.eventsAlarm];
+            this.eventsAlarm = [...this.eventsAlarm];
           },
           error: (err) => {
             this.logger.error(`deleteEvent`, err);
@@ -555,7 +639,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
+          },
         });
     }
   }
@@ -564,97 +648,112 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   / Method that fill the formEvent with a copy of the passed event
   */
   duplicateEvent(e) {
-    this.logger.debug('duplicateEvent', e);
+    this.logger.debug("duplicateEvent", e);
     this.addEvent();
-    this.formEvent.get('event-name').setValue(e.event.name + '_copy');
-    this.formEvent.get('event-description').setValue(e.event.description);
-    this.formEvent.get('event-severity').setValue(e.severity.toString());
-    this.eventToEdit = { ... this.entitiesService.event.emptyModel };
-    this.formEvent.get('ruleDefinition').setValue({
+    this.formEvent.get("event-name").setValue(e.event.name + "_copy");
+    this.formEvent.get("event-description").setValue(e.event.description);
+    this.formEvent.get("event-severity").setValue(e.severity.toString());
+    this.eventToEdit = { ...this.entitiesService.event.emptyModel };
+    this.formEvent.get("ruleDefinition").setValue({
       ruleDefinition: e.event.ruleDefinition.toString(),
       rulePrettyDefinition: e.event.rulePrettyDefinition,
     });
     this.eventToEdit.type = Rule.TypeEnum.ALARMEVENT;
     // Empty and load tags
-    this.selectedTags = []
+    this.selectedTags = [];
     if (e.event.tagIds) {
-      for (const tagId of e.event.tagIds) this.selectedTags.push(this.allTags.find(o => o.id == tagId));
+      for (const tagId of e.event.tagIds)
+        this.selectedTags.push(this.allTags.find((o) => o.id == tagId));
     }
-    this.setEventCounter()
+    this.setEventCounter();
   }
 
   changeAlarmInhibited(event) {
-    this.logger.debug("Entity", this.entity)
+    this.logger.debug("Entity", this.entity);
     this.changedAlarmData = true;
     this.entity.inhibited = event;
-
   }
 
   updateSummaryList() {
-    this.alarmsService.findAllAlarmByProjectId(this.currentProject.id)
+    this.alarmsService
+      .findAllAlarmByProjectId(this.currentProject.id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (alarms: Alarm[]) => {
           this.summaryList = {
             title: this.formTitle,
-            list: alarms
-              .map(l => {
-                return { name: l.name, data: l };
-              }) as SummaryListItem[]
+            list: alarms.map((l) => {
+              return { name: l.name, data: l };
+            }) as SummaryListItem[],
           };
 
-          const observables = this.summaryList.list.map(alarm =>
+          const observables = this.summaryList.list.map((alarm) =>
             forkJoin(
-              alarm.data.alarmEventList.map(event =>
-                this.assetsTagService.getAssetTagResourceList('it.acsoftware.hyperiot.rule.model.Rule', event.event.id)
+              alarm.data.alarmEventList.map((event) =>
+                this.assetsTagService.getAssetTagResourceList(
+                  "it.acsoftware.hyperiot.rule.model.Rule",
+                  event.event.id
+                )
               )
             )
           );
 
           forkJoin(observables)
             .pipe(takeUntil(this.ngUnsubscribe))
-            .subscribe(
-              {
-                next: (tagResourceLists) => {
-                  tagResourceLists.forEach((tagResourceList: any, alarmIndex) => {
-                    tagResourceList.forEach((tagResource, eventIndex) => {
-                      if (tagResource && tagResource.length > 0 && tagResource[0].tag) {
-                        this.summaryList.list[alarmIndex].data.alarmEventList[eventIndex].event.tagIds = [tagResource[0].tag.id];
-                      }
-                    });
+            .subscribe({
+              next: (tagResourceLists) => {
+                tagResourceLists.forEach((tagResourceList: any, alarmIndex) => {
+                  tagResourceList.forEach((tagResource, eventIndex) => {
+                    if (
+                      tagResource &&
+                      tagResource.length > 0 &&
+                      tagResource[0].tag
+                    ) {
+                      this.summaryList.list[alarmIndex].data.alarmEventList[
+                        eventIndex
+                      ].event.tagIds = [tagResource[0].tag.id];
+                    }
                   });
+                });
 
-                  this.summaryList.list.forEach(alarm => {
-                    this.eventListMap.set(alarm.data.id, alarm.data.alarmEventList);
-                    this.setEventCounter();
+                this.summaryList.list.forEach((alarm) => {
+                  this.eventListMap.set(
+                    alarm.data.id,
+                    alarm.data.alarmEventList
+                  );
+                  this.setEventCounter();
+                });
+              },
+              error: (error) => {
+                this.logger.error(
+                  `getAssetTagResourceList, error fetching tag ids`,
+                  error
+                );
+                if (error.error) {
+                  this.setErrors(error.type ? error : "undefined");
+                } else {
+                  this.dialogService.open(GenericErrorModalComponent, {
+                    backgroundClosable: true,
+                    data: {
+                      message: $localize`:@@HYT_error_loading_tags_data:Error loading tags data`,
+                    },
                   });
-                },
-                error: (error) => {
-                  this.logger.error(`getAssetTagResourceList, error fetching tag ids`, error);
-                  if (error.error) {
-                    this.setErrors(error.type ? error : 'undefined');
-                  } else {
-                    this.dialogService.open(GenericErrorModalComponent, {
-                      backgroundClosable: true,
-                      data: {
-                        message: $localize`:@@HYT_error_loading_tags_data:Error loading tags data`,
-                      },
-                    });
-                    this.tagRetrievalError = 'The event may already be associated with a tag, but due to an error, it is not being displayed';
-                  }
+                  this.tagRetrievalError =
+                    "The event may already be associated with a tag, but due to an error, it is not being displayed";
                 }
-              }
-            );
+              },
+            });
 
           this.entityEvent.emit({
-            event: 'summaryList:reload',
-            summaryList: this.summaryList, type: 'project-alarms'
+            event: "summaryList:reload",
+            summaryList: this.summaryList,
+            type: "project-alarms",
           });
         },
         error: (error) => {
           this.logger.error(`findAllAlarmByProjectId`, error);
           if (error.error) {
-            this.setErrors(error.type ? error : 'undefined');
+            this.setErrors(error.type ? error : "undefined");
           } else {
             this.dialogService.open(GenericErrorModalComponent, {
               backgroundClosable: true,
@@ -663,7 +762,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
               },
             });
           }
-        }
+        },
       });
   }
 
@@ -672,23 +771,31 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     this.resetErrors();
     // Confirmation dialog if there are unsaved changes
     let flag;
-    if (!this.formEvent.pristine && this.formEvent.status == 'INVALID') flag = this.openConfirmEventDialog();
+    if (!this.formEvent.pristine && this.formEvent.status == "INVALID")
+      flag = this.openConfirmEventDialog();
     else this.saveAlarm();
   }
 
   saveAlarm() {
-    const alarmName = this.form.get('alarm-name').value;
+    const alarmName = this.form.get("alarm-name").value;
     const alarmInhibited = this.inhibited;
-    const listOfAlarmEvents = this.selectedId === -1 ? this.eventListMap.get(-1) : this.eventListMap.get(this.selectedId);
+    const listOfAlarmEvents =
+      this.selectedId === -1
+        ? this.eventListMap.get(-1)
+        : this.eventListMap.get(this.selectedId);
 
     // Do the call to POST to server
     if (this.newAlarm === true) {
-      this.alarmsService.saveAlarmAndEvents(listOfAlarmEvents, alarmName, alarmInhibited)
+      this.alarmsService
+        .saveAlarmAndEvents(listOfAlarmEvents, alarmName, alarmInhibited)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
           next: (res) => {
-            this.logger.debug('New alarm added', res)
-            this.toastr.success($localize`:@@HYT_alarm_and_severities_desc:Alarm and severities added correctly`, $localize`:@@HYT_alarm_and_severities:Alarm and severities added!`);
+            this.logger.debug("New alarm added", res);
+            this.toastr.success(
+              $localize`:@@HYT_alarm_and_severities_desc:Alarm and severities added correctly`,
+              $localize`:@@HYT_alarm_and_severities:Alarm and severities added!`
+            );
             this.addEventMode = false;
             this.loadingStatus = LoadingStatusEnum.Ready;
 
@@ -709,7 +816,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
+          },
         });
     }
 
@@ -717,15 +824,19 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     else {
       const alarmToSave = {
         id: this.selectedId,
-        name: this.form.get('alarm-name').value,
+        name: this.form.get("alarm-name").value,
         inhibited: this.inhibited,
-      } as Alarm
+      } as Alarm;
 
-      this.alarmsService.updateAlarm(alarmToSave)
+      this.alarmsService
+        .updateAlarm(alarmToSave)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
           next: () => {
-            this.toastr.success($localize`:@@HYT_alarm_updated_desc:Event updated correctly`, $localize`:@@HYT_alarm_updated:Event updated!`);
+            this.toastr.success(
+              $localize`:@@HYT_alarm_updated_desc:Event updated correctly`,
+              $localize`:@@HYT_alarm_updated:Event updated!`
+            );
           },
           error: (error) => {
             this.logger.error(`saveAlarm save alarm only`, error);
@@ -739,7 +850,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
+          },
         });
       this.addEventMode = false;
       this.loadingStatus = LoadingStatusEnum.Ready;
@@ -759,11 +870,15 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     }
     // Case 2: old alarm, pre-existing event
     else {
-      this.alarmEventsService.deleteAlarmEvent(this.eventListMap.get(this.selectedId)[i].id)
+      this.alarmEventsService
+        .deleteAlarmEvent(this.eventListMap.get(this.selectedId)[i].id)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
           next: () => {
-            this.toastr.success($localize`:@@HYT_severity_deleted_desc:Severity deleted correctly`, $localize`:@@HYT_severity_deleted:Severity deleted!`);
+            this.toastr.success(
+              $localize`:@@HYT_severity_deleted_desc:Severity deleted correctly`,
+              $localize`:@@HYT_severity_deleted:Severity deleted!`
+            );
             this.eventListMap.get(this.selectedId).splice(i, 1);
             this.updateSummaryList();
           },
@@ -779,7 +894,7 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
                 },
               });
             }
-          }
+          },
         });
     }
     this.setEventCounter();
@@ -793,12 +908,12 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
       const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
         data: {
           message: $localize`:@@HYT_alarm_delete_last_event:Do you want to cancel the last event as well? If you confirm the alarm will also be cancelled.`,
-          title: $localize`:@@HYT_alarm_delete_last_event_title:Confirmation of cancellation last event`
-        }
+          title: $localize`:@@HYT_alarm_delete_last_event_title:Confirmation of cancellation last event`,
+        },
       });
       dialogRef.dialogRef.afterClosed().subscribe((result) => {
-        if (result === 'delete') {
-          this.deleteEvent(i)
+        if (result === "delete") {
+          this.deleteEvent(i);
           this.updateSummaryList();
           this.newAlarm = false;
           this.cancel();
@@ -809,7 +924,6 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
       this.deleteEvent(i);
     }
   }
-
 
   isValid(): boolean {
     return this.editMode && super.isValid() && this.formEvent.valid;
@@ -845,10 +959,9 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
     this.updateSummaryList();
   }
 
-
-
   delete(successCallback, errorCallback) {
-    this.alarmsService.deleteAlarm(this.entity.id)
+    this.alarmsService
+      .deleteAlarm(this.entity.id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: () => {
@@ -857,7 +970,9 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
           this.showCancel = false;
           this.updateSummaryList();
           this.cancel();
-          if (successCallback) { successCallback(); }
+          if (successCallback) {
+            successCallback();
+          }
         },
         error: (error) => {
           this.logger.error(`delete`, error);
@@ -871,18 +986,23 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
               },
             });
           }
-          if (errorCallback) { errorCallback(); }
-        }
+          if (errorCallback) {
+            errorCallback();
+          }
+        },
       });
   }
 
   openDeleteEventDialog(indexToRemove: number) {
     if (indexToRemove >= 0) {
       const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
-        data: { title: $localize`:@@HYT_delete_item_question:Do you really want to delete this item?`, message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone` }
+        data: {
+          title: $localize`:@@HYT_delete_item_question:Do you really want to delete this item?`,
+          message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone`,
+        },
       });
       dialogRef.dialogRef.afterClosed().subscribe((result) => {
-        if (result === 'delete') {
+        if (result === "delete") {
           this.removeEvent(indexToRemove);
         }
       });
@@ -894,32 +1014,41 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
   */
   openConfirmEventDialog() {
     const dialogRef = this.dialog.open(PendingChangesDialogComponent, {
-      data: { title: $localize`:@@HYT_alarm_save_changes:Do you want to save the alarm and lost the pending changes?`, message: $localize`:@@HYT_severity_will_be_lost:The current severity will be lost` }
+      data: {
+        title: $localize`:@@HYT_alarm_save_changes:Do you want to save the alarm and lost the pending changes?`,
+        message: $localize`:@@HYT_severity_will_be_lost:The current severity will be lost`,
+      },
     });
     dialogRef.dialogRef.afterClosed().subscribe((result) => {
-      if (result == 'save') this.saveAlarm(); // DISCARD
+      if (result == "save") this.saveAlarm(); // DISCARD
       else this.loadingStatus = LoadingStatusEnum.Ready; // NOT DISCARD
     });
   }
 
   getSeverityLabel(value: number) {
-    return this.severityList.find(x => x.value === value.toString())?.label;
+    return this.severityList.find((x) => x.value === value.toString())?.label;
   }
 
   setErrors(err) {
     if (err.error && err.error.type) {
       switch (err.error.type) {
-        case 'it.acsoftware.hyperiot.base.exception.HyperIoTDuplicateEntityException': {
-          this.validationError = [{ message: $localize`:@@HYT_unavailable_event_name:Unavailable event name`, field: 'event-name', invalidValue: '' }];
-          this.formEvent.get('event-name').setErrors({
+        case "it.acsoftware.hyperiot.base.exception.HyperIoTDuplicateEntityException": {
+          this.validationError = [
+            {
+              message: $localize`:@@HYT_unavailable_event_name:Unavailable event name`,
+              field: "event-name",
+              invalidValue: "",
+            },
+          ];
+          this.formEvent.get("event-name").setErrors({
             validateInjectedError: {
-              valid: false
-            }
+              valid: false,
+            },
           });
           this.loadingStatus = LoadingStatusEnum.Ready;
           break;
         }
-        case 'it.acsoftware.hyperiot.base.exception.HyperIoTValidationException': {
+        case "it.acsoftware.hyperiot.base.exception.HyperIoTValidationException": {
           super.setErrors(err);
           break;
         }
@@ -927,22 +1056,23 @@ export class ProjectAlarmsFormComponent extends ProjectFormEntity implements OnI
           this.loadingStatus = LoadingStatusEnum.Error;
         }
       }
-    } else if (err === 'undefined') {
-      this.toastr.error($localize`:@@HYT_error_loading_tags_data:Error loading tags data`, $localize`:@@HYT_error:Error`);
+    } else if (err === "undefined") {
+      this.toastr.error(
+        $localize`:@@HYT_error_loading_tags_data:Error loading tags data`,
+        $localize`:@@HYT_error:Error`
+      );
     } else {
       this.loadingStatus = LoadingStatusEnum.Error;
     }
-
   }
 
   setEventCounter() {
     if (this.eventListMap.get(this.selectedId)) {
       this.alarmCounter = this.eventListMap.get(this.selectedId).length;
-      this.form.get('alarm-counter').setValue(this.alarmCounter);
+      this.form.get("alarm-counter").setValue(this.alarmCounter);
       this.form.updateValueAndValidity();
     } else {
-      this.logger.debug('setEventCounter, no events found', this.eventListMap);
+      this.logger.debug("setEventCounter, no events found", this.eventListMap);
     }
   }
 }
-

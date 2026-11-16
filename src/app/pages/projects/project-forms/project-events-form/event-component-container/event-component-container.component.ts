@@ -1,24 +1,25 @@
-import {  Component, Input, OnInit, ViewChild,ChangeDetectorRef } from '@angular/core';
-import { json } from 'd3-fetch';
-import { EventComponent } from '../event-component';
-import { EventComponentType } from '../event-component-type.enum';
-import { EventMailComponent } from '../event-mail/event-mail.component';
-import { EventMqttCommandComponent } from '../event-mqtt-command/event-mqtt-command.component';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { json } from "d3-fetch";
+import { EventComponent } from "../event-component";
+import { EventComponentType } from "../event-component-type.enum";
+import { EventMailComponent } from "../event-mail/event-mail.component";
+import { EventMqttCommandComponent } from "../event-mqtt-command/event-mqtt-command.component";
 
-class FakeEventComponent implements EventComponent{
-  constructor(){
-
-  }
+class FakeEventComponent implements EventComponent {
+  constructor() {}
 
   getId(): string {
     return "fake";
   }
-  reset(): void {
-    
-  }
-  setData(data: String[]): void {
-    
-  }
+  reset(): void {}
+  setData(data: String[]): void {}
   buildJsonAction(): string {
     return "";
   }
@@ -28,18 +29,17 @@ class FakeEventComponent implements EventComponent{
   isDirty(): boolean {
     return false;
   }
-  
 }
 
 @Component({
-    selector: 'hyt-event-component-container',
-    templateUrl: './event-component-container.component.html',
-    styleUrls: ['./event-component-container.component.scss'],
-    standalone: false
+  selector: "hyt-event-component-container",
+  templateUrl: "./event-component-container.component.html",
+  styleUrls: ["./event-component-container.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class EventComponentContainerComponent implements OnInit {
-
-  constructor(private cd: ChangeDetectorRef) { }
+  constructor(private cd: ChangeDetectorRef) {}
 
   @Input()
   currentProjectId;
@@ -52,64 +52,61 @@ export class EventComponentContainerComponent implements OnInit {
 
   data: any;
 
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
-
-  @ViewChild('currentEventComponent',{static:false}) set content(content: EventComponent) {
-    if(content) { // initially setter gets called with undefined
-         this.currentComponentShown = content;
+  @ViewChild("currentEventComponent", { static: false }) set content(
+    content: EventComponent
+  ) {
+    if (content) {
+      // initially setter gets called with undefined
+      this.currentComponentShown = content;
     } else {
-        this.currentComponentShown = new FakeEventComponent();
-        this.currentShownComponentId = undefined;
-        this.data = null;
+      this.currentComponentShown = new FakeEventComponent();
+      this.currentShownComponentId = undefined;
+      this.data = null;
     }
     //avoiding error on change detection
     this.cd.detectChanges();
-    if(this.data)
-      this.currentComponentShown.setData(this.data); 
- }
+    if (this.data) this.currentComponentShown.setData(this.data);
+  }
 
-  getCurrentComponentShown():EventComponent{
+  getCurrentComponentShown(): EventComponent {
     return this.currentComponentShown;
   }
 
-  cancel(){
+  cancel() {
     this.currentComponentShown = new FakeEventComponent();
     this.currentShownComponentId = undefined;
     this.data = null;
   }
 
-  reset(){
+  reset() {
     this.getCurrentComponentShown().reset();
   }
 
-  setData(jsonAction){
+  setData(jsonAction) {
     this.data = jsonAction;
   }
 
-  isDirty(){
+  isDirty() {
     return this.getCurrentComponentShown().isDirty();
   }
 
-  isInvalid(){
-      return this.getCurrentComponentShown().isInvalid();
+  isInvalid() {
+    return this.getCurrentComponentShown().isInvalid();
   }
 
-  buildJsonAction(){
-      return this.getCurrentComponentShown().buildJsonAction();
+  buildJsonAction() {
+    return this.getCurrentComponentShown().buildJsonAction();
   }
 
-  show(eventComponentId,data?){
-    let mustForceDataRefresh = this.currentShownComponentId === eventComponentId;
+  show(eventComponentId, data?) {
+    let mustForceDataRefresh =
+      this.currentShownComponentId === eventComponentId;
     this.currentShownComponentId = eventComponentId;
-    if(data && !mustForceDataRefresh)
-      this.setData(data)
-    else if (data){
+    if (data && !mustForceDataRefresh) this.setData(data);
+    else if (data) {
       this.getCurrentComponentShown().setData(data);
     }
   }
-
 }
-
-

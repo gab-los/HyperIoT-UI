@@ -1,29 +1,42 @@
-import { Component, OnInit, Input, forwardRef, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { UntypedFormControl, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import {
+  Component,
+  OnInit,
+  Input,
+  forwardRef,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  UntypedFormControl,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+} from "@angular/forms";
+import { Observable } from "rxjs";
+import { map, startWith } from "rxjs/operators";
 
 @Component({
-    selector: 'hyt-autocomplete',
-    exportAs: 'hytAutocomplete',
-    templateUrl: './hyt-autocomplete.component.html',
-    styleUrls: ['./hyt-autocomplete.component.scss'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => HytAutocompleteComponent),
-            multi: true
-        }
-    ],
-    standalone: false
+  selector: "hyt-autocomplete",
+  exportAs: "hytAutocomplete",
+  templateUrl: "./hyt-autocomplete.component.html",
+  styleUrls: ["./hyt-autocomplete.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => HytAutocompleteComponent),
+      multi: true,
+    },
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-
 export class HytAutocompleteComponent implements OnInit {
-
   filteredOptions: Observable<string[]>;
 
   /** ViewChild */
-  @ViewChild('auto') private matAuto: ElementRef;
+  @ViewChild("auto") private matAuto: ElementRef;
 
   /** Function called when click event is triggered */
   @Output() optionSelected: EventEmitter<any> = new EventEmitter();
@@ -45,22 +58,21 @@ export class HytAutocompleteComponent implements OnInit {
   }
 
   /** The internal data */
-  private innerValue: any = '';
+  private innerValue: any = "";
 
   /** Callback function for change event */
-  private onChangeFn = (_: any) => { };
+  private onChangeFn = (_: any) => {};
 
   /** Callback function for blur event */
-  private onTouchedFn = () => { };
+  private onTouchedFn = () => {};
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
-    this.filteredOptions = this.formControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
+    this.filteredOptions = this.formControl.valueChanges.pipe(
+      startWith(""),
+      map((value) => this._filter(value))
+    );
 
     this.input.matAutocomplete = this.matAuto;
   }
@@ -68,7 +80,9 @@ export class HytAutocompleteComponent implements OnInit {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.optionList.filter(option => option.toLowerCase().includes(filterValue));
+    return this.optionList.filter((option) =>
+      option.toLowerCase().includes(filterValue)
+    );
   }
 
   selected(event) {

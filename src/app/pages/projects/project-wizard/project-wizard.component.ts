@@ -5,6 +5,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DialogService, Option } from "components";
@@ -39,11 +40,12 @@ import { WizardReportModalComponent } from "./wizard-report-modal/wizard-report-
 import { Subject } from "rxjs";
 
 @Component({
-    selector: "hyt-project-wizard",
-    templateUrl: "./project-wizard.component.html",
-    styleUrls: ["./project-wizard.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-project-wizard",
+  templateUrl: "./project-wizard.component.html",
+  styleUrls: ["./project-wizard.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProjectWizardComponent implements OnInit {
   @ViewChild("stepper")

@@ -1,5 +1,14 @@
-import { Component, OnInit, forwardRef, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  forwardRef,
+  ViewEncapsulation,
+  Output,
+  EventEmitter,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from "@angular/forms";
 
 /**
  * Custom provider for NG_VALUE_ACCESSOR
@@ -8,16 +17,17 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_CHECKBOX: any = {
   provide: NG_VALUE_ACCESSOR,
   // tslint:disable-next-line: no-use-before-declare
   useExisting: forwardRef(() => HytCheckboxComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-    selector: "hyt-checkbox",
-    templateUrl: "./hyt-checkbox.component.html",
-    styleUrls: ["./hyt-checkbox.component.css"],
-    providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_CHECKBOX],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-checkbox",
+  templateUrl: "./hyt-checkbox.component.html",
+  styleUrls: ["./hyt-checkbox.component.css"],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_CHECKBOX],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytCheckboxComponent implements OnInit, ControlValueAccessor {
   /** Function called when click event is triggered */

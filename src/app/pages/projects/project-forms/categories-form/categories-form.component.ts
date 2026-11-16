@@ -1,22 +1,34 @@
-import { Component, OnInit, Injector, ViewChild, ElementRef, ViewEncapsulation,ChangeDetectorRef } from '@angular/core';
-import { ProjectFormEntity } from '../project-form-entity';
-import { TreeNodeCategory, DialogService } from 'components';
-import { AssetCategoriesService, AssetCategory } from 'core';
-import { DeleteConfirmDialogComponent } from 'src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component';
-import { Router } from '@angular/router';
-import { LoadStatus } from 'src/app/models/loadStatus';
-import { Observable } from 'rxjs';
-import { AddCetegoryModalComponent } from './add-cetegory-modal/add-cetegory-modal.component';
+import {
+  Component,
+  OnInit,
+  Injector,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ProjectFormEntity } from "../project-form-entity";
+import { TreeNodeCategory, DialogService } from "components";
+import { AssetCategoriesService, AssetCategory } from "core";
+import { DeleteConfirmDialogComponent } from "src/app/components/dialogs/delete-confirm-dialog/delete-confirm-dialog.component";
+import { Router } from "@angular/router";
+import { LoadStatus } from "src/app/models/loadStatus";
+import { Observable } from "rxjs";
+import { AddCetegoryModalComponent } from "./add-cetegory-modal/add-cetegory-modal.component";
 
 @Component({
-    selector: 'hyt-categories-form',
-    templateUrl: './categories-form.component.html',
-    styleUrls: ['./categories-form.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-categories-form",
+  templateUrl: "./categories-form.component.html",
+  styleUrls: ["./categories-form.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
-export class CategoriesFormComponent extends ProjectFormEntity implements OnInit {
-
+export class CategoriesFormComponent
+  extends ProjectFormEntity
+  implements OnInit
+{
   projectId: number;
 
   categoryStatus: LoadStatus = LoadStatus.Default;
@@ -34,14 +46,14 @@ export class CategoriesFormComponent extends ProjectFormEntity implements OnInit
     private router: Router,
     private assetCategoriesService: AssetCategoriesService,
     private dialogService: DialogService,
-    private cdr:ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {
-    super(injector,cdr);
-    this.formTemplateId= 'container-category-form';
+    super(injector, cdr);
+    this.formTemplateId = "container-category-form";
     this.formTitle = $localize`:@@HYT_project_categories:Project Categories`;
     this.hideDelete = true;
     this.showSave = false;
-    this.projectId = +this.router.url.split('/')[2];
+    this.projectId = +this.router.url.split("/")[2];
   }
 
   flatCategories() {
@@ -51,10 +63,12 @@ export class CategoriesFormComponent extends ProjectFormEntity implements OnInit
       parent: null,
       children: null,
       data: d,
-      active: false
+      active: false,
     }));
-    this.categoriesFlatTree.forEach(x => {
-      x.parent = (x.data.parent) ? this.categoriesFlatTree.find(y => y.id === x.data.parent.id) : null;
+    this.categoriesFlatTree.forEach((x) => {
+      x.parent = x.data.parent
+        ? this.categoriesFlatTree.find((y) => y.id === x.data.parent.id)
+        : null;
     });
     this.categoriesFlatTree = [...this.categoriesFlatTree];
   }
@@ -66,20 +80,22 @@ export class CategoriesFormComponent extends ProjectFormEntity implements OnInit
         this.flatCategories();
         this.categoryStatus = LoadStatus.Loaded;
       },
-      err => {
+      (err) => {
         this.categoryStatus = LoadStatus.Error;
       }
     );
   }
 
-  addFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (node) => {
-    return new Observable(sub => {
+  addFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (
+    node
+  ) => {
+    return new Observable((sub) => {
       const dialogRef = this.dialogService.open(AddCetegoryModalComponent, {
         data: {
-          mode: 'add',
+          mode: "add",
           projectId: this.projectId,
           category: node ? node.data : null,
-        }
+        },
       });
       dialogRef.dialogRef.afterClosed().subscribe((result: AssetCategory) => {
         if (!result) {
@@ -91,44 +107,49 @@ export class CategoriesFormComponent extends ProjectFormEntity implements OnInit
           parent: node,
           children: [],
           data: result,
-          active: false
+          active: false,
         });
         sub.complete();
       });
     });
-  }
+  };
 
-  removeFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (node) => {
-    return new Observable(sub => {
-      const dialogRef = this.dialogService.open(
-        DeleteConfirmDialogComponent, {
-          data: { title: $localize`:@@HYT_delete_item:Delete item?`, message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone.`}
-        }
-      );
+  removeFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (
+    node
+  ) => {
+    return new Observable((sub) => {
+      const dialogRef = this.dialogService.open(DeleteConfirmDialogComponent, {
+        data: {
+          title: $localize`:@@HYT_delete_item:Delete item?`,
+          message: $localize`:@@HYT_operation_cannot_be_undone:This operation cannot be undone.`,
+        },
+      });
       dialogRef.dialogRef.afterClosed().subscribe((result) => {
-        if (result === 'delete') {
+        if (result === "delete") {
           this.assetCategoriesService.deleteAssetCategory(node.id).subscribe(
-            res => {
+            (res) => {
               sub.next(res);
               sub.complete();
             },
-            err => {
+            (err) => {
               sub.error();
             }
           );
         }
       });
     });
-  }
+  };
 
-  editFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (node) => {
-    return new Observable(sub => {
+  editFunction: (node: TreeNodeCategory) => Observable<TreeNodeCategory> = (
+    node
+  ) => {
+    return new Observable((sub) => {
       const dialogRef = this.dialogService.open(AddCetegoryModalComponent, {
         data: {
-          mode: 'edit',
+          mode: "edit",
           projectId: this.projectId,
           category: node.data,
-        }
+        },
       });
       dialogRef.dialogRef.afterClosed().subscribe((result) => {
         if (!result) {
@@ -140,11 +161,10 @@ export class CategoriesFormComponent extends ProjectFormEntity implements OnInit
           parent: node.parent,
           children: node.children,
           data: result,
-          active: node.active
+          active: node.active,
         });
         sub.complete();
       });
     });
-  }
-
+  };
 }

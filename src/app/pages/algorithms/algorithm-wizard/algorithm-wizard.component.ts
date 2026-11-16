@@ -1,27 +1,37 @@
-import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation,ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { DialogService } from 'components';
-import { HytStepperComponent } from 'components';
-import { Algorithm, AlgorithmIOField, AlgorithmService } from 'core';
-import { Subject } from 'rxjs';
-import { EntitiesService } from 'src/app/services/entities/entities.service';
-import { AlgorithmFormEntity, LoadingStatusEnum } from '../algorithm-forms/algorithm-form-entity';
-import { AlgorithmInfoFormComponent } from '../algorithm-forms/algorithm-info-form/algorithm-info-form.component';
-import { AlgorithmJarFormComponent } from '../algorithm-forms/algorithm-jar-form/algorithm-jar-form.component';
-import { InputFieldsFormComponent } from '../algorithm-forms/input-fields-form/input-fields-form.component';
-import { OutputFieldsFormComponent } from '../algorithm-forms/output-fields-form/output-fields-form.component';
-import { AlgorithmWizardReportModalComponent } from './algorithm-wizard-report-modal/algorithm-wizard-report-modal.component';
-
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { DialogService } from "components";
+import { HytStepperComponent } from "components";
+import { Algorithm, AlgorithmIOField, AlgorithmService } from "core";
+import { Subject } from "rxjs";
+import { EntitiesService } from "src/app/services/entities/entities.service";
+import {
+  AlgorithmFormEntity,
+  LoadingStatusEnum,
+} from "../algorithm-forms/algorithm-form-entity";
+import { AlgorithmInfoFormComponent } from "../algorithm-forms/algorithm-info-form/algorithm-info-form.component";
+import { AlgorithmJarFormComponent } from "../algorithm-forms/algorithm-jar-form/algorithm-jar-form.component";
+import { InputFieldsFormComponent } from "../algorithm-forms/input-fields-form/input-fields-form.component";
+import { OutputFieldsFormComponent } from "../algorithm-forms/output-fields-form/output-fields-form.component";
+import { AlgorithmWizardReportModalComponent } from "./algorithm-wizard-report-modal/algorithm-wizard-report-modal.component";
 
 @Component({
-    selector: 'hyt-algorithm-wizard',
-    templateUrl: './algorithm-wizard.component.html',
-    styleUrls: ['./algorithm-wizard.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-algorithm-wizard",
+  templateUrl: "./algorithm-wizard.component.html",
+  styleUrls: ["./algorithm-wizard.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AlgorithmWizardComponent implements OnInit {
-
   algorithmId: number;
   currentAlgorithm: Algorithm;
   currentAlgorithmSubject: Subject<Algorithm> = new Subject<Algorithm>();
@@ -30,49 +40,55 @@ export class AlgorithmWizardComponent implements OnInit {
   currentOutput: AlgorithmIOField[] = [];
   currentStepIndex = 0;
 
-  finishData: { iconPath: string, type: string, entities: string[] }[] = [];
-  hintMessage = '';
+  finishData: { iconPath: string; type: string; entities: string[] }[] = [];
+  hintMessage = "";
   hintVisible = false;
   optionModalViewed = false;
   panelIsVisible = true;
 
-  @ViewChild('algorithmInfoForm')
+  @ViewChild("algorithmInfoForm")
   algorithmInfoForm: AlgorithmInfoFormComponent;
 
-  @ViewChild('inputFieldsForm')
+  @ViewChild("inputFieldsForm")
   inputFieldsForm: InputFieldsFormComponent;
 
-  @ViewChild('outputFieldsForm')
+  @ViewChild("outputFieldsForm")
   outputFieldsForm: OutputFieldsFormComponent;
 
-  @ViewChild('algorithmJarForm')
+  @ViewChild("algorithmJarForm")
   algorithmJarForm: AlgorithmJarFormComponent;
 
-  @ViewChild('stepper')
+  @ViewChild("stepper")
   stepper: HytStepperComponent;
 
   constructor(
-      private algorithmsService: AlgorithmService,
-      public entitiesService: EntitiesService,
-      private dialogService: DialogService,
-      private route: ActivatedRoute,
-      private cd: ChangeDetectorRef) {
-    this.route.params.subscribe(routeParams => {
-      this.algorithmId = +(route.snapshot.params.id);
+    private algorithmsService: AlgorithmService,
+    public entitiesService: EntitiesService,
+    private dialogService: DialogService,
+    private route: ActivatedRoute,
+    private cd: ChangeDetectorRef
+  ) {
+    this.route.params.subscribe((routeParams) => {
+      this.algorithmId = +route.snapshot.params.id;
     });
-   }
+  }
 
   ngOnInit() {
     this.cd.detectChanges();
     if (this.algorithmId) {
-      this.algorithmsService.findAlgorithm(this.algorithmId).subscribe((a: Algorithm) => {
-        this.currentAlgorithm = a;
-        this.currentInput = JSON.parse(this.currentAlgorithm.baseConfig).input;
-        this.currentOutput = JSON.parse(this.currentAlgorithm.baseConfig).output;
-        this.currentAlgorithmSubject.next(this.currentAlgorithm);
-      });
-    }
-    else {
+      this.algorithmsService
+        .findAlgorithm(this.algorithmId)
+        .subscribe((a: Algorithm) => {
+          this.currentAlgorithm = a;
+          this.currentInput = JSON.parse(
+            this.currentAlgorithm.baseConfig
+          ).input;
+          this.currentOutput = JSON.parse(
+            this.currentAlgorithm.baseConfig
+          ).output;
+          this.currentAlgorithmSubject.next(this.currentAlgorithm);
+        });
+    } else {
       this.algorithmInfoForm.loadingStatus = LoadingStatusEnum.Ready;
     }
     this.currentForm = this.algorithmInfoForm;
@@ -81,16 +97,18 @@ export class AlgorithmWizardComponent implements OnInit {
   getDirty(index: number): boolean {
     switch (index) {
       case 0: {
-        return (this.algorithmInfoForm) ? this.algorithmInfoForm.isDirty() : false;
+        return this.algorithmInfoForm
+          ? this.algorithmInfoForm.isDirty()
+          : false;
       }
       case 1: {
-        return (this.inputFieldsForm) ? this.inputFieldsForm.isDirty() : false;
+        return this.inputFieldsForm ? this.inputFieldsForm.isDirty() : false;
       }
       case 2: {
-        return (this.outputFieldsForm) ? this.outputFieldsForm.isDirty() : false;
+        return this.outputFieldsForm ? this.outputFieldsForm.isDirty() : false;
       }
       case 3: {
-        return (this.algorithmJarForm) ? this.algorithmJarForm.isDirty() : false;
+        return this.algorithmJarForm ? this.algorithmJarForm.isDirty() : false;
       }
       default: {
         return false;
@@ -114,7 +132,10 @@ export class AlgorithmWizardComponent implements OnInit {
         return this.currentOutput.length === 0;
       }
       case 3: {
-        return !this.currentAlgorithm.algorithmFileName || this.currentAlgorithm.algorithmFileName.length === 0;
+        return (
+          !this.currentAlgorithm.algorithmFileName ||
+          this.currentAlgorithm.algorithmFileName.length === 0
+        );
       }
     }
   }
@@ -129,41 +150,51 @@ export class AlgorithmWizardComponent implements OnInit {
 
   onEntityEvent(data: any) {
     switch (data.event) {
-      case 'hint:show':
+      case "hint:show":
         this.showHintMessage(data.message);
         break;
-      case 'hint:hide':
+      case "hint:hide":
         this.hideHintMessage();
         break;
-      case 'pw:algorithm-updated':
+      case "pw:algorithm-updated":
         this.currentAlgorithm = data.algorithm;
         this.currentInput = JSON.parse(this.currentAlgorithm.baseConfig).input;
-        this.currentOutput = JSON.parse(this.currentAlgorithm.baseConfig).output;
+        this.currentOutput = JSON.parse(
+          this.currentAlgorithm.baseConfig
+        ).output;
         this.currentAlgorithmSubject.next(this.currentAlgorithm);
         break;
     }
   }
 
   onSaveClick(e) {
-    this.currentForm.save((ent, isNew) => {
-      if (this.currentForm instanceof AlgorithmInfoFormComponent) {
-        this.currentAlgorithm = ent;
-        // wait for step 0 validation (next cicle)
-        this.cd.detectChanges();
-        this.stepper.next();
+    this.currentForm.save(
+      (ent, isNew) => {
+        if (this.currentForm instanceof AlgorithmInfoFormComponent) {
+          this.currentAlgorithm = ent;
+          // wait for step 0 validation (next cicle)
+          this.cd.detectChanges();
+          this.stepper.next();
+        }
+      },
+      (error) => {
+        // TODO: ...
       }
-    }, (error) => {
-      // TODO: ...
-    });
+    );
   }
 
   openFinishModal() {
     this.cd.detectChanges();
-    this.dialogService.open(AlgorithmWizardReportModalComponent, { backgroundClosable: true });
+    this.dialogService.open(AlgorithmWizardReportModalComponent, {
+      backgroundClosable: true,
+    });
   }
 
   showCancel(): boolean {
-    return this.currentForm instanceof InputFieldsFormComponent || this.currentForm instanceof OutputFieldsFormComponent;
+    return (
+      this.currentForm instanceof InputFieldsFormComponent ||
+      this.currentForm instanceof OutputFieldsFormComponent
+    );
   }
 
   showHintMessage(message: string): void {
@@ -192,7 +223,7 @@ export class AlgorithmWizardComponent implements OnInit {
         break;
       }
       default: {
-        console.log('error');
+        console.log("error");
       }
     }
   }
@@ -200,5 +231,4 @@ export class AlgorithmWizardComponent implements OnInit {
   togglePanel() {
     this.panelIsVisible = !this.panelIsVisible;
   }
-
 }

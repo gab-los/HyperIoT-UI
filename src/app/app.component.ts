@@ -4,11 +4,13 @@ import {
   OnDestroy,
   OnInit,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
   HProject,
-  HProjectService, IGNORE_ERROR_NOTIFY,
+  HProjectService,
+  IGNORE_ERROR_NOTIFY,
   Logger,
   LoggerService,
   RealtimeDataService,
@@ -17,19 +19,20 @@ import {
   NotificationSelectors,
 } from "core";
 import { ToastrService } from "ngx-toastr";
-import {Subject, Subscription, filter, takeUntil, map} from "rxjs";
+import { Subject, Subscription, filter, takeUntil, map } from "rxjs";
 import { environment } from "../environments/environment";
-import {HttpContext} from "@angular/common/http";
-import {CookieService} from "ngx-cookie-service";
+import { HttpContext } from "@angular/common/http";
+import { CookieService } from "ngx-cookie-service";
 import { Store } from "@ngrx/store";
-import { concatLatestFrom } from '@ngrx/operators';
+import { concatLatestFrom } from "@ngrx/operators";
 
 @Component({
-    selector: "hyt-root",
-    templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class AppComponent implements OnInit, OnDestroy {
   public environment = environment;
@@ -60,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private brandingService: BrandingService,
     private cookieService: CookieService,
-    private store: Store,
+    private store: Store
   ) {
     // Init Logger
     this.logger = new Logger(this.loggerService);
@@ -88,7 +91,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isLogged(): boolean {
-    if (this.cookieService.check('HIT-AUTH') && localStorage.getItem('user') && localStorage.getItem('userInfo')) {
+    if (
+      this.cookieService.check("HIT-AUTH") &&
+      localStorage.getItem("user") &&
+      localStorage.getItem("userInfo")
+    ) {
       return true;
     }
   }
@@ -98,7 +105,11 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   subscribeToWebSockets() {
     this.hprojectsService
-      .findAllHProject('body', undefined, new HttpContext().set(IGNORE_ERROR_NOTIFY, true))
+      .findAllHProject(
+        "body",
+        undefined,
+        new HttpContext().set(IGNORE_ERROR_NOTIFY, true)
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((projectsList: HProject[]) => {
         this.projectIds = projectsList.map((project) => project.id);
@@ -123,46 +134,43 @@ export class AppComponent implements OnInit, OnDestroy {
   subscribeToNotification() {
     this.logger.info("Subscribe to notifications ON");
 
-    if(this.alarmSubscription) this.alarmSubscription.unsubscribe();
+    if (this.alarmSubscription) this.alarmSubscription.unsubscribe();
 
-    this.alarmSubscription = this.store.select(NotificationSelectors.selectLastNotification)
-    .pipe(
-      concatLatestFrom(
-        () => this.store.select(UserSiteSettingSelectors.selectNotificationActive)
-      ),
-      filter(
-        ([value, isNotificationEnabled]) => {
+    this.alarmSubscription = this.store
+      .select(NotificationSelectors.selectLastNotification)
+      .pipe(
+        concatLatestFrom(() =>
+          this.store.select(UserSiteSettingSelectors.selectNotificationActive)
+        ),
+        filter(([value, isNotificationEnabled]) => {
           return !!(isNotificationEnabled && value);
-        }
-      ),
-      map(
-        ([value, isNotificationEnabled]) => value
+        }),
+        map(([value, isNotificationEnabled]) => value)
       )
-    )
-    .subscribe({
-      next: (notification) => {
-        this.toastr
-        .show(
-          notification.message,
-          notification.title,
-          { toastClass: "ngx-toastr toast-" + notification.id },
-          notification.image
-        )
-        .onShown.subscribe({
-          complete: () => {
-            document
-              .querySelector(
-                ".overlay-container #toast-container .ngx-toastr.toast-" +
-                  notification.id
-              )
-              .setAttribute(
-                "style",
-                `background-color: ${notification.bgColor}; color: ${notification.color}; transform: translateY(64px);`
-              );
-          },
-        });
-      }
-    });
+      .subscribe({
+        next: (notification) => {
+          this.toastr
+            .show(
+              notification.message,
+              notification.title,
+              { toastClass: "ngx-toastr toast-" + notification.id },
+              notification.image
+            )
+            .onShown.subscribe({
+              complete: () => {
+                document
+                  .querySelector(
+                    ".overlay-container #toast-container .ngx-toastr.toast-" +
+                      notification.id
+                  )
+                  .setAttribute(
+                    "style",
+                    `background-color: ${notification.bgColor}; color: ${notification.color}; transform: translateY(64px);`
+                  );
+              },
+            });
+        },
+      });
   }
 
   showToolBars(): boolean {

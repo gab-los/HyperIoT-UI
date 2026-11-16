@@ -1,5 +1,22 @@
-import { Component, OnInit, Input, forwardRef, ViewEncapsulation, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormControl, Validators, UntypedFormGroup } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  Input,
+  forwardRef,
+  ViewEncapsulation,
+  Output,
+  EventEmitter,
+  OnChanges,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  UntypedFormControl,
+  Validators,
+  UntypedFormGroup,
+} from "@angular/forms";
 
 /** Interface for select option element */
 export interface SelectOption {
@@ -22,7 +39,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_SELECT: any = {
   provide: NG_VALUE_ACCESSOR,
   // tslint:disable-next-line: no-use-before-declare
   useExisting: forwardRef(() => HytSelectComponent),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -30,12 +47,13 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_SELECT: any = {
  * This compoenent allows to select an element in a set of options.
  */
 @Component({
-    selector: "hyt-select",
-    templateUrl: "./hyt-select.component.html",
-    styleUrls: ["./hyt-select.component.scss"],
-    providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_SELECT],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: "hyt-select",
+  templateUrl: "./hyt-select.component.html",
+  styleUrls: ["./hyt-select.component.scss"],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR_SELECT],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytSelectComponent
   implements OnInit, ControlValueAccessor, OnChanges
@@ -67,7 +85,7 @@ export class HytSelectComponent
   /** Tells if the elements can be filtered */
   @Input() isSearchable = false;
 
-  searchValue = '';
+  searchValue = "";
 
   /** Array of displayed options */
   selectOptions: SelectOption[] = [];
@@ -101,7 +119,6 @@ export class HytSelectComponent
   /** changePositionStrategy apply the positionSelect directive only if true */
   @Input() changePositionStrategy = false;
 
-
   @Input() chips = false;
 
   /**
@@ -121,7 +138,7 @@ export class HytSelectComponent
    */
   @Input() onTouchedFn = () => {};
 
-  @ViewChild('select', { static: true }) select: any;
+  @ViewChild("select", { static: true }) select: any;
 
   /**
    * Callback functions for change
@@ -197,7 +214,7 @@ export class HytSelectComponent
   ngOnInit() {
     // prevent space button to close select (fix select closing using space in filter)
     this.select._handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === ' ') {
+      if (event.key === " ") {
         return;
       }
       if (!this.select.disabled) {
@@ -212,7 +229,10 @@ export class HytSelectComponent
       validators.push(Validators.required);
       this.label += " *";
     }
-    this.formControl = new UntypedFormControl("", Validators.compose(validators));
+    this.formControl = new UntypedFormControl(
+      "",
+      Validators.compose(validators)
+    );
     if (this.disabled) {
       this.formControl.disable();
     }
@@ -223,7 +243,9 @@ export class HytSelectComponent
       this.formControl.setValue(this.selected);
     }
     if (this.chips && !this.isMultiple) {
-      console.error('HYT-SELECT: Cannot use chips mode with single selection mode');
+      console.error(
+        "HYT-SELECT: Cannot use chips mode with single selection mode"
+      );
     }
 
     this.sortOptions();
@@ -274,7 +296,6 @@ export class HytSelectComponent
     this.onTouchedFn = fn;
   }
 
-
   onSearch() {
     // search filter is using change detection (may affect performance).
     // Implement this function to update filtered options when the user update searchValue instead.
@@ -283,7 +304,11 @@ export class HytSelectComponent
   isGroupVisibile(group: SelectOptionGroup) {
     if (group.name.toLowerCase().includes(this.searchValue)) {
       return true;
-    } else if (group.options.some(y => y.label.toLowerCase().includes(this.searchValue))) {
+    } else if (
+      group.options.some((y) =>
+        y.label.toLowerCase().includes(this.searchValue)
+      )
+    ) {
       return true;
     } else {
       return false;
@@ -299,14 +324,14 @@ export class HytSelectComponent
   }
 
   resetSearchValue() {
-    this.searchValue = '';
+    this.searchValue = "";
   }
 
   onChipRemoved(val: string) {
     const vals = this.formControl.value as string[];
     this.removeFirst(vals, val);
     this.formControl.setValue(vals);
-    this.change({ source: null, value: vals});
+    this.change({ source: null, value: vals });
   }
 
   private removeFirst<T>(array: T[], toRemove: T): void {
@@ -318,12 +343,15 @@ export class HytSelectComponent
 
   getChipLabel(value: any) {
     if (this.options.length) {
-      return this.options.find(o => o.value === value).label;
+      return this.options.find((o) => o.value === value).label;
     } else if (this.groups.length) {
-      const group = this.groups.find(x => x.options.some(y =>y.value === value));
-      return group.name + ' | ' + group.options.find(o => o.value === value).label;
+      const group = this.groups.find((x) =>
+        x.options.some((y) => y.value === value)
+      );
+      return (
+        group.name + " | " + group.options.find((o) => o.value === value).label
+      );
     }
-    return '';
+    return "";
   }
-
 }

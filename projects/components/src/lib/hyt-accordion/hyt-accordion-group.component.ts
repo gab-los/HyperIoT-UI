@@ -1,11 +1,19 @@
-import { Component, AfterContentInit, Input, ContentChildren, QueryList } from '@angular/core';
-import { HytAccordionItem } from './hyt-directives/hyt-accordion-item.directive';
+import {
+  Component,
+  AfterContentInit,
+  Input,
+  ContentChildren,
+  QueryList,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import { HytAccordionItem } from "./hyt-directives/hyt-accordion-item.directive";
 
 @Component({
-    selector: 'hyt-accordion-group',
-    templateUrl: './hyt-accordion-group.component.html',
-    styleUrls: ['./hyt-accordion-group.component.scss'],
-    standalone: false
+  selector: "hyt-accordion-group",
+  templateUrl: "./hyt-accordion-group.component.html",
+  styleUrls: ["./hyt-accordion-group.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class HytAccordionGroupComponent implements AfterContentInit {
   @Input() collapsing = true;
@@ -13,12 +21,11 @@ export class HytAccordionGroupComponent implements AfterContentInit {
   @ContentChildren(HytAccordionItem) items: QueryList<HytAccordionItem>;
 
   expanded = new Set<number>();
-  
-  constructor() { }
+
+  constructor() {}
 
   ngAfterContentInit() {
-    console.log('items: ', this.items);
-
+    console.log("items: ", this.items);
   }
 
   ngOnInit(): void {}
