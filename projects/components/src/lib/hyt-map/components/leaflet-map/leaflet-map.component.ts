@@ -1,7 +1,7 @@
 import {
   ApplicationRef,
   Component,
-  ComponentFactoryResolver,
+  EnvironmentInjector,
   EventEmitter,
   Injector,
   Input,
@@ -10,6 +10,7 @@ import {
   OnInit,
   Renderer2,
   ChangeDetectionStrategy,
+  createComponent,
 } from "@angular/core";
 import * as L from "leaflet";
 import {
@@ -112,7 +113,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
   constructor(
     private ngZone: NgZone,
     private loggerService: LoggerService,
-    private resolver: ComponentFactoryResolver,
+    private environmentInjector: EnvironmentInjector,
     private injector: Injector,
     private appRef: ApplicationRef,
     private store: Store,
@@ -328,9 +329,10 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     this.markers.push({ reference: marker, badgeId, deepHDeviceList });
 
     if (this.editMode) {
-      const deviceEditComponent = this.resolver
-        .resolveComponentFactory(MapDeviceEditComponent)
-        .create(this.injector);
+      const deviceEditComponent = createComponent(MapDeviceEditComponent, {
+        environmentInjector: this.environmentInjector,
+        elementInjector: this.injector,
+      });
       this.appRef.attachView(deviceEditComponent.hostView);
       deviceEditComponent.instance.itemInfo = areaItem;
       deviceEditComponent.instance.itemRemoveCB = (itemInfo) => {
@@ -372,9 +374,10 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
       });
       //L.DomEvent.disableClickPropagation(deviceEditComponent.location.nativeElement);
     } else {
-      const deviceEditComponent = this.resolver
-        .resolveComponentFactory(MapDeviceInfoComponent)
-        .create(this.injector);
+      const deviceEditComponent = createComponent(MapDeviceInfoComponent, {
+        environmentInjector: this.environmentInjector,
+        elementInjector: this.injector,
+      });
       deviceEditComponent.instance.itemData = areaItem;
       deviceEditComponent.instance.openClicked.subscribe((mapItem) => {
         this.itemOpen.emit(mapItem);

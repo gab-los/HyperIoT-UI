@@ -19,7 +19,6 @@
 
 import {
   Component,
-  ComponentFactoryResolver,
   ViewChild,
   ComponentRef,
   ElementRef,
@@ -103,10 +102,7 @@ export class AreaMapComponent implements OnDestroy {
     this.refresh();
   }
 
-  constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private loggerService: LoggerService
-  ) {
+  constructor(private loggerService: LoggerService) {
     // Init Logger
     this.logger = new Logger(this.loggerService);
     this.logger.registerClass("AreaMapComponent");
@@ -182,12 +178,8 @@ export class AreaMapComponent implements OnDestroy {
    * Add single item on the Area map
    */
   addItem(): ComponentRef<DraggableItemComponent> {
-    const componentFactory =
-      this.componentFactoryResolver.resolveComponentFactory(
-        DraggableItemComponent
-      );
     const viewContainerRef = this.mapContainer.viewContainerRef;
-    const component = viewContainerRef.createComponent(componentFactory);
+    const component = viewContainerRef.createComponent(DraggableItemComponent);
 
     // enable/disable editMode
     component.instance.editMode = this.editMode;

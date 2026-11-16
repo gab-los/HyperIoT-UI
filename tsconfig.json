@@ -17,7 +17,10 @@
     "importHelpers": true,
     "target": "ES2022",
     "resolveJsonModule": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "strict": false,
+    "ignoreDeprecations": "6.0",
+    "noUncheckedSideEffectImports": false
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
