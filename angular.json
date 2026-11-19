@@ -119,21 +119,6 @@
           "options": {
             "tsConfig": "tsconfig.spec.json"
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "hyperiot:serve:production"
-            },
-            "development": {
-              "devServerTarget": "hyperiot:serve:development"
-            }
-          },
-          "defaultConfiguration": "development"
         }
       }
     },
