@@ -15,7 +15,7 @@
     "components:watch": "ng build components --watch",
     "widgets:watch": "ng build widgets --watch",
     "libs:watch": "npm run components:watch && npm run widgets:watch",
-    "test": "ng test  --watch=false --browsers=ChromeHeadless --code-coverage",
+    "test": "ng test --watch=false",
     "compodoc": "npx compodoc -p src/tsconfig.app.json",
     "postinstall": "patch-package"
   },
