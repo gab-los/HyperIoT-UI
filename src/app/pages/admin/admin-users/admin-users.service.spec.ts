@@ -47,13 +47,12 @@ describe('AdminUsersService', () => {
     expect(result).toEqual({ user: expect.objectContaining({ id: 10 }), failedRoleIds: [] });
   });
 
-  it('updates from the loaded user, keeping "admin" and without password', async () => {
+  it('updates from the loaded user, keeping "admin", always active and without password', async () => {
     const original: HUser = { id: 7, entityVersion: 3, username: 'old', name: 'Old', lastname: 'Name', email: 'old@example.com', admin: true };
     await firstValueFrom(service.update(original, [4], formValue));
 
     const sent = hUserService.updateHUser.mock.calls[0][0] as HUser;
-    expect(sent).toMatchObject({ id: 7, entityVersion: 3, username: 'mrossi', email: 'mario@example.com', admin: true });
-    expect(sent).not.toHaveProperty('active');
+    expect(sent).toMatchObject({ id: 7, entityVersion: 3, username: 'mrossi', email: 'mario@example.com', admin: true, active: true });
     expect(sent).not.toHaveProperty('password');
   });
 

@@ -69,9 +69,10 @@ export class AdminUsersService {
   /**
    * Updates the user starting from the loaded entity (to keep id, entityVersion and the fields
    * the form does not show, such as "admin"), then adds and removes roles with the dedicated endpoints.
+   * `active` is always sent as true: the backend does not handle it and disables the user when it is missing.
    */
   update(original: HUser, originalRoleIds: number[], value: UserFormValue): Observable<UserSaveResult> {
-    const user: HUser = { ...original, ...this.userFields(value) };
+    const user: HUser = { ...original, ...this.userFields(value), active: true };
     return (this.hUserService.updateHUser(user, 'body', false, silentContext()) as Observable<HUser>).pipe(
       switchMap(saved => this.applyRoles(saved, originalRoleIds, value.roleIds)),
     );
