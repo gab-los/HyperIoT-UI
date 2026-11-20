@@ -7,6 +7,11 @@ describe('actionDescription', () => {
     expect(actionDescription('HyperIoTWebSocketChannel', 'CREATE_CHANNEL')).toBe('Create a WebSocket channel.');
   });
 
+  it('marks the actions the backend does not use', () => {
+    expect(actionDescription('Rule', 'action_run')).toBe('Unused: granting it has no effect.');
+    expect(actionDescription('Role', 'permission')).toBe('Unused: granting it has no effect.');
+  });
+
   it('has no description for unknown resources or actions', () => {
     expect(actionDescription('HProject', 'unknown_action')).toBeUndefined();
     expect(actionDescription('Unknown', 'save')).toBeUndefined();

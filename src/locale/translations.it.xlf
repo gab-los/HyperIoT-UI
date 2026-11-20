@@ -2796,6 +2796,10 @@
         <source>List the user brandings the user can access.</source>
         <target>Elencare le personalizzazioni grafiche degli utenti accessibili all’utente.</target>
       </trans-unit>
+      <trans-unit id="HYT_admin_role_action_unused" datatype="html">
+        <source>Unused: granting it has no effect.</source>
+        <target>Non utilizzata: concederla non ha effetto.</target>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
         <target>Percorso di navigazione</target>

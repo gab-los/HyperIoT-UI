@@ -4,6 +4,16 @@
  */
 let descriptions: Readonly<Record<string, string>> | undefined;
 
+/** Actions the backend registers but never checks: they all share the same description. */
+const UNUSED_ACTIONS: ReadonlySet<string> = new Set([
+  'HPacket/fields_management',
+  'HProject/get_topology_list',
+  'Permission/permission',
+  'Role/api_access',
+  'Role/permission',
+  'Rule/action_run',
+]);
+
 export function actionDescription(shortResourceName: string, actionName: string): string | undefined {
   descriptions ??= {
     'HProject/save': $localize`:@@HYT_admin_role_action_hproject_save:Create a project.`,
@@ -179,5 +189,8 @@ export function actionDescription(shortResourceName: string, actionName: string)
     'UIBranding/find-all': $localize`:@@HYT_admin_role_action_uibranding_find_all:List the user brandings the user can access.`,
   };
   const key = `${shortResourceName}/${actionName}`;
+  if (UNUSED_ACTIONS.has(key)) {
+    return $localize`:@@HYT_admin_role_action_unused:Unused: granting it has no effect.`;
+  }
   return Object.hasOwn(descriptions, key) ? descriptions[key] : undefined;
 }

@@ -2096,6 +2096,9 @@
       <trans-unit id="HYT_admin_role_action_uibranding_find_all" datatype="html">
         <source>List the user brandings the user can access.</source>
       </trans-unit>
+      <trans-unit id="HYT_admin_role_action_unused" datatype="html">
+        <source>Unused: granting it has no effect.</source>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
       </trans-unit>
