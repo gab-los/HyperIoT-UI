@@ -1322,6 +1322,99 @@
       <trans-unit id="HYT_admin_category_data_processing" datatype="html">
         <source>Data processing</source>
       </trans-unit>
+      <trans-unit id="HYT_admin_users_loading" datatype="html">
+        <source>Loading users</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_load_error" datatype="html">
+        <source>Unable to load the users.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_retry" datatype="html">
+        <source>Retry</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_search" datatype="html">
+        <source>Search users</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_sort_by" datatype="html">
+        <source>Sort by</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_sort_ascending" datatype="html">
+        <source>Ascending order</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_sort_descending" datatype="html">
+        <source>Descending order</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_count" datatype="html">
+        <source>Users found: <x id="INTERPOLATION" /></source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_empty" datatype="html">
+        <source>There are no users.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_no_match" datatype="html">
+        <source>No user matches the search.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_you" datatype="html">
+        <source>You</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_name" datatype="html">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_username" datatype="html">
+        <source>Username</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_email" datatype="html">
+        <source>Email</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_status" datatype="html">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_roles" datatype="html">
+        <source>Roles</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_actions" datatype="html">
+        <source>Actions</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_active" datatype="html">
+        <source>Active</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_inactive" datatype="html">
+        <source>Inactive</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_admin_badge" datatype="html">
+        <source>Administrator</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_aria" datatype="html">
+        <source>Delete user <x id="name" /></source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_title" datatype="html">
+        <source>Delete user</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_message" datatype="html">
+        <source>Do you want to delete the user <x id="name" />? This operation cannot be undone.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_deleted" datatype="html">
+        <source>User <x id="name" /> deleted</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_items_per_page" datatype="html">
+        <source>Items per page:</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_next_page" datatype="html">
+        <source>Next page</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_previous_page" datatype="html">
+        <source>Previous page</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_first_page" datatype="html">
+        <source>First page</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_last_page" datatype="html">
+        <source>Last page</source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_range_empty" datatype="html">
+        <source>0 of <x id="length" /></source>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_range" datatype="html">
+        <source><x id="start" /> – <x id="end" /> of <x id="length" /></source>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
       </trans-unit>

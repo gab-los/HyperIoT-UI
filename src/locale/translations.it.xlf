@@ -1764,6 +1764,130 @@
         <source>Data processing</source>
         <target>Elaborazione dati</target>
       </trans-unit>
+      <trans-unit id="HYT_admin_users_loading" datatype="html">
+        <source>Loading users</source>
+        <target>Caricamento utenti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_load_error" datatype="html">
+        <source>Unable to load the users.</source>
+        <target>Impossibile caricare gli utenti.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_retry" datatype="html">
+        <source>Retry</source>
+        <target>Riprova</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_search" datatype="html">
+        <source>Search users</source>
+        <target>Cerca utenti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_sort_by" datatype="html">
+        <source>Sort by</source>
+        <target>Ordina per</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_sort_ascending" datatype="html">
+        <source>Ascending order</source>
+        <target>Ordine crescente</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_sort_descending" datatype="html">
+        <source>Descending order</source>
+        <target>Ordine decrescente</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_count" datatype="html">
+        <source>Users found: <x id="INTERPOLATION" /></source>
+        <target>Utenti trovati: <x id="INTERPOLATION" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_empty" datatype="html">
+        <source>There are no users.</source>
+        <target>Non ci sono utenti.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_no_match" datatype="html">
+        <source>No user matches the search.</source>
+        <target>Nessun utente corrisponde alla ricerca.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_you" datatype="html">
+        <source>You</source>
+        <target>Tu</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_name" datatype="html">
+        <source>Name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_username" datatype="html">
+        <source>Username</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_email" datatype="html">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_status" datatype="html">
+        <source>Status</source>
+        <target>Stato</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_roles" datatype="html">
+        <source>Roles</source>
+        <target>Ruoli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_col_actions" datatype="html">
+        <source>Actions</source>
+        <target>Azioni</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_active" datatype="html">
+        <source>Active</source>
+        <target>Attivo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_inactive" datatype="html">
+        <source>Inactive</source>
+        <target>Non attivo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_admin_badge" datatype="html">
+        <source>Administrator</source>
+        <target>Amministratore</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_aria" datatype="html">
+        <source>Delete user <x id="name" /></source>
+        <target>Elimina l'utente <x id="name" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_title" datatype="html">
+        <source>Delete user</source>
+        <target>Elimina utente</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_delete_message" datatype="html">
+        <source>Do you want to delete the user <x id="name" />? This operation cannot be undone.</source>
+        <target>Vuoi eliminare l'utente <x id="name" />? L'operazione non può essere annullata.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_deleted" datatype="html">
+        <source>User <x id="name" /> deleted</source>
+        <target>Utente <x id="name" /> eliminato</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_items_per_page" datatype="html">
+        <source>Items per page:</source>
+        <target>Elementi per pagina:</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_next_page" datatype="html">
+        <source>Next page</source>
+        <target>Pagina successiva</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_previous_page" datatype="html">
+        <source>Previous page</source>
+        <target>Pagina precedente</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_first_page" datatype="html">
+        <source>First page</source>
+        <target>Prima pagina</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_last_page" datatype="html">
+        <source>Last page</source>
+        <target>Ultima pagina</target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_range_empty" datatype="html">
+        <source>0 of <x id="length" /></source>
+        <target>0 di <x id="length" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_paginator_range" datatype="html">
+        <source><x id="start" /> – <x id="end" /> of <x id="length" /></source>
+        <target><x id="start" /> – <x id="end" /> di <x id="length" /></target>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
         <target>Percorso di navigazione</target>
