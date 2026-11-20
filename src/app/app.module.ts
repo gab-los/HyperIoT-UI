@@ -31,7 +31,6 @@ import { AddWidgetDialogComponent, DashboardModule, WidgetSettingsDialogComponen
 import { RouterModule, DefaultUrlSerializer, UrlSerializer, UrlTree } from '@angular/router';
 
 // local
-import { AlgorithmsModule } from './pages/algorithms/algorithms.module';
 import { ProjectsModule } from './pages/projects/projects.module';
 import { CanDeactivateGuard } from './components/CanDeactivateGuard';
 import { SaveChangesDialogComponent } from './components/dialogs/save-changes-dialog/save-changes-dialog.component';
@@ -138,7 +137,6 @@ export function apiConfigFactory(): Configuration {
         HytRoutingModule,
         AuthenticationModule,
         ComponentsModule,
-        AlgorithmsModule,
         ProjectsModule,
         WidgetsModule,
         ApiModule.forRoot(apiConfigFactory),
