@@ -31,6 +31,7 @@ import { ProjectStatisticsFormComponent } from '../pages/projects/project-forms/
 import { ProjectAlarmsFormComponent } from '../pages/projects/project-forms/project-alarms-form/project-alarms-form.component';
 import {DashComponent} from '../pages/dash/dash.component';
 import { PostLoginService } from '../services/postLogin/post-login.service';
+import { environment } from '../../environments/environment';
 
 export enum HytRoutesDataFields {
   IGNORE_HTTP_ERROR_NOTIFY = 'ignoreHttpErrorNotify'
@@ -348,6 +349,16 @@ const hyperiotRoutes: Routes = [
       showToolBar: true
     }
   },
+  // Development pages: not registered in production builds.
+  ...(environment.production ? [] : [{
+    path: 'dev/theme-preview',
+    loadComponent: () => import('../pages/dev/theme-preview/theme-preview.component')
+      .then((m) => m.ThemePreviewComponent),
+    canActivate: [LoggedInGuard],
+    data: {
+      showToolBar: true
+    }
+  }]),
   {
     path: 'notFound',
     component: NotFoundComponent

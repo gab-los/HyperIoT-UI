@@ -1,0 +1,70 @@
+// HyperIoT global theme, built on Angular Material 3 (`mat.theme`).
+//
+// This file emits CSS: it must be loaded once, by the application's global styles
+// (src/styles.scss). Component styles must not @use it.
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use './theme-colors';
+@use './brand';
+
+// Shapes closer to the current look: Material 3 rounds buttons fully (corner-full)
+// and dialogs (corner-extra-large, 28px) much more than the M2 theme used so far.
+$_shape-overrides: (
+  corner-full: 4px,
+  corner-extra-large: 8px,
+  corner-large: 8px,
+);
+
+// Only the weights shipped in src/assets/fonts (200, 400, 600) are used, so the browser
+// does not synthesize the missing ones.
+$_typography: (
+  plain-family: Exo,
+  brand-family: Exo,
+  bold-weight: 600,
+  medium-weight: 600,
+  regular-weight: 400,
+);
+
+// Theme object used only by the backwards compatibility mixin below. With system variables
+// its colors are references to --mat-sys-*, so they follow the brand too.
+$_compat-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: theme-colors.$primary-palette,
+    tertiary: theme-colors.$tertiary-palette,
+    use-system-variables: true,
+  ),
+));
+
+html {
+  @include brand.defaults;
+
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      primary: theme-colors.$primary-palette,
+      tertiary: theme-colors.$tertiary-palette,
+      theme-type: light,
+    ),
+    typography: $_typography,
+    density: 0,
+  ), $overrides: map.merge(brand.$system-color-overrides, $_shape-overrides));
+
+  // Option panels of selects and autocompletes on white (surface-container-lowest)
+  // instead of the default grey-blue surface-container.
+  @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));
+  @include mat.autocomplete-overrides((background-color: var(--mat-sys-surface-container-lowest)));
+
+  // Visible focus outline on every Material component (WCAG 2.4.7). The default color is the
+  // secondary one, a light blue with too little contrast on white: use the primary instead.
+  @include mat.strong-focus-indicators((border-color: var(--mat-sys-primary)));
+}
+
+// Keeps the mat-elevation-z* classes used in the templates.
+@include mat.elevation-classes();
+
+// Keeps the M2 `color` input working (color="primary" / "accent" / "warn" on mat-icon,
+// mat-badge, mat-fab, ...), which Material 3 ignores otherwise.
+@include mat.color-variants-backwards-compatibility($_compat-theme);

@@ -1,0 +1,52 @@
+// Brand colors of the HyperIoT theme.
+//
+// The user picks only the primary and the secondary color at runtime; every other color
+// role used by the theme is derived here in CSS, so it follows the user's choice
+// without any recompilation.
+
+@mixin defaults {
+  // Bridge with the current branding: BrandingService writes --primary-color and
+  // --secondary-color after the login. The fallbacks are the HyperIoT colors, used before
+  // the login and when no custom branding exists.
+  --hyt-brand-primary: var(--primary-color, #0956b6);
+  --hyt-brand-secondary: var(--secondary-color, #17a4fa);
+  // In Material 3 the M2 "accent" becomes the tertiary color. The user does not pick it
+  // (yet): it follows the primary color.
+  --hyt-brand-tertiary: var(--hyt-brand-primary);
+
+  // Text on a brand color: white on dark colors, black on light ones. 0.565 is the OKLCH
+  // lightness where white and black text have about the same WCAG contrast.
+  --hyt-brand-on-primary: oklch(from var(--hyt-brand-primary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
+  --hyt-brand-on-secondary: oklch(from var(--hyt-brand-secondary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
+  --hyt-brand-on-tertiary: oklch(from var(--hyt-brand-tertiary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
+
+  // Containers and inverse color: an approximation of the Material 3 tones
+  // (90 for the containers, 10 for the text on them, 80 for the inverse color).
+  --hyt-brand-primary-container: color-mix(in srgb, var(--hyt-brand-primary) 15%, white);
+  --hyt-brand-on-primary-container: color-mix(in srgb, var(--hyt-brand-primary) 40%, black);
+  --hyt-brand-inverse-primary: color-mix(in srgb, var(--hyt-brand-primary) 40%, white);
+  --hyt-brand-secondary-container: color-mix(in srgb, var(--hyt-brand-secondary) 15%, white);
+  --hyt-brand-on-secondary-container: color-mix(in srgb, var(--hyt-brand-secondary) 40%, black);
+  --hyt-brand-tertiary-container: color-mix(in srgb, var(--hyt-brand-tertiary) 15%, white);
+  --hyt-brand-on-tertiary-container: color-mix(in srgb, var(--hyt-brand-tertiary) 40%, black);
+}
+
+// Material 3 system color roles bound to the brand colors, for the `$overrides` of `mat.theme`.
+// The roles not listed here (surfaces, outlines, error, the "fixed" roles) come from the
+// palettes generated in _theme-colors.scss.
+$system-color-overrides: (
+  primary: var(--hyt-brand-primary),
+  on-primary: var(--hyt-brand-on-primary),
+  primary-container: var(--hyt-brand-primary-container),
+  on-primary-container: var(--hyt-brand-on-primary-container),
+  inverse-primary: var(--hyt-brand-inverse-primary),
+  surface-tint: var(--hyt-brand-primary),
+  secondary: var(--hyt-brand-secondary),
+  on-secondary: var(--hyt-brand-on-secondary),
+  secondary-container: var(--hyt-brand-secondary-container),
+  on-secondary-container: var(--hyt-brand-on-secondary-container),
+  tertiary: var(--hyt-brand-tertiary),
+  on-tertiary: var(--hyt-brand-on-tertiary),
+  tertiary-container: var(--hyt-brand-tertiary-container),
+  on-tertiary-container: var(--hyt-brand-on-tertiary-container),
+);
