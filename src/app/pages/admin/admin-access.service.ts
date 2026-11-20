@@ -6,16 +6,15 @@ export type AdminSectionId = 'users' | 'roles' | 'algorithms';
 export const ADMIN_SECTION_IDS: readonly AdminSectionId[] = ['users', 'roles', 'algorithms'];
 
 /**
- * Back-end resource checked for each section: a user who is not admin can open a section
- * only with the `control_panel` permission on its resource (same rule as the old algorithms page).
+ * Permission checked for each section: a user who is not admin can open a section only with
+ * this action on its resource. Users and roles need the list (`find-all`, they have no
+ * `control_panel` action); algorithms keep the rule of the old algorithms page.
  */
-export const ADMIN_SECTION_RESOURCES: Readonly<Record<AdminSectionId, string>> = {
-  users: 'it.acsoftware.hyperiot.huser.model.HUser',
-  roles: 'it.acsoftware.hyperiot.role.model.Role',
-  algorithms: 'it.acsoftware.hyperiot.algorithm.model.Algorithm',
+export const ADMIN_SECTION_PERMISSIONS: Readonly<Record<AdminSectionId, { resource: string; action: string }>> = {
+  users: { resource: 'it.acsoftware.hyperiot.huser.model.HUser', action: 'find-all' },
+  roles: { resource: 'it.acsoftware.hyperiot.role.model.Role', action: 'find-all' },
+  algorithms: { resource: 'it.acsoftware.hyperiot.algorithm.model.Algorithm', action: 'control_panel' },
 };
-
-const CONTROL_PANEL_ACTION = 'control_panel';
 
 interface StoredUserInfo {
   authenticable?: { admin?: boolean };
@@ -34,8 +33,9 @@ export class AdminAccessService {
     if (userInfo.authenticable?.admin) {
       return true;
     }
-    const permissions = userInfo.profile?.[ADMIN_SECTION_RESOURCES[section]]?.permissions ?? [];
-    return permissions.includes(CONTROL_PANEL_ACTION);
+    const { resource, action } = ADMIN_SECTION_PERMISSIONS[section];
+    const permissions = userInfo.profile?.[resource]?.permissions ?? [];
+    return permissions.includes(action);
   }
 
   accessibleSections(): AdminSectionId[] {
