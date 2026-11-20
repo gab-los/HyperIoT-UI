@@ -1,0 +1,86 @@
+.editor {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+
+  @media (min-width: 768px) {
+    grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+  }
+}
+
+.resource-select {
+  width: 100%;
+}
+
+.resource-list {
+  max-height: 560px;
+  overflow-y: auto;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.count {
+  font-family: monospace;
+}
+
+.count.has-granted {
+  font-weight: 700;
+}
+
+.detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-title {
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 1.3em;
+  }
+
+  .fqn {
+    display: block;
+    overflow-wrap: anywhere;
+    margin: 4px 0;
+  }
+
+  .summary {
+    margin: 0;
+  }
+}
+
+.bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  button {
+    min-height: 44px;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.action-name {
+  font-family: monospace;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.action-description {
+  white-space: pre-wrap;
+}

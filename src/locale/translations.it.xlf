@@ -1752,10 +1752,6 @@
         <source>Manage the algorithms available to the projects</source>
         <target>Gestisci gli algoritmi disponibili per i progetti</target>
       </trans-unit>
-      <trans-unit id="HYT_admin_section_coming_soon" datatype="html">
-        <source>This section is under construction.</source>
-        <target>Questa sezione è in costruzione.</target>
-      </trans-unit>
       <trans-unit id="HYT_admin_category_access" datatype="html">
         <source>Users and permissions</source>
         <target>Utenti e permessi</target>
@@ -2011,6 +2007,354 @@
       <trans-unit id="HYT_admin_user_roles_failed" datatype="html">
         <source>User <x id="name" /> saved, but these roles could not be changed: <x id="roles" /></source>
         <target>Utente <x id="name" /> salvato, ma non è stato possibile modificare questi ruoli: <x id="roles" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_new" datatype="html">
+        <source>New role</source>
+        <target>Nuovo ruolo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_edit" datatype="html">
+        <source>Edit role</source>
+        <target>Modifica ruolo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_loading" datatype="html">
+        <source>Loading roles</source>
+        <target>Caricamento ruoli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_load_error" datatype="html">
+        <source>Unable to load the roles.</source>
+        <target>Impossibile caricare i ruoli.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_empty" datatype="html">
+        <source>There are no roles.</source>
+        <target>Non ci sono ruoli.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_name" datatype="html">
+        <source>Name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_description" datatype="html">
+        <source>Description</source>
+        <target>Descrizione</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_edit_aria" datatype="html">
+        <source>Edit role <x id="name" /></source>
+        <target>Modifica il ruolo <x id="name" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_delete_aria" datatype="html">
+        <source>Delete role <x id="name" /></source>
+        <target>Elimina il ruolo <x id="name" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_delete_title" datatype="html">
+        <source>Delete role</source>
+        <target>Elimina ruolo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_delete_message" datatype="html">
+        <source>Do you want to delete the role <x id="name" />? The users with this role lose its permissions. This operation cannot be undone.</source>
+        <target>Vuoi eliminare il ruolo <x id="name" />? Gli utenti con questo ruolo perdono i suoi permessi. L'operazione non può essere annullata.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_roles_deleted" datatype="html">
+        <source>Role <x id="name" /> deleted</source>
+        <target>Ruolo <x id="name" /> eliminato</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_loading" datatype="html">
+        <source>Loading role</source>
+        <target>Caricamento ruolo</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_load_error" datatype="html">
+        <source>Unable to load the role.</source>
+        <target>Impossibile caricare il ruolo.</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_back_to_roles" datatype="html">
+        <source>Back to roles</source>
+        <target>Torna ai ruoli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_section_details" datatype="html">
+        <source>Details</source>
+        <target>Dettagli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_section_permissions" datatype="html">
+        <source>Permissions</source>
+        <target>Permessi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_resource" datatype="html">
+        <source>Resource</source>
+        <target>Risorsa</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_resources" datatype="html">
+        <source>Resources</source>
+        <target>Risorse</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_actions_granted" datatype="html">
+        <source><x id="INTERPOLATION" /> of <x id="INTERPOLATION_1" /> actions granted</source>
+        <target><x id="INTERPOLATION" /> di <x id="INTERPOLATION_1" /> azioni concesse</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_select_all" datatype="html">
+        <source>Select all</source>
+        <target>Seleziona tutte</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_select_none" datatype="html">
+        <source>None</source>
+        <target>Nessuna</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_actions_of" datatype="html">
+        <source>Actions of <x id="INTERPOLATION" /></source>
+        <target>Azioni di <x id="INTERPOLATION" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_created" datatype="html">
+        <source>Role <x id="name" /> created</source>
+        <target>Ruolo <x id="name" /> creato</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_updated" datatype="html">
+        <source>Role <x id="name" /> updated</source>
+        <target>Ruolo <x id="name" /> aggiornato</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_permissions_failed" datatype="html">
+        <source>Role <x id="name" /> saved, but these permissions could not be saved: <x id="resources" /></source>
+        <target>Ruolo <x id="name" /> salvato, ma non è stato possibile salvare questi permessi: <x id="resources" /></target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_save" datatype="html">
+        <source>Create new items</source>
+        <target>Crea nuovi elementi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_update" datatype="html">
+        <source>Edit items</source>
+        <target>Modifica gli elementi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_remove" datatype="html">
+        <source>Delete items</source>
+        <target>Elimina gli elementi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_find" datatype="html">
+        <source>View the details of an item</source>
+        <target>Visualizza il dettaglio di un elemento</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_find_all" datatype="html">
+        <source>View the list of items</source>
+        <target>Visualizza l'elenco degli elementi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_permission" datatype="html">
+        <source>Manage permissions</source>
+        <target>Gestisce i permessi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_list_actions" datatype="html">
+        <source>View the available actions</source>
+        <target>Visualizza le azioni disponibili</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_assign_members" datatype="html">
+        <source>Assign users to roles</source>
+        <target>Assegna utenti ai ruoli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_unassign" datatype="html">
+        <source>Remove users from roles</source>
+        <target>Rimuove utenti dai ruoli</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_api_access" datatype="html">
+        <source>Access the API</source>
+        <target>Accede alle API</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_impersonate" datatype="html">
+        <source>Sign in as another user</source>
+        <target>Accede come un altro utente</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_share" datatype="html">
+        <source>Share projects with other users</source>
+        <target>Condivide i progetti con altri utenti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_device_list" datatype="html">
+        <source>View the devices of projects</source>
+        <target>Visualizza i dispositivi dei progetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_algorithms_management" datatype="html">
+        <source>Manage the algorithms of projects</source>
+        <target>Gestisce gli algoritmi dei progetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_areas_management" datatype="html">
+        <source>Manage the areas of projects</source>
+        <target>Gestisce le aree dei progetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_manage_rules" datatype="html">
+        <source>Manage the rules of projects</source>
+        <target>Gestisce le regole dei progetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_get_topology_list" datatype="html">
+        <source>View the list of topologies</source>
+        <target>Visualizza l'elenco delle topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_get_topology" datatype="html">
+        <source>View the details of a topology</source>
+        <target>Visualizza il dettaglio di una topologia</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_add_topology" datatype="html">
+        <source>Add topologies</source>
+        <target>Aggiunge topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_activate_topology" datatype="html">
+        <source>Activate topologies</source>
+        <target>Attiva le topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_deactivate_topology" datatype="html">
+        <source>Deactivate topologies</source>
+        <target>Disattiva le topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_kill_topology" datatype="html">
+        <source>Stop topologies</source>
+        <target>Termina le topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_upload_topology_jar" datatype="html">
+        <source>Upload the JAR files of topologies</source>
+        <target>Carica i file JAR delle topologie</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_scan_hbase_data" datatype="html">
+        <source>Read project data from HBase</source>
+        <target>Legge i dati dei progetti da HBase</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_delete_hadoop_data" datatype="html">
+        <source>Delete project data from Hadoop</source>
+        <target>Elimina i dati dei progetti da Hadoop</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_packets_management" datatype="html">
+        <source>Manage the packets of devices</source>
+        <target>Gestisce i pacchetti dei dispositivi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_fields_management" datatype="html">
+        <source>Manage the fields of packets</source>
+        <target>Gestisce i campi dei pacchetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_area_device_manager" datatype="html">
+        <source>Manage the devices of areas</source>
+        <target>Gestisce i dispositivi delle aree</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_find_widgets" datatype="html">
+        <source>View the widgets of dashboards</source>
+        <target>Visualizza i widget delle dashboard</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_action_run" datatype="html">
+        <source>Run the actions of rules</source>
+        <target>Esegue le azioni delle regole</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_control_panel" datatype="html">
+        <source>Manage algorithms in the admin area</source>
+        <target>Gestisce gli algoritmi nell'area admin</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_add_io_field" datatype="html">
+        <source>Add input and output fields</source>
+        <target>Aggiunge campi di input e output</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_update_io_field" datatype="html">
+        <source>Edit input and output fields</source>
+        <target>Modifica i campi di input e output</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_delete_io_field" datatype="html">
+        <source>Delete input and output fields</source>
+        <target>Elimina i campi di input e output</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_read_base_config" datatype="html">
+        <source>View the base configuration</source>
+        <target>Visualizza la configurazione di base</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_update_base_config_all" datatype="html">
+        <source>Edit the base configuration</source>
+        <target>Modifica la configurazione di base</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_update_jar" datatype="html">
+        <source>Upload the JAR file of algorithms</source>
+        <target>Carica il file JAR degli algoritmi</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_update_config" datatype="html">
+        <source>Edit the configuration of algorithms in projects</source>
+        <target>Modifica la configurazione degli algoritmi nei progetti</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_check_connection" datatype="html">
+        <source>Check the connection to HBase</source>
+        <target>Verifica la connessione a HBase</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_create_table" datatype="html">
+        <source>Create tables</source>
+        <target>Crea tabelle</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_drop_table" datatype="html">
+        <source>Delete tables</source>
+        <target>Elimina tabelle</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_enable_table" datatype="html">
+        <source>Enable tables</source>
+        <target>Abilita tabelle</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_disable_data" datatype="html">
+        <source>Disable tables</source>
+        <target>Disabilita tabelle</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_insert_data" datatype="html">
+        <source>Insert data</source>
+        <target>Inserisce dati</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_read_data" datatype="html">
+        <source>Read data</source>
+        <target>Legge dati</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_delete_data" datatype="html">
+        <source>Delete data</source>
+        <target>Elimina dati</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_topics_add" datatype="html">
+        <source>Create Kafka topics</source>
+        <target>Crea topic Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_topics_alter" datatype="html">
+        <source>Edit Kafka topics</source>
+        <target>Modifica topic Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_topics_delete" datatype="html">
+        <source>Delete Kafka topics</source>
+        <target>Elimina topic Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_topics_metrics" datatype="html">
+        <source>View the metrics of Kafka topics</source>
+        <target>Visualizza le metriche dei topic Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_acl_add" datatype="html">
+        <source>Add Kafka ACLs</source>
+        <target>Aggiunge ACL Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_admin_kafka_acl_update" datatype="html">
+        <source>Edit Kafka ACLs</source>
+        <target>Modifica ACL Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_consume_from_topic" datatype="html">
+        <source>Read messages from Kafka topics</source>
+        <target>Legge i messaggi dai topic Kafka</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_check_leadership" datatype="html">
+        <source>Check the cluster leadership</source>
+        <target>Verifica la leadership del cluster</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_submit_job" datatype="html">
+        <source>Start Spark jobs</source>
+        <target>Avvia job Spark</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_get_job_status" datatype="html">
+        <source>View the status of Spark jobs</source>
+        <target>Visualizza lo stato dei job Spark</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_kill_job" datatype="html">
+        <source>Stop Spark jobs</source>
+        <target>Termina i job Spark</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_copy_file" datatype="html">
+        <source>Copy files to Hadoop</source>
+        <target>Copia file su Hadoop</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_delete_file" datatype="html">
+        <source>Delete files from Hadoop</source>
+        <target>Elimina file da Hadoop</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_send_email" datatype="html">
+        <source>Send emails</source>
+        <target>Invia email</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_action_create_channel" datatype="html">
+        <source>Create WebSocket channels</source>
+        <target>Crea canali WebSocket</target>
       </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>

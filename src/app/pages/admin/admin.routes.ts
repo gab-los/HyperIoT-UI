@@ -33,7 +33,24 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'roles',
     canActivate: [adminSectionGuard('roles')],
-    loadComponent: () => import('./admin-roles/admin-roles.component').then(m => m.AdminRolesComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./admin-roles/admin-roles.component').then(m => m.AdminRolesComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./admin-roles/admin-role-form/admin-role-form.component').then(m => m.AdminRoleFormComponent),
+        canDeactivate: [CanDeactivateGuard],
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./admin-roles/admin-role-form/admin-role-form.component').then(m => m.AdminRoleFormComponent),
+        canDeactivate: [CanDeactivateGuard],
+      },
+    ],
   },
   {
     path: 'algorithms',

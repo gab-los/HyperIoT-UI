@@ -1,0 +1,64 @@
+<div class="editor">
+  @if (isPhone()) {
+    <mat-form-field class="resource-select">
+      <mat-label i18n="@@HYT_admin_role_resource">Resource</mat-label>
+      <mat-select [value]="selected()?.resourceName" (valueChange)="select($event)">
+        @for (resource of resources(); track resource.resourceName) {
+          <mat-option [value]="resource.resourceName">
+            {{ resource.shortName }} ({{ granted(resource) }}/{{ resource.actions.length }})
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  } @else {
+    <nav class="resource-list" i18n-aria-label="@@HYT_admin_role_resources" aria-label="Resources">
+      <mat-action-list>
+        @for (resource of resources(); track resource.resourceName) {
+          <button
+            mat-list-item
+            type="button"
+            [activated]="resource === selected()"
+            [attr.aria-current]="resource === selected() ? 'true' : null"
+            (click)="select(resource.resourceName)"
+          >
+            <span matListItemTitle>{{ resource.shortName }}</span>
+            <span matListItemMeta class="count" [class.has-granted]="granted(resource) > 0">
+              {{ granted(resource) }}/{{ resource.actions.length }}
+            </span>
+          </button>
+        }
+      </mat-action-list>
+    </nav>
+  }
+
+  @if (selected(); as resource) {
+    <mat-card appearance="outlined" class="detail">
+      <mat-card-content>
+        <div class="detail-header">
+          <div class="detail-title">
+            <h3>{{ resource.shortName }}</h3>
+            <code class="fqn">{{ resource.resourceName }}</code>
+            <p class="summary" aria-live="polite" i18n="@@HYT_admin_role_actions_granted">{{ granted(resource) }} of {{ resource.actions.length }} actions granted</p>
+          </div>
+          <div class="bulk-actions">
+            <button mat-stroked-button type="button" (click)="selectAll(resource)" i18n="@@HYT_admin_role_select_all">Select all</button>
+            <button mat-stroked-button type="button" (click)="selectNone(resource)" i18n="@@HYT_admin_role_select_none">None</button>
+          </div>
+        </div>
+
+        <fieldset class="actions">
+          <legend class="cdk-visually-hidden" i18n="@@HYT_admin_role_actions_of">Actions of {{ resource.shortName }}</legend>
+          @for (action of resource.actions; track action.id) {
+            <mat-checkbox [checked]="isGranted(resource, action)" (change)="toggle(resource, action, $event.checked)">
+              <code class="action-name">{{ action.name }}</code>
+              @if (description(action.name); as text) {
+                <!-- the separator is in the interpolation: whitespace between elements is removed -->
+                <span class="action-description">{{ ' – ' + text }}</span>
+              }
+            </mat-checkbox>
+          }
+        </fieldset>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
