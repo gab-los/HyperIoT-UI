@@ -1415,6 +1415,99 @@
       <trans-unit id="HYT_paginator_range" datatype="html">
         <source><x id="start" /> – <x id="end" /> of <x id="length" /></source>
       </trans-unit>
+      <trans-unit id="HYT_admin_user_new" datatype="html">
+        <source>New user</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_edit" datatype="html">
+        <source>Edit user</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_edit" datatype="html">
+        <source>Edit</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_users_edit_aria" datatype="html">
+        <source>Edit user <x id="name" /></source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_loading" datatype="html">
+        <source>Loading user</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_load_error" datatype="html">
+        <source>Unable to load the user.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_back_to_users" datatype="html">
+        <source>Back to users</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_section_account" datatype="html">
+        <source>Account</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_section_password" datatype="html">
+        <source>Password</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_section_permissions" datatype="html">
+        <source>Permissions</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_field_required" datatype="html">
+        <source>This field is required</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_invalid_email" datatype="html">
+        <source>Enter a valid email address</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_name" datatype="html">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_lastname" datatype="html">
+        <source>Last name</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password" datatype="html">
+        <source>Password</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_confirm" datatype="html">
+        <source>Confirm password</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_show_password" datatype="html">
+        <source>Show password</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_invalid" datatype="html">
+        <source>The password does not meet the rules</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_mismatch" datatype="html">
+        <source>The passwords do not match</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_rule_length" datatype="html">
+        <source>At least <x id="INTERPOLATION" /> characters</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_rule_case" datatype="html">
+        <source>A lowercase and an uppercase letter</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_rule_number" datatype="html">
+        <source>A number</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_password_rule_special" datatype="html">
+        <source>A special character</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_save" datatype="html">
+        <source>Save</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_saving" datatype="html">
+        <source>Saving…</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_unsaved_title" datatype="html">
+        <source>Discard changes?</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_unsaved_message" datatype="html">
+        <source>The changes you made have not been saved.</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_unsaved_confirm" datatype="html">
+        <source>Discard</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_created" datatype="html">
+        <source>User <x id="name" /> created</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_updated" datatype="html">
+        <source>User <x id="name" /> updated</source>
+      </trans-unit>
+      <trans-unit id="HYT_admin_user_roles_failed" datatype="html">
+        <source>User <x id="name" /> saved, but these roles could not be changed: <x id="roles" /></source>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
       </trans-unit>

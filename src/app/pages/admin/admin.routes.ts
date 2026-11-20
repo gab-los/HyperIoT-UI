@@ -11,7 +11,24 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'users',
     canActivate: [adminSectionGuard('users')],
-    loadComponent: () => import('./admin-users/admin-users.component').then(m => m.AdminUsersComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./admin-users/admin-users.component').then(m => m.AdminUsersComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./admin-users/admin-user-form/admin-user-form.component').then(m => m.AdminUserFormComponent),
+        canDeactivate: [CanDeactivateGuard],
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./admin-users/admin-user-form/admin-user-form.component').then(m => m.AdminUserFormComponent),
+        canDeactivate: [CanDeactivateGuard],
+      },
+    ],
   },
   {
     path: 'roles',

@@ -13,6 +13,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { RouterLink } from '@angular/router';
 import { DialogService } from 'components';
 import { HUser } from 'core';
 import { ToastrService } from 'ngx-toastr';
@@ -36,6 +37,7 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50];
   imports: [
     NgTemplateOutlet,
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -167,6 +169,11 @@ export class AdminUsersComponent {
 
   protected roleNames(user: HUser): string {
     return (user.roles ?? []).map(role => role.name).filter(Boolean).join(', ');
+  }
+
+  protected editLabel(user: HUser): string {
+    const name = userDisplayName(user);
+    return $localize`:@@HYT_admin_users_edit_aria:Edit user ${name}:name:`;
   }
 
   protected deleteLabel(user: HUser): string {
