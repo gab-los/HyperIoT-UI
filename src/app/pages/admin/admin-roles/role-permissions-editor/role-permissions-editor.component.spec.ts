@@ -46,7 +46,7 @@ describe('RolePermissionsEditorComponent', () => {
     await render({});
     expect(element.querySelector('.detail h3')?.textContent).toBe('HDevice');
     expect(text('.detail .action-name')).toEqual(['save', 'find']);
-    expect(text('.detail mat-checkbox')).toEqual(['save – Create new items', 'find – View the details of an item']);
+    expect(text('.detail mat-checkbox')).toEqual(['save – Create a device.', 'find – View the device with the given ID.']);
   });
 
   it('changes the mask when an action is checked', async () => {

@@ -51,7 +51,7 @@
           @for (action of resource.actions; track action.id) {
             <mat-checkbox [checked]="isGranted(resource, action)" (change)="toggle(resource, action, $event.checked)">
               <code class="action-name">{{ action.name }}</code>
-              @if (description(action.name); as text) {
+              @if (description(resource.shortName, action.name); as text) {
                 <!-- the separator is in the interpolation: whitespace between elements is removed -->
                 <span class="action-description">{{ ' – ' + text }}</span>
               }
