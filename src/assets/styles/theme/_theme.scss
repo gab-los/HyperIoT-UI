@@ -23,6 +23,13 @@ $_shape-overrides: (
   corner-large: 8px,
 );
 
+// White page and component surfaces (dialogs, tables, expansion panels, paginators, toolbars),
+// as in the M2 theme, instead of the light grey tone 98 of Material 3.
+$_surface-overrides: (
+  background: var(--mat-sys-surface-container-lowest),
+  surface: var(--mat-sys-surface-container-lowest),
+);
+
 // Only the weights shipped in src/assets/fonts (200, 400, 600) are used, so the browser
 // does not synthesize the missing ones.
 $_typography: (
@@ -57,14 +64,23 @@ html {
     ),
     typography: $_typography,
     density: 0,
-  ), $overrides: map.merge(brand.$system-color-overrides, $_shape-overrides));
+  ), $overrides: map.merge(
+    map.merge(brand.$system-color-overrides, $_surface-overrides),
+    $_shape-overrides
+  ));
 
   @include brand.legacy-shades;
 
-  // Option panels of selects and autocompletes on white (surface-container-lowest)
-  // instead of the default grey-blue surface-container.
+  // Option panels of selects, autocompletes and menus on white (surface-container-lowest)
+  // instead of the grey surface-container, as in the M2 theme.
   @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));
   @include mat.autocomplete-overrides((background-color: var(--mat-sys-surface-container-lowest)));
+  @include mat.menu-overrides((container-color: var(--mat-sys-surface-container-lowest)));
+
+  // Filled form fields on a light grey, close to the M2 theme (#f6f6f6), instead of
+  // surface-variant (#e2e2e2). surface-variant itself stays as it is: it is also the track of
+  // progress bars, sliders and slide toggles, which would become almost invisible.
+  @include mat.form-field-overrides((filled-container-color: var(--mat-sys-surface-container-low)));
 
   // Cards as in the M2 theme: white and with 4px corners (M3 defaults: surface-container-low,
   // a light grey, and corner-medium, 12px).
