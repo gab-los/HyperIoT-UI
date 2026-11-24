@@ -8,6 +8,7 @@
 @use './theme-colors';
 @use './brand';
 @use './neutral-palette';
+@use './elevation';
 
 // Generated palettes with pure grey neutrals, so surfaces and outlines do not keep the
 // tint of the default blue when the user picks other colors.
@@ -65,6 +66,16 @@ html {
   @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));
   @include mat.autocomplete-overrides((background-color: var(--mat-sys-surface-container-lowest)));
 
+  // Cards as in the M2 theme: white and with 4px corners (M3 defaults: surface-container-low,
+  // a light grey, and corner-medium, 12px).
+  @include mat.card-overrides((
+    elevated-container-color: var(--mat-sys-surface-container-lowest),
+    outlined-container-color: var(--mat-sys-surface-container-lowest),
+    elevated-container-shape: 4px,
+    outlined-container-shape: 4px,
+    filled-container-shape: 4px,
+  ));
+
   // Chips with the M2 look the app was designed for: fully rounded, no outline and body text
   // instead of the M3 bold label (M3 defaults: 8px corners, 1px outline, label-large).
   @include mat.chips-overrides((
@@ -80,8 +91,8 @@ html {
   @include mat.strong-focus-indicators((border-color: var(--mat-sys-primary)));
 }
 
-// Keeps the mat-elevation-z* classes used in the templates.
-@include mat.elevation-classes();
+// Keeps the mat-elevation-z* classes used in the templates (see _elevation.scss).
+@include elevation.elevation-classes;
 
 // Keeps the M2 `color` input working (color="primary" / "accent" / "warn" on mat-icon,
 // mat-badge, mat-fab, ...), which Material 3 ignores otherwise.
