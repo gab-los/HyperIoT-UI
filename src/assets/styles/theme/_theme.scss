@@ -65,6 +65,16 @@ html {
   @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));
   @include mat.autocomplete-overrides((background-color: var(--mat-sys-surface-container-lowest)));
 
+  // Chips with the M2 look the app was designed for: fully rounded, no outline and body text
+  // instead of the M3 bold label (M3 defaults: 8px corners, 1px outline, label-large).
+  @include mat.chips-overrides((
+    container-shape-radius: 16px,
+    outline-width: 0,
+    label-text-font: var(--mat-sys-body-medium-font),
+    label-text-size: var(--mat-sys-body-medium-size),
+    label-text-weight: var(--mat-sys-body-medium-weight),
+  ));
+
   // Visible focus outline on every Material component (WCAG 2.4.7). The default color is the
   // secondary one, a light blue with too little contrast on white: use the primary instead.
   @include mat.strong-focus-indicators((border-color: var(--mat-sys-primary)));
