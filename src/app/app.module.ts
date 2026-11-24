@@ -16,6 +16,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { ProfileComponent } from './pages/account/profile/profile.component';
+import { ColorContrastWarningComponent } from './pages/account/profile/color-contrast-warning/color-contrast-warning.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
@@ -121,6 +122,7 @@ export function apiConfigFactory(): Configuration {
         DataExportNotificationDialogComponent
     ],
     imports: [
+        ColorContrastWarningComponent,
         DragDropModule,
         RouterModule,
         BrowserModule,

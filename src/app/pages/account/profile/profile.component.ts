@@ -349,6 +349,13 @@ export class ProfileComponent implements OnInit {
     this.brandingForm.markAsPristine();
   }
 
+  /** Sets a theme color, for example the darker color suggested by the contrast warning. */
+  setBrandingColor(controlName: 'primaryColor' | 'secondaryColor', color: string): void {
+    const control = this.brandingForm.get(controlName);
+    control?.setValue(color);
+    control?.markAsDirty();
+  }
+
   restoreDefaultTheme(logoFileInput) {
     this.logoErrorMessage = {
       showError: false,
