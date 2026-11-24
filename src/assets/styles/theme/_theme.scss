@@ -7,6 +7,12 @@
 @use '@angular/material' as mat;
 @use './theme-colors';
 @use './brand';
+@use './neutral-palette';
+
+// Generated palettes with pure grey neutrals, so surfaces and outlines do not keep the
+// tint of the default blue when the user picks other colors.
+$_primary-palette: neutral-palette.with-grey-neutrals(theme-colors.$primary-palette);
+$_tertiary-palette: neutral-palette.with-grey-neutrals(theme-colors.$tertiary-palette);
 
 // Shapes closer to the current look: Material 3 rounds buttons fully (corner-full)
 // and dialogs (corner-extra-large, 28px) much more than the M2 theme used so far.
@@ -31,8 +37,8 @@ $_typography: (
 $_compat-theme: mat.define-theme((
   color: (
     theme-type: light,
-    primary: theme-colors.$primary-palette,
-    tertiary: theme-colors.$tertiary-palette,
+    primary: $_primary-palette,
+    tertiary: $_tertiary-palette,
     use-system-variables: true,
   ),
 ));
@@ -44,8 +50,8 @@ html {
 
   @include mat.theme((
     color: (
-      primary: theme-colors.$primary-palette,
-      tertiary: theme-colors.$tertiary-palette,
+      primary: $_primary-palette,
+      tertiary: $_tertiary-palette,
       theme-type: light,
     ),
     typography: $_typography,
