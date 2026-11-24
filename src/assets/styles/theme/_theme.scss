@@ -52,6 +52,8 @@ html {
     density: 0,
   ), $overrides: map.merge(brand.$system-color-overrides, $_shape-overrides));
 
+  @include brand.legacy-shades;
+
   // Option panels of selects and autocompletes on white (surface-container-lowest)
   // instead of the default grey-blue surface-container.
   @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));

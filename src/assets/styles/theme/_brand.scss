@@ -9,11 +9,6 @@
   // element when the user has custom colors (keep DEFAULT_THEME_COLORS in sync).
   --hyt-brand-primary: #0956b6;
   --hyt-brand-secondary: #17a4fa;
-  // Bridge for the legacy styles, which read --primary-color and --secondary-color
-  // (through $primary-color and $secondary-color): they follow the brand colors too.
-  // To be removed once those styles use the --mat-sys-* tokens.
-  --primary-color: var(--hyt-brand-primary);
-  --secondary-color: var(--hyt-brand-secondary);
   // In Material 3 the M2 "accent" becomes the tertiary color. The user does not pick it
   // (yet): it follows the primary color.
   --hyt-brand-tertiary: var(--hyt-brand-primary);
@@ -54,3 +49,15 @@ $system-color-overrides: (
   tertiary-container: var(--hyt-brand-tertiary-container),
   on-tertiary-container: var(--hyt-brand-on-tertiary-container),
 );
+
+// Shades of the brand colors used by the styles written before Material 3, with the same
+// formulas as the old Sass variables of abstracts/_variables.scss ($primary-color-dark, ...),
+// so those styles keep their look. To review in the cleanup step: each one should become a Material role
+// (--mat-sys-*) or stay as a HyperIoT variable.
+@mixin legacy-shades {
+  --hyt-primary-dark: hsl(from var(--mat-sys-primary) h 100% 24%);
+  --hyt-primary-dark-unsaturated: hsl(from var(--mat-sys-primary) calc(h - 7) 78% 24%);
+  --hyt-primary-light: hsl(from var(--mat-sys-primary) h 43% 46%);
+  --hyt-secondary-dark: hsl(from var(--mat-sys-secondary) h s 40%);
+  --hyt-secondary-unsaturated: hsl(from var(--mat-sys-secondary) h 63% l);
+}
