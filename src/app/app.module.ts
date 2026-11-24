@@ -1,7 +1,7 @@
 // angular
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, inject, provideAppInitializer } from '@angular/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -25,7 +25,8 @@ import { AccountButtonComponent } from './components/topbar/account-button/accou
 import { MatIconModule } from '@angular/material/icon';
 
 // hyperiot
-import { Configuration, ConfigurationParameters, CoreModule, ApiModule, LoggerService, BrandingService, HyperiotStore} from 'core';
+import { Configuration, ConfigurationParameters, CoreModule, ApiModule, LoggerService, HyperiotStore} from 'core';
+import { ThemeService } from './services/theme/theme.service';
 import { ComponentsModule } from 'components';
 import { AddWidgetDialogComponent, DashboardModule, WidgetSettingsDialogComponent, WidgetsModule } from 'widgets';
 import { RouterModule, DefaultUrlSerializer, UrlSerializer, UrlTree } from '@angular/router';
@@ -173,7 +174,8 @@ export function apiConfigFactory(): Configuration {
         { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } },
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
-        BrandingService,
+        // Colors of the last session applied before the first render, while the branding loads.
+        provideAppInitializer(() => inject(ThemeService).restoreSavedColors()),
         provideHttpClient(withInterceptorsFromDi()),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -5,11 +5,15 @@
 // without any recompilation.
 
 @mixin defaults {
-  // Bridge with the current branding: BrandingService writes --primary-color and
-  // --secondary-color after the login. The fallbacks are the HyperIoT colors, used before
-  // the login and when no custom branding exists.
-  --hyt-brand-primary: var(--primary-color, #0956b6);
-  --hyt-brand-secondary: var(--secondary-color, #17a4fa);
+  // Default HyperIoT colors. ThemeService overrides them with inline styles on the root
+  // element when the user has custom colors (keep DEFAULT_THEME_COLORS in sync).
+  --hyt-brand-primary: #0956b6;
+  --hyt-brand-secondary: #17a4fa;
+  // Bridge for the legacy styles, which read --primary-color and --secondary-color
+  // (through $primary-color and $secondary-color): they follow the brand colors too.
+  // To be removed once those styles use the --mat-sys-* tokens.
+  --primary-color: var(--hyt-brand-primary);
+  --secondary-color: var(--hyt-brand-secondary);
   // In Material 3 the M2 "accent" becomes the tertiary color. The user does not pick it
   // (yet): it follows the primary color.
   --hyt-brand-tertiary: var(--hyt-brand-primary);
