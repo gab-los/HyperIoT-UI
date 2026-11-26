@@ -1,14 +1,16 @@
 // Brand colors of the HyperIoT theme.
 //
-// The user picks only the primary and the secondary color at runtime; every other color
-// role used by the theme is derived here in CSS, so it follows the user's choice
-// without any recompilation.
+// The user picks only the primary color at runtime; every other color role used by the
+// theme is derived here in CSS, so it follows the user's choice without any recompilation.
 
 @mixin defaults {
-  // Default HyperIoT colors. ThemeService overrides them with inline styles on the root
-  // element when the user has custom colors (keep DEFAULT_THEME_COLORS in sync).
+  // Default HyperIoT color. ThemeService overrides it with an inline style on the root
+  // element when the user has a custom color (keep DEFAULT_THEME_COLORS in sync).
   --hyt-brand-primary: #0956b6;
-  --hyt-brand-secondary: #17a4fa;
+  // Secondary color: the primary one, lighter (+0.2 OKLCH lightness, at most 0.85), with the
+  // same hue and chroma, like the HyperIoT blue and light blue. From the default primary it
+  // gives #4e94fa.
+  --hyt-brand-secondary: oklch(from var(--hyt-brand-primary) min(l + 0.2, 0.85) c h);
   // In Material 3 the M2 "accent" becomes the tertiary color. The user does not pick it
   // (yet): it follows the primary color.
   --hyt-brand-tertiary: var(--hyt-brand-primary);

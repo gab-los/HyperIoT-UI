@@ -34,7 +34,8 @@ const DEFAULT_LOGO: BrandingLogo = {
 
 /**
  * Reads a color scheme in the format of the ui-branding API, as a JSON string or as an
- * object: `{"primaryColor": "#0956b6", "secondaryColor": "#17a4fa"}`.
+ * object: `{"primaryColor": "#0956b6"}`. A `secondaryColor`, saved by older versions, is
+ * ignored: the secondary color is now derived from the primary one.
  * Returns null when the value is not valid.
  */
 export function parseColorScheme(value: unknown): ThemeColors | null {
@@ -49,16 +50,13 @@ export function parseColorScheme(value: unknown): ThemeColors | null {
   if (typeof scheme !== 'object' || scheme === null) {
     return null;
   }
-  const { primaryColor, secondaryColor } = scheme as Record<string, unknown>;
-  if (!isHexColor(primaryColor) || !isHexColor(secondaryColor)) {
-    return null;
-  }
-  return { primary: primaryColor.toLowerCase(), secondary: secondaryColor.toLowerCase() };
+  const { primaryColor } = scheme as Record<string, unknown>;
+  return isHexColor(primaryColor) ? { primary: primaryColor.toLowerCase() } : null;
 }
 
 /** Writes the colors in the format of the ui-branding API. */
 export function formatColorScheme(colors: ThemeColors): string {
-  return JSON.stringify({ primaryColor: colors.primary, secondaryColor: colors.secondary });
+  return JSON.stringify({ primaryColor: colors.primary });
 }
 
 /**

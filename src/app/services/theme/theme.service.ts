@@ -1,22 +1,20 @@
 import { DOCUMENT, Injectable, computed, inject, signal } from '@angular/core';
 
-/** Colors of the HyperIoT theme that the user can choose, as CSS hex colors. */
+/**
+ * Colors of the HyperIoT theme that the user can choose, as CSS hex colors. Only the primary
+ * color: the secondary one is derived from it in the stylesheet.
+ */
 export interface ThemeColors {
   primary: string;
-  secondary: string;
 }
 
 /** Default HyperIoT colors. They must match the defaults in src/assets/styles/theme/_brand.scss. */
 export const DEFAULT_THEME_COLORS: Readonly<ThemeColors> = {
   primary: '#0956b6',
-  secondary: '#17a4fa',
 };
 
-/** CSS variables of the theme written for each color (see _brand.scss). */
-const CSS_VARIABLES: Readonly<Record<keyof ThemeColors, string>> = {
-  primary: '--hyt-brand-primary',
-  secondary: '--hyt-brand-secondary',
-};
+/** CSS variable of the theme written for the primary color (see _brand.scss). */
+const PRIMARY_VARIABLE = '--hyt-brand-primary';
 
 /** localStorage key of the colors of the last session in this browser. */
 const STORAGE_KEY = 'hytThemeColors';
@@ -31,9 +29,9 @@ export function isHexColor(value: unknown): value is string {
 /**
  * Applies the colors chosen by the user to the theme at runtime.
  *
- * It writes only the --hyt-brand-* variables on the root element: the theme derives every
- * other color from them (see src/assets/styles/theme/_brand.scss). Without custom colors
- * the variables are removed, so the defaults of the stylesheet apply.
+ * It writes only the --hyt-brand-primary variable on the root element: the theme derives every
+ * other color from it (see src/assets/styles/theme/_brand.scss). Without custom colors the
+ * variable is removed, so the default of the stylesheet applies.
  */
 @Injectable({
   providedIn: 'root'
@@ -66,17 +64,13 @@ export class ThemeService {
    * Colors that are not hex colors are ignored, so nothing else reaches the stylesheet.
    */
   setColors(colors: ThemeColors | null): void {
-    const valid = colors && isHexColor(colors.primary) && isHexColor(colors.secondary)
-      ? { primary: colors.primary.toLowerCase(), secondary: colors.secondary.toLowerCase() }
-      : null;
+    const valid = colors && isHexColor(colors.primary) ? { primary: colors.primary.toLowerCase() } : null;
     this.customColors.set(valid);
     const style = this.document.documentElement.style;
-    for (const key of Object.keys(CSS_VARIABLES) as (keyof ThemeColors)[]) {
-      if (valid) {
-        style.setProperty(CSS_VARIABLES[key], valid[key]);
-      } else {
-        style.removeProperty(CSS_VARIABLES[key]);
-      }
+    if (valid) {
+      style.setProperty(PRIMARY_VARIABLE, valid.primary);
+    } else {
+      style.removeProperty(PRIMARY_VARIABLE);
     }
     this.saveColors(valid);
   }
@@ -92,8 +86,8 @@ export class ThemeService {
       if (typeof saved !== 'object' || saved === null) {
         return null;
       }
-      const { primary, secondary } = saved as Record<string, unknown>;
-      return isHexColor(primary) && isHexColor(secondary) ? { primary, secondary } : null;
+      const { primary } = saved as Record<string, unknown>;
+      return isHexColor(primary) ? { primary } : null;
     } catch {
       return null;
     }

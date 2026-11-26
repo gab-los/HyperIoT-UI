@@ -239,18 +239,6 @@
                 (apply)="setBrandingColor('primaryColor', $event)"
               />
             </div>
-            <div class="container-form-field col-3">
-              <mat-form-field>
-                <mat-label i18n="@@HYT_secondary_color"
-                  >Secondary Color</mat-label
-                >
-                <input matInput formControlName="secondaryColor" type="color" />
-              </mat-form-field>
-              <hyt-color-contrast-warning
-                [color]="brandingForm.get('secondaryColor')?.value"
-                (apply)="setBrandingColor('secondaryColor', $event)"
-              />
-            </div>
 
             @if (this.brandingForm.dirty) {
               <button

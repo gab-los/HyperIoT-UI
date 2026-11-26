@@ -169,7 +169,6 @@ export class ProfileComponent implements OnInit {
 
     this.brandingForm = this.fb.group({
       primaryColor: [''],
-      secondaryColor: [''],
     });
 
     this.store.select(UserSiteSettingSelectors.selectUserSiteSetting)
@@ -350,7 +349,7 @@ export class ProfileComponent implements OnInit {
   }
 
   /** Sets a theme color, for example the darker color suggested by the contrast warning. */
-  setBrandingColor(controlName: 'primaryColor' | 'secondaryColor', color: string): void {
+  setBrandingColor(controlName: 'primaryColor', color: string): void {
     const control = this.brandingForm.get(controlName);
     control?.setValue(color);
     control?.markAsDirty();
@@ -386,10 +385,10 @@ export class ProfileComponent implements OnInit {
       message: ''
     };
 
-    const { primaryColor, secondaryColor } = this.brandingForm.value;
+    const { primaryColor } = this.brandingForm.value;
 
     this.brandingService.save({
-      colors: { primary: primaryColor, secondary: secondaryColor },
+      colors: { primary: primaryColor },
       logo: this.fileToUpload ?? undefined,
     }).subscribe({
       error: () => {
@@ -415,7 +414,7 @@ export class ProfileComponent implements OnInit {
     // Shows the saved logo and colors, again after every load, save or restore.
     effect(() => {
       const { standard, mobile } = this.brandingService.logo();
-      const { primary, secondary } = this.themeService.colors();
+      const { primary } = this.themeService.colors();
       this.initialLogoPath = standard;
       this.initialLogoMobilePath = mobile;
       this.logoPath = standard;
@@ -427,7 +426,6 @@ export class ProfileComponent implements OnInit {
       }
       this.initialBrandingForm = this.fb.group({
         primaryColor: [primary],
-        secondaryColor: [secondary],
       });
       this.resetColorSchema();
     }, { injector: this.injector });

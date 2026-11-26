@@ -9,13 +9,16 @@ import { BrandingService, formatColorScheme, parseColorScheme } from './branding
 
 describe('parseColorScheme', () => {
   it('reads the JSON string saved by the ui-branding API', () => {
-    expect(parseColorScheme('{"primaryColor":"#C62828","secondaryColor":"#00897b"}'))
-      .toEqual({ primary: '#c62828', secondary: '#00897b' });
+    expect(parseColorScheme('{"primaryColor":"#C62828"}')).toEqual({ primary: '#c62828' });
   });
 
   it('reads an object with the same fields', () => {
-    expect(parseColorScheme({ primaryColor: '#abc', secondaryColor: '#123456' }))
-      .toEqual({ primary: '#abc', secondary: '#123456' });
+    expect(parseColorScheme({ primaryColor: '#abc' })).toEqual({ primary: '#abc' });
+  });
+
+  it('ignores the secondary color saved by older versions', () => {
+    expect(parseColorScheme('{"primaryColor":"#c62828","secondaryColor":"#00897b"}'))
+      .toEqual({ primary: '#c62828' });
   });
 
   it.each([
@@ -23,8 +26,8 @@ describe('parseColorScheme', () => {
     ['a JSON null', 'null'],
     ['a number', 42],
     ['undefined', undefined],
-    ['a missing secondary color', '{"primaryColor":"#c62828"}'],
-    ['a color name', '{"primaryColor":"red","secondaryColor":"#00897b"}'],
+    ['a missing primary color', '{"secondaryColor":"#00897b"}'],
+    ['a color name', '{"primaryColor":"red"}'],
   ])('returns null for %s', (_description, value) => {
     expect(parseColorScheme(value)).toBeNull();
   });
@@ -32,16 +35,16 @@ describe('parseColorScheme', () => {
 
 describe('formatColorScheme', () => {
   it('writes the format read by parseColorScheme', () => {
-    const colors = { primary: '#c62828', secondary: '#00897b' };
+    const colors = { primary: '#c62828' };
 
-    expect(JSON.parse(formatColorScheme(colors))).toEqual({ primaryColor: '#c62828', secondaryColor: '#00897b' });
+    expect(JSON.parse(formatColorScheme(colors))).toEqual({ primaryColor: '#c62828' });
     expect(parseColorScheme(formatColorScheme(colors))).toEqual(colors);
   });
 });
 
 describe('BrandingService', () => {
   const brandingUrl = '/hyperiot/ui-branding';
-  const customColors = { primary: '#c62828', secondary: '#00897b' };
+  const customColors = { primary: '#c62828' };
   const savedBranding = {
     colorScheme: formatColorScheme(customColors),
     logoBase64: 'bG9nbw==',
