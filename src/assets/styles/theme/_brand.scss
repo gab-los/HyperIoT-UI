@@ -21,15 +21,27 @@
   --hyt-brand-on-secondary: oklch(from var(--hyt-brand-secondary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
   --hyt-brand-on-tertiary: oklch(from var(--hyt-brand-tertiary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
 
-  // Containers and inverse color: an approximation of the Material 3 tones
-  // (90 for the containers, 10 for the text on them, 80 for the inverse color).
+  // Containers and inverse color: an approximation of the Material 3 tones of the light theme
+  // (90 for the containers, 30 for the text on them, 80 for the inverse color). The text on the
+  // containers has a fixed OKLCH lightness (0.40, about tone 30), so it stays readable (contrast
+  // above 7:1) whatever the lightness of the brand color.
   --hyt-brand-primary-container: color-mix(in srgb, var(--hyt-brand-primary) 15%, white);
-  --hyt-brand-on-primary-container: color-mix(in srgb, var(--hyt-brand-primary) 40%, black);
+  --hyt-brand-on-primary-container: oklch(from var(--hyt-brand-primary) 0.4 c h);
   --hyt-brand-inverse-primary: color-mix(in srgb, var(--hyt-brand-primary) 40%, white);
   --hyt-brand-secondary-container: color-mix(in srgb, var(--hyt-brand-secondary) 15%, white);
-  --hyt-brand-on-secondary-container: color-mix(in srgb, var(--hyt-brand-secondary) 40%, black);
+  --hyt-brand-on-secondary-container: oklch(from var(--hyt-brand-secondary) 0.4 c h);
   --hyt-brand-tertiary-container: color-mix(in srgb, var(--hyt-brand-tertiary) 15%, white);
-  --hyt-brand-on-tertiary-container: color-mix(in srgb, var(--hyt-brand-tertiary) 40%, black);
+  --hyt-brand-on-tertiary-container: oklch(from var(--hyt-brand-tertiary) 0.4 c h);
+
+  // HyperIoT shades of the brand colors, for example the dark blue of the selected sidebar item
+  // and the navy of titles and links, with the formulas of the original design. Material 3 has
+  // no role with these colors: its closest one, on-primary-container (tone 30), is lighter and
+  // more saturated, and the selected sidebar item would barely stand out.
+  --hyt-primary-dark: hsl(from var(--hyt-brand-primary) h 100% 24%);
+  --hyt-primary-dark-unsaturated: hsl(from var(--hyt-brand-primary) calc(h - 7) 78% 24%);
+  --hyt-primary-light: hsl(from var(--hyt-brand-primary) h 43% 46%);
+  --hyt-secondary-dark: hsl(from var(--hyt-brand-secondary) h s 40%);
+  --hyt-secondary-unsaturated: hsl(from var(--hyt-brand-secondary) h 63% l);
 }
 
 // Material 3 system color roles bound to the brand colors, for the `$overrides` of `mat.theme`.
@@ -51,15 +63,3 @@ $system-color-overrides: (
   tertiary-container: var(--hyt-brand-tertiary-container),
   on-tertiary-container: var(--hyt-brand-on-tertiary-container),
 );
-
-// Shades of the brand colors used by the styles written before Material 3, with the same
-// formulas as the old Sass variables of abstracts/_variables.scss ($primary-color-dark, ...),
-// so those styles keep their look. To review in the cleanup step: each one should become a Material role
-// (--mat-sys-*) or stay as a HyperIoT variable.
-@mixin legacy-shades {
-  --hyt-primary-dark: hsl(from var(--mat-sys-primary) h 100% 24%);
-  --hyt-primary-dark-unsaturated: hsl(from var(--mat-sys-primary) calc(h - 7) 78% 24%);
-  --hyt-primary-light: hsl(from var(--mat-sys-primary) h 43% 46%);
-  --hyt-secondary-dark: hsl(from var(--mat-sys-secondary) h s 40%);
-  --hyt-secondary-unsaturated: hsl(from var(--mat-sys-secondary) h 63% l);
-}

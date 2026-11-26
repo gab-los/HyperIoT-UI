@@ -69,8 +69,6 @@ html {
     $_shape-overrides
   ));
 
-  @include brand.legacy-shades;
-
   // Option panels of selects, autocompletes and menus on white (surface-container-lowest)
   // instead of the grey surface-container, as in the M2 theme.
   @include mat.select-overrides((panel-background-color: var(--mat-sys-surface-container-lowest)));
