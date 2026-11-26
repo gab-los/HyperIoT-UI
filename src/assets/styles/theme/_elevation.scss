@@ -1,14 +1,5 @@
-// Shadows of the mat-elevation-z* classes, in place of mat.elevation-classes().
-//
-// With Material 3 the shadows emitted by mat.elevation-classes() are invalid CSS (the color is
-// written as `--mat-sys-shadow` instead of `var(--mat-sys-shadow)`), so the browser drops them
-// and the elements have no shadow. mat.elevation() writes the Material 2 shadows, the ones the
-// app was designed with. When Material fixes it, go back to mat.elevation-classes() and keep only
-// the mat-card selector.
-//
-// mat-card sets its own shadow with `.mat-mdc-card`, which wins over the mat-elevation-z*
-// classes (known Material bug, open since v15: https://github.com/angular/components/issues/26094):
-// the more specific selector lets the classes work on cards too.
+// Replaces mat.elevation-classes(): in M3 its shadows are invalid CSS (no shadow at all), and
+// mat-card ignores the classes (https://github.com/angular/components/issues/26094).
 
 @use '@angular/material' as mat;
 

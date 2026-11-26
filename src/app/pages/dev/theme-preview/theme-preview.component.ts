@@ -39,11 +39,7 @@ interface DeviceRow {
   status: string;
 }
 
-/**
- * Development page that shows the main Angular Material components with the HyperIoT theme,
- * to check colors and shapes while the theme is being reworked.
- * It is registered only in non-production builds, so its texts are not translated.
- */
+/** Theme preview for development only (not in production builds, so texts are not translated). */
 @Component({
   selector: 'hyt-theme-preview',
   templateUrl: './theme-preview.component.html',

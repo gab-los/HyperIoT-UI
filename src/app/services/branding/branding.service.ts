@@ -6,20 +6,17 @@ import { Observable, map, tap } from 'rxjs';
 import { HyperiotLogoMobilePath, HyperiotLogoPath } from '../../constants';
 import { ThemeColors, ThemeService, isHexColor } from '../theme/theme.service';
 
-/** Logo shown in the top bar, in the full and in the compact (mobile) version. */
 export interface BrandingLogo {
   standard: SafeResourceUrl | string;
   mobile: SafeResourceUrl | string;
 }
 
-/** Changes saved from the theme customization of the profile page. */
 export interface BrandingChanges {
   colors: ThemeColors;
-  /** New logo; when missing, the current logo is kept. */
+  /** When missing, the current logo is kept. */
   logo?: File;
 }
 
-/** Branding entity returned by the ui-branding API (only the fields used here). */
 interface UiBranding {
   colorScheme?: string | null;
   logoBase64?: string | null;
@@ -32,12 +29,7 @@ const DEFAULT_LOGO: BrandingLogo = {
   mobile: HyperiotLogoMobilePath,
 };
 
-/**
- * Reads a color scheme in the format of the ui-branding API, as a JSON string or as an
- * object: `{"primaryColor": "#0956b6"}`. A `secondaryColor`, saved by older versions, is
- * ignored: the secondary color is now derived from the primary one.
- * Returns null when the value is not valid.
- */
+/** Reads `{"primaryColor": "#0956b6"}` (JSON string or object); a legacy secondaryColor is ignored. */
 export function parseColorScheme(value: unknown): ThemeColors | null {
   let scheme: unknown = value;
   if (typeof value === 'string') {
@@ -54,15 +46,11 @@ export function parseColorScheme(value: unknown): ThemeColors | null {
   return isHexColor(primaryColor) ? { primary: primaryColor.toLowerCase() } : null;
 }
 
-/** Writes the colors in the format of the ui-branding API. */
 export function formatColorScheme(colors: ThemeColors): string {
   return JSON.stringify({ primaryColor: colors.primary });
 }
 
-/**
- * Branding of the user interface (logo and colors), saved by the ui-branding API.
- * The colors are applied to the theme by ThemeService.
- */
+/** Logo and colors of the user, saved by the ui-branding API; the colors go to ThemeService. */
 @Injectable({
   providedIn: 'root'
 })
@@ -73,24 +61,22 @@ export class BrandingService {
   private readonly themeService = inject(ThemeService);
   private readonly logger = new Logger(inject(LoggerService));
 
-  /** Logo uploaded by the user; null when the HyperIoT logo is used. */
+  /** Null when the HyperIoT logo is used. */
   private readonly customLogo = signal<SafeResourceUrl | null>(null);
   private readonly branded = signal(false);
 
-  /** Logo to show. */
   readonly logo = computed<BrandingLogo>(() => {
     const logo = this.customLogo();
     return logo ? { standard: logo, mobile: logo } : DEFAULT_LOGO;
   });
 
-  /** Whether a custom branding is saved; the first one must include a logo. */
+  /** The backend requires a logo in the first saved branding. */
   readonly isBranded = this.branded.asReadonly();
 
   constructor() {
     this.logger.registerClass('BrandingService');
   }
 
-  /** Loads the branding after the login. Without a saved branding, the defaults are used. */
   load(): void {
     this.uiBrandingService.getUIBranding().subscribe({
       next: (branding: UiBranding) => this.apply(branding),
@@ -98,7 +84,7 @@ export class BrandingService {
     });
   }
 
-  /** Saves colors and, when given, a new logo; the branding is applied when the API answers. */
+  /** PUT when there is a new logo, PATCH (colors only) otherwise. */
   save({ colors, logo }: BrandingChanges): Observable<void> {
     const formData = new FormData();
     formData.append('colorScheme', formatColorScheme(colors));
@@ -116,7 +102,6 @@ export class BrandingService {
     );
   }
 
-  /** Deletes the saved branding and goes back to the HyperIoT logo and colors. */
   restoreDefaults(): Observable<void> {
     return this.http.delete(BRANDING_URL).pipe(
       tap(() => this.clear()),
@@ -124,7 +109,7 @@ export class BrandingService {
     );
   }
 
-  /** Forgets the branding in this browser, without calling the API (for example at logout). */
+  /** Local reset without calling the API, for example at logout. */
   clear(): void {
     this.customLogo.set(null);
     this.branded.set(false);

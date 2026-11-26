@@ -1,30 +1,17 @@
-// Brand colors of the HyperIoT theme.
-//
-// The user picks only the primary color at runtime; every other color role used by the
-// theme is derived here in CSS, so it follows the user's choice without any recompilation.
+// Brand colors: the user picks only the primary color, everything else is derived here.
 
 @mixin defaults {
-  // Default HyperIoT color. ThemeService overrides it with an inline style on the root
-  // element when the user has a custom color (keep DEFAULT_THEME_COLORS in sync).
+  // ThemeService overrides it at runtime; keep in sync with DEFAULT_THEME_COLORS.
   --hyt-brand-primary: #0956b6;
-  // Secondary color: the primary one, lighter (+0.2 OKLCH lightness, at most 0.85), with the
-  // same hue and chroma, like the HyperIoT blue and light blue. From the default primary it
-  // gives #4e94fa.
   --hyt-brand-secondary: oklch(from var(--hyt-brand-primary) min(l + 0.2, 0.85) c h);
-  // In Material 3 the M2 "accent" becomes the tertiary color. The user does not pick it
-  // (yet): it follows the primary color.
   --hyt-brand-tertiary: var(--hyt-brand-primary);
 
-  // Text on a brand color: white on dark colors, black on light ones. 0.565 is the OKLCH
-  // lightness where white and black text have about the same WCAG contrast.
+  // White or black text, whichever has more contrast.
   --hyt-brand-on-primary: oklch(from var(--hyt-brand-primary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
   --hyt-brand-on-secondary: oklch(from var(--hyt-brand-secondary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
   --hyt-brand-on-tertiary: oklch(from var(--hyt-brand-tertiary) clamp(0, (0.565 - l) * 1000, 1) 0 0);
 
-  // Containers and inverse color: an approximation of the Material 3 tones of the light theme
-  // (90 for the containers, 30 for the text on them, 80 for the inverse color). The text on the
-  // containers has a fixed OKLCH lightness (0.40, about tone 30), so it stays readable (contrast
-  // above 7:1) whatever the lightness of the brand color.
+  // Approximations of the M3 tones: 90 for containers, 30 for the text on them, 80 for inverse.
   --hyt-brand-primary-container: color-mix(in srgb, var(--hyt-brand-primary) 15%, white);
   --hyt-brand-on-primary-container: oklch(from var(--hyt-brand-primary) 0.4 c h);
   --hyt-brand-inverse-primary: color-mix(in srgb, var(--hyt-brand-primary) 40%, white);
@@ -33,10 +20,7 @@
   --hyt-brand-tertiary-container: color-mix(in srgb, var(--hyt-brand-tertiary) 15%, white);
   --hyt-brand-on-tertiary-container: oklch(from var(--hyt-brand-tertiary) 0.4 c h);
 
-  // HyperIoT shades of the brand colors, for example the dark blue of the selected sidebar item
-  // and the navy of titles and links, with the formulas of the original design. Material 3 has
-  // no role with these colors: its closest one, on-primary-container (tone 30), is lighter and
-  // more saturated, and the selected sidebar item would barely stand out.
+  // HyperIoT shades with no Material 3 equivalent.
   --hyt-primary-dark: hsl(from var(--hyt-brand-primary) h 100% 24%);
   --hyt-primary-dark-unsaturated: hsl(from var(--hyt-brand-primary) calc(h - 7) 78% 24%);
   --hyt-primary-light: hsl(from var(--hyt-brand-primary) h 43% 46%);
@@ -44,9 +28,7 @@
   --hyt-secondary-unsaturated: hsl(from var(--hyt-brand-secondary) h 63% l);
 }
 
-// Material 3 system color roles bound to the brand colors, for the `$overrides` of `mat.theme`.
-// The roles not listed here (surfaces, outlines, error, the "fixed" roles) come from the
-// palettes generated in _theme-colors.scss.
+// M3 roles bound to the brand colors, passed to the $overrides of mat.theme.
 $system-color-overrides: (
   primary: var(--hyt-brand-primary),
   on-primary: var(--hyt-brand-on-primary),

@@ -5,11 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MIN_CONTRAST_ON_WHITE, contrastOnWhite, darkenForWhite } from '../../../../services/theme/color-contrast';
 import { isHexColor } from '../../../../services/theme/theme.service';
 
-/**
- * Warns when a theme color is hard to read as text on a white background, and suggests a
- * darker version of the same color. The theme keeps the colors exactly as chosen, and Material
- * also uses them for text, icons and outlines on light surfaces.
- */
+/** Warns when a theme color is hard to read on white and suggests a darker version of it. */
 @Component({
   selector: 'hyt-color-contrast-warning',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,10 +55,9 @@ import { isHexColor } from '../../../../services/theme/theme.service';
   `,
 })
 export class ColorContrastWarningComponent {
-  /** Color to check, as a CSS hex color. */
   readonly color = input<string | null | undefined>();
 
-  /** Emits the suggested darker color when the user chooses it. */
+  /** Emits the suggested darker color. */
   readonly apply = output<string>();
 
   protected readonly minContrast = MIN_CONTRAST_ON_WHITE;
@@ -72,7 +67,6 @@ export class ColorContrastWarningComponent {
     return isHexColor(color) ? contrastOnWhite(color) : null;
   });
 
-  /** Darker version of the color, only when the color does not have enough contrast. */
   protected readonly suggestion = computed(() => {
     const color = this.color();
     const contrast = this.contrast();

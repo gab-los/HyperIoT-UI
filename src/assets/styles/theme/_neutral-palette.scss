@@ -1,9 +1,7 @@
-// Pure grey palette for the neutral color roles (surfaces, outlines, secondary texts).
-//
-// The neutral palettes generated in _theme-colors.scss are tinted with the hue of the default
-// primary color, so they would stay blue whatever color the user picks at runtime. These greys
-// have the same Material 3 tones (tone = CIE L*) with chroma 0: they match any brand color, are
-// close to the look of the old M2 theme, and keep the dark tones (4–24) needed by a dark theme.
+// Pure greys instead of the generated neutral palettes, which are
+// tinted with the default blue and would not follow the brand color.
+// For surfaces tinted with the brand color, as M3 intends, the neutral
+// roles should instead be computed from --hyt-brand-primary
 
 @use 'sass:map';
 
@@ -36,12 +34,9 @@ $grey: (
   100: #ffffff,
 );
 
-// Material accepts only the standard tones in the neutral-variant palette: the extra ones
-// (4–24, 87–96) are used for surfaces, which come from the neutral palette.
+// Material accepts only the standard tones in the neutral-variant palette.
 $grey-variant: map.remove($grey, 4, 6, 12, 17, 22, 24, 87, 92, 94, 96);
 
-// Replaces the neutral and neutral-variant palettes of a palette map built by the
-// theme-color schematic (theme-colors.$primary-palette or $tertiary-palette).
 @function with-grey-neutrals($palette) {
   @return map.merge($palette, (neutral: $grey, neutral-variant: $grey-variant));
 }

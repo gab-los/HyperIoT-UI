@@ -1,17 +1,10 @@
-/**
- * Contrast ratio on a white background below which a theme color gets a warning. Material uses
- * the brand colors also for text, icons and outlines on light surfaces (text buttons, tabs,
- * checkboxes, focused fields). The WCAG minimums are 4.5:1 for text and 3:1 for icons and
- * outlines; 2.5:1 is a deliberate compromise (product decision), so that only the colors that
- * are really hard to read get a warning.
- */
+/** Deliberately below the WCAG minimums (3:1, 4.5:1): only really light colors get a warning. */
 export const MIN_CONTRAST_ON_WHITE = 2.5;
 
 const WHITE: Rgb = [255, 255, 255];
 
 type Rgb = [number, number, number];
 
-/** Parses a CSS hex color (#rgb or #rrggbb). */
 function parseHex(hex: string): Rgb {
   const digits = hex.replace('#', '');
   const full = digits.length === 3 ? [...digits].map((d) => d + d).join('') : digits;
@@ -36,16 +29,11 @@ function ratio(a: Rgb, b: Rgb): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-/** WCAG contrast ratio of a hex color on white, from 1 to 21. */
 export function contrastOnWhite(hex: string): number {
   return ratio(parseHex(hex), WHITE);
 }
 
-/**
- * Darker version of a hex color that reaches the given contrast on white: the color is mixed
- * with black (as `color-mix(in srgb, color, black)`), which keeps its hue, only as much as
- * needed. Returns the color itself when it already has enough contrast.
- */
+/** Mixes the color with black just enough to reach the contrast on white, keeping its hue. */
 export function darkenForWhite(hex: string, minRatio = MIN_CONTRAST_ON_WHITE): string {
   const rgb = parseHex(hex);
   for (let black = 0; black <= 100; black++) {
