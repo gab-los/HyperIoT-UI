@@ -74,12 +74,6 @@ hyt-icon-button[type]:not(:disabled) {
 @import "./base/reset";
 @import "./base/typography.scss";
 
-
-/* Components */
-@import "./components/inputs";
-@import "./components/buttons";
-@import "./components/cards";
-
 /* Widget */
 @import "./widgets/generalWidget";
 @import "./widgets/lines";
@@ -93,7 +87,4 @@ hyt-icon-button[type]:not(:disabled) {
 
 /* Pages */
 @import "./pages/login";
-
-/* Themes */
-@import "./themes/themes";
 
