@@ -1,10 +1,14 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, model, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { map } from 'rxjs';
@@ -28,7 +32,18 @@ const PHONE_QUERY = '(max-width: 767.98px)';
  */
 @Component({
   selector: 'hyt-role-permissions-editor',
-  imports: [MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule, MatListModule, MatSelectModule],
+  imports: [
+    NgTemplateOutlet,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatSelectModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './role-permissions-editor.component.html',
   styleUrl: './role-permissions-editor.component.scss',
@@ -44,9 +59,18 @@ export class RolePermissionsEditorComponent {
 
   protected readonly description = actionDescription;
 
+  protected readonly search = new FormControl('', { nonNullable: true });
+  private readonly searchText = toSignal(this.search.valueChanges, { initialValue: '' });
+
+  /** Resources whose short name contains the search text, ignoring case. */
+  protected readonly visibleResources = computed(() => {
+    const text = this.searchText().trim().toLowerCase();
+    return this.resources().filter(resource => resource.shortName.toLowerCase().includes(text));
+  });
+
   private readonly selectedName = signal<string | null>(null);
 
-  /** The selected resource; the first one until the user picks another. */
+  /** The selected resource; the first one until the user picks another. Searching does not change it. */
   protected readonly selected = computed(() => {
     const resources = this.resources();
     return resources.find(resource => resource.resourceName === this.selectedName()) ?? resources[0] ?? null;

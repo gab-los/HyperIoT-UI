@@ -9,8 +9,20 @@
   }
 }
 
+.resources {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.search,
 .resource-select {
   width: 100%;
+}
+
+.no-match {
+  margin: 0;
 }
 
 .resource-list {
@@ -18,14 +30,28 @@
   overflow-y: auto;
   border: 1px solid currentColor;
   border-radius: 4px;
+
+  .no-match {
+    padding: 16px;
+  }
+}
+
+.search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px;
+  background-color: var(--mat-sys-surface);
 }
 
 .count {
   font-family: monospace;
+  font-weight: 400;
 }
 
 .count.has-granted {
   font-weight: 700;
+  color: var(--mat-sys-primary);
 }
 
 .detail-header {

@@ -1,34 +1,63 @@
 <div class="editor">
-  @if (isPhone()) {
-    <mat-form-field class="resource-select">
-      <mat-label i18n="@@HYT_admin_role_resource">Resource</mat-label>
-      <mat-select [value]="selected()?.resourceName" (valueChange)="select($event)">
-        @for (resource of resources(); track resource.resourceName) {
-          <mat-option [value]="resource.resourceName">
-            {{ resource.shortName }} ({{ granted(resource) }}/{{ resource.actions.length }})
-          </mat-option>
-        }
-      </mat-select>
+  <ng-template #searchField>
+    <mat-form-field class="search" subscriptSizing="dynamic">
+      <mat-label i18n="@@HYT_admin_role_resource_search">Search resources</mat-label>
+      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+      <!-- Enter must not submit the role form around the editor -->
+      <input matInput type="search" autocomplete="off" [formControl]="search" (keydown.enter)="$event.preventDefault()" />
     </mat-form-field>
+  </ng-template>
+  <ng-template #noMatch>
+    <p class="no-match" role="status" i18n="@@HYT_admin_role_resources_no_match">No resource matches the search.</p>
+  </ng-template>
+
+  @if (isPhone()) {
+    <div class="resources">
+      <ng-container [ngTemplateOutlet]="searchField" />
+      @if (visibleResources().length === 0) {
+        <ng-container [ngTemplateOutlet]="noMatch" />
+      } @else {
+        <mat-form-field class="resource-select">
+          <mat-label i18n="@@HYT_admin_role_resource">Resource</mat-label>
+          <mat-select [value]="selected()?.resourceName" (valueChange)="select($event)">
+            @for (resource of visibleResources(); track resource.resourceName) {
+              <mat-option [value]="resource.resourceName">
+                {{ resource.shortName }} ({{ granted(resource) }}/{{ resource.actions.length }})
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+    </div>
   } @else {
-    <nav class="resource-list" i18n-aria-label="@@HYT_admin_role_resources" aria-label="Resources">
-      <mat-action-list>
-        @for (resource of resources(); track resource.resourceName) {
-          <button
-            mat-list-item
-            type="button"
-            [activated]="resource === selected()"
-            [attr.aria-current]="resource === selected() ? 'true' : null"
-            (click)="select(resource.resourceName)"
-          >
-            <span matListItemTitle>{{ resource.shortName }}</span>
-            <span matListItemMeta class="count" [class.has-granted]="granted(resource) > 0">
-              {{ granted(resource) }}/{{ resource.actions.length }}
-            </span>
-          </button>
-        }
-      </mat-action-list>
-    </nav>
+    <!-- the search stays at the top of the list while it scrolls -->
+    <div class="resource-list">
+      <div class="search-bar">
+        <ng-container [ngTemplateOutlet]="searchField" />
+      </div>
+      @if (visibleResources().length === 0) {
+        <ng-container [ngTemplateOutlet]="noMatch" />
+      } @else {
+        <nav i18n-aria-label="@@HYT_admin_role_resources" aria-label="Resources">
+          <mat-action-list>
+            @for (resource of visibleResources(); track resource.resourceName) {
+              <button
+                mat-list-item
+                type="button"
+                [activated]="resource === selected()"
+                [attr.aria-current]="resource === selected() ? 'true' : null"
+                (click)="select(resource.resourceName)"
+              >
+                <span matListItemTitle>{{ resource.shortName }}</span>
+                <span matListItemMeta>
+                  <span class="count" [class.has-granted]="granted(resource) > 0">{{ granted(resource) }}/{{ resource.actions.length }}</span>
+                </span>
+              </button>
+            }
+          </mat-action-list>
+        </nav>
+      }
+    </div>
   }
 
   @if (selected(); as resource) {

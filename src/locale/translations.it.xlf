@@ -2800,6 +2800,14 @@
         <source>Unused: granting it has no effect.</source>
         <target>Non utilizzata: concederla non ha effetto.</target>
       </trans-unit>
+      <trans-unit id="HYT_admin_role_resource_search" datatype="html">
+        <source>Search resources</source>
+        <target>Cerca risorse</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_resources_no_match" datatype="html">
+        <source>No resource matches the search.</source>
+        <target>Nessuna risorsa corrisponde alla ricerca.</target>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
         <target>Percorso di navigazione</target>

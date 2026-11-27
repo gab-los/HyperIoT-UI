@@ -42,6 +42,31 @@ describe('RolePermissionsEditorComponent', () => {
     expect(text('.count')).toEqual(['0/2', '2/3']);
   });
 
+  it('filters the resources by name, keeping the selected one', async () => {
+    await render({});
+    const search = element.querySelector<HTMLInputElement>('.search input')!;
+    search.value = ' PROJ ';
+    search.dispatchEvent(new Event('input'));
+    await update();
+
+    expect(text('.resource-list [matListItemTitle]')).toEqual(['HProject']);
+    expect(element.querySelector('.detail h3')?.textContent).toBe('HDevice');
+
+    search.value = 'nothing';
+    search.dispatchEvent(new Event('input'));
+    await update();
+    expect(element.querySelector('.resource-list nav')).toBeNull();
+    expect(element.querySelector('.search input')).not.toBeNull();
+    expect(element.querySelector('.no-match')).not.toBeNull();
+  });
+
+  it('does not submit the surrounding form when Enter is pressed in the search', async () => {
+    await render({});
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+    element.querySelector<HTMLInputElement>('.search input')!.dispatchEvent(enter);
+    expect(enter.defaultPrevented).toBe(true);
+  });
+
   it('shows the first resource and its actions with their description', async () => {
     await render({});
     expect(element.querySelector('.detail h3')?.textContent).toBe('HDevice');
