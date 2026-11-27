@@ -1,15 +1,10 @@
 import { Injectable } from '@angular/core';
 
-/** Sub-areas of the admin area. */
 export type AdminSectionId = 'users' | 'roles' | 'algorithms';
 
 export const ADMIN_SECTION_IDS: readonly AdminSectionId[] = ['users', 'roles', 'algorithms'];
 
-/**
- * Permission checked for each section: a user who is not admin can open a section only with
- * this action on its resource. Users and roles need the list (`find-all`, they have no
- * `control_panel` action); algorithms keep the rule of the old algorithms page.
- */
+/** Non-admins need this action on the resource (users and roles have no `control_panel`). */
 export const ADMIN_SECTION_PERMISSIONS: Readonly<Record<AdminSectionId, { resource: string; action: string }>> = {
   users: { resource: 'it.acsoftware.hyperiot.huser.model.HUser', action: 'find-all' },
   roles: { resource: 'it.acsoftware.hyperiot.role.model.Role', action: 'find-all' },
@@ -21,7 +16,7 @@ interface StoredUserInfo {
   profile?: Record<string, { permissions?: string[] } | undefined>;
 }
 
-/** Tells which parts of the admin area the logged user can use, from `userInfo` in localStorage. */
+/** From `userInfo` in localStorage. */
 @Injectable({ providedIn: 'root' })
 export class AdminAccessService {
 

@@ -4,10 +4,10 @@
       <mat-form-field class="search" subscriptSizing="dynamic">
         <mat-label i18n="@@HYT_admin_role_resource_search">Search resources</mat-label>
         <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-        <!-- Enter must not submit the role form around the editor -->
+        <!-- Enter must not submit the role form -->
         <input matInput type="search" autocomplete="off" [formControl]="search" (keydown.enter)="$event.preventDefault()" />
       </mat-form-field>
-      <!-- outside the field: a click inside the field also focuses its input -->
+      <!-- outside the field, so a click does not focus the input -->
       <button
         mat-icon-button
         type="button"
@@ -55,7 +55,6 @@
       }
     </div>
   } @else {
-    <!-- the search stays at the top of the list while it scrolls -->
     <div class="resource-list">
       <div class="search-bar">
         <ng-container [ngTemplateOutlet]="searchField" />

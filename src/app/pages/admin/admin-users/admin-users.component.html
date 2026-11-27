@@ -197,7 +197,7 @@
 </div>
 
 <ng-template #statusBadges let-user>
-  <!-- the list API may not send "active": no badge rather than a wrong "Inactive" -->
+  <!-- the list API may not send "active" -->
   @if (user.active === true) {
     <span class="badge" i18n="@@HYT_admin_users_active">Active</span>
   } @else if (user.active === false) {

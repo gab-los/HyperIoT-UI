@@ -25,16 +25,12 @@ import {
   withAction,
 } from '../role-permissions';
 
-/** Bootstrap `md` breakpoint: below it the resource list becomes a select. */
+/** Below Bootstrap `md` the resource list becomes a select. */
 const PHONE_QUERY = '(max-width: 767.98px)';
 
-/** Order of the resources: by short name, or by granted actions (most first). */
 type ResourceSort = 'name' | 'granted';
 
-/**
- * Editor of the permissions of a role: resources on one side, the actions of the selected
- * resource on the other. Edits the masks in place (`[(masks)]`).
- */
+/** Edits the masks in place (`[(masks)]`). */
 @Component({
   selector: 'hyt-role-permissions-editor',
   imports: [
@@ -71,10 +67,7 @@ export class RolePermissionsEditorComponent {
 
   protected readonly sortBy = signal<ResourceSort>('name');
 
-  /**
-   * Resources whose short name contains the search text, ignoring case, in the chosen order.
-   * The input is already sorted by name, which stays the order between equal counts.
-   */
+  /** The input is sorted by name, which also breaks ties. */
   protected readonly visibleResources = computed(() => {
     const text = this.searchText().trim().toLowerCase();
     const visible = this.resources().filter(resource => resource.shortName.toLowerCase().includes(text));
@@ -88,7 +81,7 @@ export class RolePermissionsEditorComponent {
 
   private readonly selectedName = signal<string | null>(null);
 
-  /** The selected resource; the first one until the user picks another. Searching does not change it. */
+  /** The first resource until the user picks one; searching does not change it. */
   protected readonly selected = computed(() => {
     const resources = this.resources();
     return resources.find(resource => resource.resourceName === this.selectedName()) ?? resources[0] ?? null;

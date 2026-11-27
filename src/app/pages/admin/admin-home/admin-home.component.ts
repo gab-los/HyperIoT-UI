@@ -56,10 +56,7 @@ const CATEGORIES: readonly AdminCategory[] = [
   },
 ];
 
-/**
- * Landing page of the admin area: the sections the user can open, grouped by category.
- * A category without accessible sections is not shown.
- */
+/** Accessible sections grouped by category; empty categories are hidden. */
 @Component({
   selector: 'hyt-admin-home',
   imports: [RouterLink, MatCardModule, MatRippleModule, AdminPageHeaderComponent],

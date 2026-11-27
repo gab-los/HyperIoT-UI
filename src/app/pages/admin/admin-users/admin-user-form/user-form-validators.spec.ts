@@ -31,7 +31,7 @@ describe('matchesPassword', () => {
       password: new FormControl(password),
       passwordConfirm: new FormControl(confirm, matchesPassword),
     });
-    // The validator reads the parent, which the control does not have yet when it is created.
+    // the validator reads the parent, missing at creation
     form.get('passwordConfirm')?.updateValueAndValidity();
     return form;
   }

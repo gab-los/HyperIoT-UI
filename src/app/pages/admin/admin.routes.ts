@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { CanDeactivateGuard } from '../../components/CanDeactivateGuard';
 import { adminSectionGuard } from './admin-access.guard';
 
-/** Children of `/admin`. The parent route checks login and access to the admin area. */
+/** Login and admin access are checked by the parent route. */
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',

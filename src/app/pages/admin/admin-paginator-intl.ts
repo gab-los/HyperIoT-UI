@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 
-/**
- * Translated labels of `mat-paginator` for the admin area.
- * Provide it in the component that shows the paginator.
- */
+/** Translated `mat-paginator` labels: provide it in the component. */
 @Injectable()
 export class AdminPaginatorIntl extends MatPaginatorIntl {
   override itemsPerPageLabel = $localize`:@@HYT_paginator_items_per_page:Items per page:`;

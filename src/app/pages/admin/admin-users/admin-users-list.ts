@@ -1,6 +1,5 @@
 import { HUser } from 'core';
 
-/** Columns the users list can be sorted by. */
 export type UserSortField = 'name' | 'username' | 'email';
 
 export interface UserSort {

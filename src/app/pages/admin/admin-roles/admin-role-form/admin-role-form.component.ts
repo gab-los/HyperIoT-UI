@@ -22,7 +22,6 @@ type LoadStatus = 'loading' | 'ready' | 'error';
 const ROLE_FORM_FIELDS = ['name', 'description'] as const;
 type RoleFormField = (typeof ROLE_FORM_FIELDS)[number];
 
-/** Creation (`/admin/roles/new`) and editing (`/admin/roles/:id`) of a role and of its permissions. */
 @Component({
   selector: 'hyt-admin-role-form',
   imports: [
@@ -46,10 +45,9 @@ export class AdminRoleFormComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** The `:id` route parameter; missing on `/admin/roles/new`. */
   private readonly rawId = inject(ActivatedRoute).snapshot.paramMap.get('id');
   protected readonly isNew = this.rawId === null;
-  /** Id of the edited role; `null` when creating one or when the URL has an invalid id. */
+  /** `null` when creating or with an invalid id. */
   protected readonly roleId = this.parseId(this.rawId);
 
   protected readonly status = signal<LoadStatus>('loading');
@@ -57,10 +55,9 @@ export class AdminRoleFormComponent {
   protected readonly generalErrors = signal<string[]>([]);
   protected readonly resources = signal<ResourceActions[]>([]);
   protected readonly masks = signal<PermissionMasks>({});
-  /** The role as loaded from the server (editing only). */
   private readonly original = signal<Role | null>(null);
   private originalPermissions = new Map<string, Permission>();
-  /** Set after a successful save, so leaving the page does not ask to discard changes. */
+  /** After a save, leaving does not ask to discard changes. */
   private saved = false;
 
   protected readonly form = inject(NonNullableFormBuilder).group({
@@ -81,7 +78,6 @@ export class AdminRoleFormComponent {
     ];
   });
 
-  /** True when the permissions differ from the saved ones. */
   private readonly permissionsChanged = computed(() =>
     hasPermissionChanges(
       planPermissionChanges(this.resources(), this.originalPermissions, this.masks(), this.original() ?? { entityVersion: 1 }),
@@ -119,7 +115,7 @@ export class AdminRoleFormComponent {
       });
   }
 
-  /** Server error of a field, shown under it until the value changes. */
+  /** Shown under the field until its value changes. */
   protected serverError(field: RoleFormField): string | null {
     const error: unknown = this.form.controls[field].errors?.['server'];
     return typeof error === 'string' ? error : null;
@@ -148,7 +144,7 @@ export class AdminRoleFormComponent {
     });
   }
 
-  /** Called by `CanDeactivateGuard`: asks before leaving with unsaved changes. */
+  /** Used by `CanDeactivateGuard`. */
   canDeactivate(): boolean | Observable<boolean> {
     if (this.saved || (!this.form.dirty && !this.permissionsChanged())) {
       return true;
@@ -169,7 +165,7 @@ export class AdminRoleFormComponent {
       this.toastr.warning(
         $localize`:@@HYT_admin_role_permissions_failed:Role ${name}:name: saved, but these permissions could not be saved: ${resources}:resources:`,
       );
-      // show what the server has now: the new role's edit page, or the reloaded role
+      // show what was saved
       if (this.isNew && result.role.id !== undefined) {
         this.saved = true;
         this.router.navigate(['/admin/roles', result.role.id]);

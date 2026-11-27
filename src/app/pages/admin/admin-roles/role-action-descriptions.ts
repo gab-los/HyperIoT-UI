@@ -1,10 +1,7 @@
-/**
- * Readable descriptions of the actions returned by `/permissions/actions`, by short resource name and action name.
- * The backend only sends the names; an action without an entry is shown with its name only.
- */
+/** By `Resource/action`: the backend sends only the names. */
 let descriptions: Readonly<Record<string, string>> | undefined;
 
-/** Actions the backend registers but never checks: they all share the same description. */
+/** Registered by the backend but never checked. */
 const UNUSED_ACTIONS: ReadonlySet<string> = new Set([
   'HPacket/fields_management',
   'HProject/get_topology_list',

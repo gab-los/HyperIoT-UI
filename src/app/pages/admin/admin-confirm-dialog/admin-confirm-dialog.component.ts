@@ -12,10 +12,7 @@ export interface AdminConfirmDialogData {
 
 let nextId = 0;
 
-/**
- * Confirmation of a destructive action, shown with `hyt-dialog`.
- * Closes with `true` when confirmed, `false` otherwise (Cancel or Escape).
- */
+/** Closes with `true` only when confirmed. */
 @Component({
   selector: 'hyt-admin-confirm-dialog',
   imports: [A11yModule, MatButtonModule, ComponentsModule],
@@ -75,7 +72,6 @@ export class AdminConfirmDialogComponent {
   }
 }
 
-/** Opens the confirmation dialog and emits `true` only when the user confirms. */
 export function openAdminConfirmDialog(dialogService: DialogService, data: AdminConfirmDialogData): Observable<boolean> {
   return dialogService
     .open<AdminConfirmDialogComponent, AdminConfirmDialogData, boolean>(AdminConfirmDialogComponent, {

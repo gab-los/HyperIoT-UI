@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { HUser, HUserService, IGNORE_ERROR_NOTIFY, Role, RolesService } from 'core';
 
-/** Values of the user form. Password fields are used only when creating a user. */
+/** Password fields are used only when creating. */
 export interface UserFormValue {
   username: string;
   name: string;
@@ -19,21 +19,17 @@ export interface UserWithRoles {
   roles: Role[];
 }
 
-/**
- * Result of a save. The user and its roles are saved with separate calls,
- * so some role changes can fail after the user was saved.
- */
+/** Roles are saved after the user, so some can fail. */
 export interface UserSaveResult {
   user: HUser;
   failedRoleIds: number[];
 }
 
-/** The page shows its own error states: the HTTP interceptor must not notify them too. */
+/** The page shows its own errors: no interceptor toast. */
 function silentContext(): HttpContext {
   return new HttpContext().set(IGNORE_ERROR_NOTIFY, true);
 }
 
-/** Access to the users of the platform for the admin area. */
 @Injectable({ providedIn: 'root' })
 export class AdminUsersService {
   private readonly hUserService = inject(HUserService);
@@ -67,9 +63,8 @@ export class AdminUsersService {
   }
 
   /**
-   * Updates the user starting from the loaded entity (to keep id, entityVersion and the fields
-   * the form does not show, such as "admin"), then adds and removes roles with the dedicated endpoints.
-   * `active` is always sent as true: the backend does not handle it and disables the user when it is missing.
+   * Starts from the loaded user to keep the fields the form does not show.
+   * `active` is always true: the backend disables the user when it is missing.
    */
   update(original: HUser, originalRoleIds: number[], value: UserFormValue): Observable<UserSaveResult> {
     const user: HUser = { ...original, ...this.userFields(value), active: true };
@@ -82,7 +77,6 @@ export class AdminUsersService {
     return this.hUserService.deleteHUser(id).pipe(map(() => undefined));
   }
 
-  /** Id of the logged user, from `user` in localStorage. */
   currentUserId(): number | null {
     const raw = localStorage.getItem('user');
     if (!raw) {
@@ -105,7 +99,7 @@ export class AdminUsersService {
     };
   }
 
-  /** Adds and removes roles one by one; a failed change does not stop the others. */
+  /** A failed change does not stop the others. */
   private applyRoles(user: HUser, currentIds: number[], wantedIds: number[]): Observable<UserSaveResult> {
     const userId = user.id;
     if (userId === undefined) {

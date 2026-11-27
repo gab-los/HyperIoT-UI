@@ -2,10 +2,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 export const PASSWORD_MIN_LENGTH = 8;
 
-/**
- * Same rules as the registration form: at least 8 characters, a lowercase and an uppercase letter,
- * a number and a special character. Each missing rule is a separate error key.
- */
+/** Same rules as the registration form, one error key per missing rule. */
 export const passwordStrength: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = typeof control.value === 'string' ? control.value : '';
   if (!value) {
@@ -27,7 +24,7 @@ export const passwordStrength: ValidatorFn = (control: AbstractControl): Validat
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
-/** On the confirmation control: error when it differs from the `password` sibling. */
+/** Error when it differs from the `password` sibling. */
 export const matchesPassword: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.parent?.get('password');
   if (!password || password.disabled || !control.value) {

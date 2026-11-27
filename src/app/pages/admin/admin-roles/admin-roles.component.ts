@@ -18,10 +18,9 @@ import { AdminRolesService } from './admin-roles.service';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
-/** Bootstrap `md` breakpoint: below it the table becomes a list of cards. */
+/** Below Bootstrap `md` the table becomes a list of cards. */
 const PHONE_QUERY = '(max-width: 767.98px)';
 
-/** Role management: list of the roles with deletion. */
 @Component({
   selector: 'hyt-admin-roles',
   imports: [
@@ -87,7 +86,6 @@ export class AdminRolesComponent {
       });
   }
 
-  /** Only the name column can be sorted, and only asc/desc (`matSortDisableClear`). */
   protected onSortChange(sort: Sort): void {
     this.sortDirection.set(sort.direction === 'desc' ? 'desc' : 'asc');
   }

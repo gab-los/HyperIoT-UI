@@ -3,14 +3,11 @@ import { RouterLink } from '@angular/router';
 
 export interface BreadcrumbItem {
   label: string;
-  /** Omitted for the current page (last item). */
+  /** Omitted for the current page. */
   link?: string;
 }
 
-/**
- * Page header of the admin area: breadcrumb on the left, page actions (projected content) on the right.
- * The breadcrumb always starts from Home.
- */
+/** Breadcrumb from Home on the left, projected page actions on the right. */
 @Component({
   selector: 'hyt-admin-page-header',
   imports: [RouterLink],

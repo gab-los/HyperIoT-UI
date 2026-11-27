@@ -1,9 +1,8 @@
 import { Permission, Role } from 'core';
 
-/** An action of a resource, as returned by `/permissions/actions`. */
 export interface ResourceAction {
   name: string;
-  /** Bit of the action in the permission mask (1, 2, 4, ...). */
+  /** Bit in the permission mask (1, 2, 4, ...). */
   id: number;
 }
 
@@ -16,7 +15,7 @@ export interface ResourceActions {
   actions: ResourceAction[];
 }
 
-/** Selected action mask of each resource, by resource name. */
+/** Action mask by resource name. */
 export type PermissionMasks = Record<string, number>;
 
 interface ActionResponseItem {
@@ -28,7 +27,7 @@ export function shortResourceName(resourceName: string): string {
   return resourceName.split('.').pop() ?? resourceName;
 }
 
-/** Turns the `/permissions/actions` response into resources sorted by short name, actions sorted by value. */
+/** Resources sorted by short name, actions by value. */
 export function buildResources(response: unknown): ResourceActions[] {
   if (!response || typeof response !== 'object') {
     return [];
@@ -47,10 +46,7 @@ export function buildResources(response: unknown): ResourceActions[] {
     .sort((a, b) => a.shortName.localeCompare(b.shortName));
 }
 
-/**
- * Permissions of a role, by resource name. Only role-wide ones count:
- * permissions of a single user or of a single entity (resourceId) are not part of the role.
- */
+/** Role-wide permissions by resource name: per-user and per-entity ones are not part of the role. */
 export function rolePermissions(permissions: readonly Permission[], roleId: number): Map<string, Permission> {
   const byResource = new Map<string, Permission>();
   for (const permission of permissions) {
@@ -80,7 +76,6 @@ export function withAction(mask: number, actionId: number, granted: boolean): nu
   return granted ? mask | actionId : mask & ~actionId;
 }
 
-/** Mask with all the given actions. */
 export function allActionsMask(actions: readonly ResourceAction[]): number {
   return actions.reduce((mask, action) => mask | action.id, 0);
 }
@@ -89,17 +84,13 @@ export function grantedCount(mask: number, actions: readonly ResourceAction[]): 
   return actions.filter(action => hasAction(mask, action.id)).length;
 }
 
-/** Calls to make so that the role's permissions match the masks. */
 export interface PermissionChanges {
   create: Permission[];
   update: Permission[];
   remove: Permission[];
 }
 
-/**
- * Compares the masks with the role's permissions. Bits that are not among the listed actions
- * are kept as they are, so that actions the UI does not know are never lost.
- */
+/** Bits of actions the UI does not list are kept as they are. */
 export function planPermissionChanges(
   resources: readonly ResourceActions[],
   existing: ReadonlyMap<string, Permission>,

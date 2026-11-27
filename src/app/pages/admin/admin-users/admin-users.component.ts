@@ -26,12 +26,11 @@ import { AdminUsersService } from './admin-users.service';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
-/** Bootstrap `md` breakpoint: below it the table becomes a list of cards. */
+/** Below Bootstrap `md` the table becomes a list of cards. */
 const PHONE_QUERY = '(max-width: 767.98px)';
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-/** User management: list of the users with search, sort, pagination and deletion. */
 @Component({
   selector: 'hyt-admin-users',
   imports: [
@@ -82,7 +81,6 @@ export class AdminUsersComponent {
 
   protected readonly status = signal<LoadStatus>('loading');
   protected readonly users = signal<HUser[]>([]);
-  /** Id of the user being deleted, to disable its button meanwhile. */
   protected readonly deletingId = signal<number | null>(null);
 
   protected readonly search = new FormControl('', { nonNullable: true });
@@ -96,7 +94,7 @@ export class AdminUsersComponent {
     sortUsers(filterUsers(this.users(), this.searchTerm()), this.sort()),
   );
 
-  /** The requested page, moved back when it no longer exists (after a search or a deletion). */
+  /** Moved back when the page no longer exists. */
   protected readonly pageIndex = computed(() => {
     const lastPage = Math.max(0, Math.ceil(this.filteredUsers().length / this.pageSize()) - 1);
     return Math.min(this.requestedPageIndex(), lastPage);
@@ -107,7 +105,7 @@ export class AdminUsersComponent {
     return this.filteredUsers().slice(start, start + this.pageSize());
   });
 
-  /** The roles column is shown only when the back end sends the roles with the users. */
+  /** Only when the back end sends the users' roles. */
   protected readonly showRoles = computed(() => this.users().some(user => Array.isArray(user.roles)));
 
   protected readonly displayedColumns = computed(() => [
@@ -145,7 +143,6 @@ export class AdminUsersComponent {
       });
   }
 
-  /** The headers cycle only between asc and desc (`matSortDisableClear`). */
   protected onSortChange(sort: Sort): void {
     this.sort.set({ field: sort.active as UserSortField, direction: sort.direction === 'desc' ? 'desc' : 'asc' });
   }

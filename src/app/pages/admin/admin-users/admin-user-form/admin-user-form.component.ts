@@ -22,10 +22,7 @@ import { PASSWORD_MIN_LENGTH, matchesPassword, passwordStrength } from './user-f
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
-/**
- * Creation (`/admin/users/new`) and editing (`/admin/users/:id`) of a user, with its roles.
- * The password is set only when the user is created.
- */
+/** The password is set only when creating a user. */
 @Component({
   selector: 'hyt-admin-user-form',
   imports: [
@@ -51,10 +48,9 @@ export class AdminUserFormComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** The `:id` route parameter; missing on `/admin/users/new`. */
   private readonly rawId = inject(ActivatedRoute).snapshot.paramMap.get('id');
   protected readonly isNew = this.rawId === null;
-  /** Id of the edited user; `null` when creating one or when the URL has an invalid id. */
+  /** `null` when creating or with an invalid id. */
   protected readonly userId = this.parseId(this.rawId);
   protected readonly passwordMinLength = PASSWORD_MIN_LENGTH;
 
@@ -63,10 +59,9 @@ export class AdminUserFormComponent {
   protected readonly generalErrors = signal<string[]>([]);
   protected readonly allRoles = signal<Role[]>([]);
   protected readonly hidePassword = signal(true);
-  /** The user as loaded from the server (editing only). */
   private readonly original = signal<HUser | null>(null);
   private originalRoleIds: number[] = [];
-  /** Set after a successful save, so leaving the page does not ask to discard changes. */
+  /** After a save, leaving does not ask to discard changes. */
   private saved = false;
 
   protected readonly form = inject(NonNullableFormBuilder).group({
@@ -134,7 +129,7 @@ export class AdminUserFormComponent {
       .join(', ');
   }
 
-  /** Server error of a field, shown under it until the value changes. */
+  /** Shown under the field until its value changes. */
   protected serverError(field: UserFormField): string | null {
     const error: unknown = this.form.controls[field].errors?.['server'];
     return typeof error === 'string' ? error : null;
@@ -163,7 +158,7 @@ export class AdminUserFormComponent {
     });
   }
 
-  /** Called by `CanDeactivateGuard`: asks before leaving with unsaved changes. */
+  /** Used by `CanDeactivateGuard`. */
   canDeactivate(): boolean | Observable<boolean> {
     if (this.saved || !this.form.dirty) {
       return true;
@@ -196,7 +191,7 @@ export class AdminUserFormComponent {
       this.toastr.warning(
         $localize`:@@HYT_admin_user_roles_failed:User ${name}:name: saved, but these roles could not be changed: ${roles}:roles:`,
       );
-      // show what the server has now: the new user's edit page, or the reloaded user
+      // show what was saved
       if (this.isNew && result.user.id !== undefined) {
         this.saved = true;
         this.router.navigate(['/admin/users', result.user.id]);

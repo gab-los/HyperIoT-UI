@@ -15,24 +15,19 @@ export interface RoleFormValue {
   description: string;
 }
 
-/** Everything the role form needs to edit a role. */
 export interface RoleEditData {
   role: Role;
-  /** Role-wide permissions by resource name. */
+  /** Role-wide only. */
   permissions: Map<string, Permission>;
 }
 
-/**
- * Result of a save. The role and its permissions are saved with separate calls,
- * so some permissions can fail after the role was saved.
- */
+/** Permissions are saved after the role, so some can fail. */
 export interface RoleSaveResult {
   role: Role;
-  /** Resource names whose permission could not be saved. */
   failedResources: string[];
 }
 
-/** The pages show their own error states: the HTTP interceptor must not notify them too. */
+/** The pages show their own errors: no interceptor toast. */
 function silentContext(): HttpContext {
   return new HttpContext().set(IGNORE_ERROR_NOTIFY, true);
 }
@@ -41,7 +36,6 @@ function asArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
 }
 
-/** Access to the roles of the platform and to their permissions, for the admin area. */
 @Injectable({ providedIn: 'root' })
 export class AdminRolesService {
   private readonly rolesService = inject(RolesService);
@@ -51,7 +45,6 @@ export class AdminRolesService {
     return this.rolesService.findAllRoles('body', false, silentContext()).pipe(map(roles => asArray<Role>(roles)));
   }
 
-  /** Resources with their actions, for the permissions editor. */
   findResources(): Observable<ResourceActions[]> {
     return this.permissionsService.findAllActions('body', false, silentContext()).pipe(map(buildResources));
   }
@@ -94,7 +87,7 @@ export class AdminRolesService {
     return { name: value.name.trim(), description: value.description.trim() };
   }
 
-  /** Creates, updates and deletes permissions one by one; a failed call does not stop the others. */
+  /** A failed call does not stop the others. */
   private applyPermissions(
     role: Role,
     resources: ResourceActions[],

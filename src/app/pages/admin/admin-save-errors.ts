@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 export interface SaveError<F extends string> {
-  /** Field the error belongs to; missing for errors of the whole form. */
+  /** Missing for errors of the whole form. */
   field?: F;
   message: string;
 }
@@ -15,16 +15,13 @@ interface HyperIoTErrorBody {
 const DUPLICATE_ENTITY = 'it.acsoftware.hyperiot.base.exception.HyperIoTDuplicateEntityException';
 const VALIDATION = 'it.acsoftware.hyperiot.base.exception.HyperIoTValidationException';
 
-/** Maps a server field name (e.g. `huser-username`, `lastName`) to one of the form fields. */
+/** e.g. `huser-username` or `lastName` to a form field. */
 function toFormField<F extends string>(serverField: string | undefined, fields: readonly F[]): F | undefined {
   const name = (serverField ?? '').replace(/^[a-z]+-/i, '').toLowerCase();
   return fields.find(field => field.toLowerCase() === name);
 }
 
-/**
- * Turns the error of a save call into messages for a form: duplicates and validation errors
- * of the HyperIoT back end go to their field when the form has it.
- */
+/** Puts HyperIoT duplicate and validation errors on their field. */
 export function parseSaveError<F extends string>(error: unknown, fields: readonly F[]): SaveError<F>[] {
   const body = (error instanceof HttpErrorResponse ? error.error : null) as HyperIoTErrorBody | null;
 
