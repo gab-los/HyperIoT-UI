@@ -64,16 +64,6 @@
 
     #btn-no-home {
       text-align: center;
-
-      hyt-button {
-
-        &#go-to-projects {
-
-          margin-top: 2px;
-
-        }
-  
-      }
     }
 
   }
@@ -188,41 +178,6 @@
             font-size: .9em;
             margin-top: 10px;
             margin-bottom: 40px;
-
-          }
-
-        }
-
-      }
-
-      #btn-no-home {
-
-        button {
-
-          font-size: .9em;
-
-          span {
-
-            &.mdc-button__label {
-
-              display: flex;
-              align-items: center;
-              justify-content: center;
-
-              span {
-
-                &.hyt-icon {
-
-                  font-size: 1.4em;
-                  margin-right: 3px;
-                  margin-left: 3px;
-                  margin-top: -2px;
-
-                }
-
-              }
-
-            }
 
           }
 
