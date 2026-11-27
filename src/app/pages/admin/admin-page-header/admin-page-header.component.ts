@@ -45,7 +45,7 @@ export interface BreadcrumbItem {
       justify-content: space-between;
       gap: 8px;
       min-height: 50px;
-      border-bottom: 1px solid var(--primary-color);
+      border-bottom: 1px solid var(--mat-sys-primary);
     }
 
     .breadcrumb-nav {
