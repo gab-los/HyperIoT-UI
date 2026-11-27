@@ -27,10 +27,13 @@ describe('passwordStrength', () => {
 
 describe('matchesPassword', () => {
   function group(password: string, confirm: string): FormGroup {
-    return new FormGroup({
+    const form = new FormGroup({
       password: new FormControl(password),
       passwordConfirm: new FormControl(confirm, matchesPassword),
     });
+    // The validator reads the parent, which the control does not have yet when it is created.
+    form.get('passwordConfirm')?.updateValueAndValidity();
+    return form;
   }
 
   it('is valid when the two values are equal', () => {

@@ -90,7 +90,7 @@ describe('RolePermissionsEditorComponent', () => {
 
   it('changes the mask when an action is checked', async () => {
     await render({ [PROJECT]: 1 });
-    (element.querySelectorAll<HTMLButtonElement>('.resource-list button')[1]).click();
+    (element.querySelectorAll<HTMLButtonElement>('.resource-list nav button')[1]).click();
     await update();
 
     element.querySelectorAll<HTMLInputElement>('.detail mat-checkbox input')[1].click();
