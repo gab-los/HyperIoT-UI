@@ -60,6 +60,20 @@ describe('RolePermissionsEditorComponent', () => {
     expect(element.querySelector('.no-match')).not.toBeNull();
   });
 
+  it('sorts the resources by granted actions from the sort menu', async () => {
+    await render({ [PROJECT]: 1 });
+    expect(text('.resource-list [matListItemTitle]')).toEqual(['HDevice', 'HProject']);
+
+    element.querySelector<HTMLButtonElement>('.sort-trigger')!.click();
+    await update();
+    const items = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]'));
+    expect(items.map(item => item.getAttribute('aria-checked'))).toEqual(['true', 'false']);
+
+    items[1].click();
+    await update();
+    expect(text('.resource-list [matListItemTitle]')).toEqual(['HProject', 'HDevice']);
+  });
+
   it('does not submit the surrounding form when Enter is pressed in the search', async () => {
     await render({});
     const enter = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });

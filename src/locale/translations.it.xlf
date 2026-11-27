@@ -2808,6 +2808,18 @@
         <source>No resource matches the search.</source>
         <target>Nessuna risorsa corrisponde alla ricerca.</target>
       </trans-unit>
+      <trans-unit id="HYT_admin_role_resource_sort" datatype="html">
+        <source>Sort resources</source>
+        <target>Ordina risorse</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_resource_sort_name" datatype="html">
+        <source>Name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="HYT_admin_role_resource_sort_granted" datatype="html">
+        <source>Granted actions</source>
+        <target>Azioni concesse</target>
+      </trans-unit>
       <trans-unit id="HYT_breadcrumb" datatype="html">
         <source>Breadcrumb</source>
         <target>Percorso di navigazione</target>

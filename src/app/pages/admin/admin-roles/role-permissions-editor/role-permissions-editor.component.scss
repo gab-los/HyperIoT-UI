@@ -21,6 +21,21 @@
   width: 100%;
 }
 
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .search {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sort-trigger {
+    flex-shrink: 0;
+  }
+}
+
 .no-match {
   margin: 0;
 }

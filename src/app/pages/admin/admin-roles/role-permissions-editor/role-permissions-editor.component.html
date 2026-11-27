@@ -1,12 +1,37 @@
 <div class="editor">
   <ng-template #searchField>
-    <mat-form-field class="search" subscriptSizing="dynamic">
-      <mat-label i18n="@@HYT_admin_role_resource_search">Search resources</mat-label>
-      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-      <!-- Enter must not submit the role form around the editor -->
-      <input matInput type="search" autocomplete="off" [formControl]="search" (keydown.enter)="$event.preventDefault()" />
-    </mat-form-field>
+    <div class="search-row">
+      <mat-form-field class="search" subscriptSizing="dynamic">
+        <mat-label i18n="@@HYT_admin_role_resource_search">Search resources</mat-label>
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <!-- Enter must not submit the role form around the editor -->
+        <input matInput type="search" autocomplete="off" [formControl]="search" (keydown.enter)="$event.preventDefault()" />
+      </mat-form-field>
+      <!-- outside the field: a click inside the field also focuses its input -->
+      <button
+        mat-icon-button
+        type="button"
+        class="sort-trigger"
+        [matMenuTriggerFor]="sortMenu"
+        i18n-aria-label="@@HYT_admin_role_resource_sort"
+        aria-label="Sort resources"
+        i18n-matTooltip="@@HYT_admin_role_resource_sort"
+        matTooltip="Sort resources"
+      >
+        <mat-icon aria-hidden="true">sort</mat-icon>
+      </button>
+    </div>
   </ng-template>
+  <mat-menu #sortMenu="matMenu">
+    <button mat-menu-item type="button" role="menuitemradio" [attr.aria-checked]="sortBy() === 'name'" (click)="sortBy.set('name')">
+      <mat-icon aria-hidden="true">{{ sortBy() === 'name' ? 'check' : '' }}</mat-icon>
+      <span i18n="@@HYT_admin_role_resource_sort_name">Name</span>
+    </button>
+    <button mat-menu-item type="button" role="menuitemradio" [attr.aria-checked]="sortBy() === 'granted'" (click)="sortBy.set('granted')">
+      <mat-icon aria-hidden="true">{{ sortBy() === 'granted' ? 'check' : '' }}</mat-icon>
+      <span i18n="@@HYT_admin_role_resource_sort_granted">Granted actions</span>
+    </button>
+  </mat-menu>
   <ng-template #noMatch>
     <p class="no-match" role="status" i18n="@@HYT_admin_role_resources_no_match">No resource matches the search.</p>
   </ng-template>

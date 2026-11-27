@@ -10,7 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { map } from 'rxjs';
 import { actionDescription } from '../role-action-descriptions';
 import {
@@ -25,6 +27,9 @@ import {
 
 /** Bootstrap `md` breakpoint: below it the resource list becomes a select. */
 const PHONE_QUERY = '(max-width: 767.98px)';
+
+/** Order of the resources: by short name, or by granted actions (most first). */
+type ResourceSort = 'name' | 'granted';
 
 /**
  * Editor of the permissions of a role: resources on one side, the actions of the selected
@@ -42,7 +47,9 @@ const PHONE_QUERY = '(max-width: 767.98px)';
     MatIconModule,
     MatInputModule,
     MatListModule,
+    MatMenuModule,
     MatSelectModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './role-permissions-editor.component.html',
@@ -62,10 +69,21 @@ export class RolePermissionsEditorComponent {
   protected readonly search = new FormControl('', { nonNullable: true });
   private readonly searchText = toSignal(this.search.valueChanges, { initialValue: '' });
 
-  /** Resources whose short name contains the search text, ignoring case. */
+  protected readonly sortBy = signal<ResourceSort>('name');
+
+  /**
+   * Resources whose short name contains the search text, ignoring case, in the chosen order.
+   * The input is already sorted by name, which stays the order between equal counts.
+   */
   protected readonly visibleResources = computed(() => {
     const text = this.searchText().trim().toLowerCase();
-    return this.resources().filter(resource => resource.shortName.toLowerCase().includes(text));
+    const visible = this.resources().filter(resource => resource.shortName.toLowerCase().includes(text));
+    if (this.sortBy() === 'name') {
+      return visible;
+    }
+    const masks = this.masks();
+    const granted = (resource: ResourceActions) => grantedCount(masks[resource.resourceName] ?? 0, resource.actions);
+    return visible.sort((a, b) => granted(b) - granted(a));
   });
 
   private readonly selectedName = signal<string | null>(null);
