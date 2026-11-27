@@ -13,26 +13,12 @@
 
     <div class="dialog-footer" hyt-dialog-footer>
 
-        <div id="btn-left">
+        <button matButton (click)="close('cancel')" i18n="@@HYT_cancel">Cancel</button>
 
-            <hyt-button 
-                [color]="'hyt-base-total-green'"
-                (click)="close('cancel')"> 
-                <span class="hyt-icon icon-hyt_arrowLeft"></span>
-                <ng-container i18n="@@HYT_cancel">Cancel</ng-container>
-            </hyt-button>
-            
-        </div>
-
-        <div id="btn-right">
-
-            <hyt-button 
-                [color]="'hyt-base-total-red'"
-                (click)="close('delete')"> 
-                <span class="hyt-icon icon-hyt_trash"></span>
-                <ng-container i18n="@@HYT_delete">Delete</ng-container>
-            </hyt-button>
-        </div>
+        <button matButton="filled" (click)="close('delete')">
+            <mat-icon fontSet="hyt-icon" fontIcon="icon-hyt_trash" />
+            <ng-container i18n="@@HYT_delete">Delete</ng-container>
+        </button>
 
     </div>
 

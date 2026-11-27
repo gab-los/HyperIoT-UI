@@ -10,13 +10,13 @@
         </span>
     </div>
     <div hyt-dialog-footer>
-        <hyt-button [color]="'hyt-base-white'" (clickFn)="close()">
+        <button matButton (click)="close()">
             @if (data.closeButtonLabel) {
             {{ data.closeButtonLabel }}
             }
             @if (!data.closeButtonLabel) {
             <ng-container i18n="@@HYT_ok">OK</ng-container>
             }
-        </hyt-button>
+        </button>
     </div>
 </div>
