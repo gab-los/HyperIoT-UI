@@ -68,10 +68,9 @@
               </div> <!-- Error Box -->
 
               <div class="container-form-field container-submit-btn">
-                <hyt-button [color]="'hyt-base-default-white'" id="submit-btn" [ngClass]="{'submit-valid-form' : !notValid() }" type="submit"
-                  [isDisabled]="notValid() || loginStatus == 1">
+                <button matButton="filled" id="submit-btn" type="submit" [disabled]="notValid() || loginStatus == 1">
                   <ng-container i18n="@@HYT_login">Login</ng-container>
-                </hyt-button>
+                </button>
               </div> <!-- Container Button -->
 
             </form> <!-- End Form -->

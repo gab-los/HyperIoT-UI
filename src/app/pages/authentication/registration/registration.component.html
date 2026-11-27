@@ -85,9 +85,9 @@
               </div> <!-- Error Box -->
 
               <div id="container-submit-btn" class="container-form-field">
-                <hyt-button [color]="'hyt-base-default-white'" id="submit-btn" type="submit" [isDisabled]="notValid() || registrationStatus == 1 || registrationStatus == 2">
+                <button matButton="filled" id="submit-btn" type="submit" [disabled]="notValid() || registrationStatus == 1 || registrationStatus == 2">
                   <ng-container i18n="@@HYT_registration_button">Sign In</ng-container>
-                </hyt-button>
+                </button>
               </div> <!-- Container Button -->
 
               @if (registrationStatus == 1) {
