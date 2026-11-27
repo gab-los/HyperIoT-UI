@@ -33,11 +33,11 @@
         }
 
         <div id="buttons-container" class="ml-3 mr-3 d-flex flex-row justify-content-between">
-            <hyt-button [color]="'hyt-base-default-white'" (clickFn)="close()" i18n="@@HYT_cancel">Cancel</hyt-button>
-            <hyt-button [color]="'hyt-base-default-white'" [isDisabled]="!selectedDevice || !selectedDeviceIcon" (clickFn)="close({
+            <button matButton (click)="close()" i18n="@@HYT_cancel">Cancel</button>
+            <button matButton="filled" [disabled]="!selectedDevice || !selectedDeviceIcon" (click)="close({
                 device: selectedDevice,
                 icon: selectedDeviceIcon
-            })" i18n="@@HYT_add">Add</hyt-button>
+            })" i18n="@@HYT_add">Add</button>
         </div>
 
     </div>

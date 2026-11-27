@@ -14,13 +14,9 @@
             <hyt-hexagon id="ex-box" iconPath="icon-hyt_statistics" (clicked)="goToAlgorithmsWizard()">
             </hyt-hexagon>
             
-            <hyt-button 
-                [color]="'hyt-base-total-green'"
-                (click)="goToAlgorithmsWizard()"
-                id="btn-go-to-alg"
-            > 
+            <button matButton="filled" (click)="goToAlgorithmsWizard()" id="btn-go-to-alg">
                 <ng-container i18n="@@HYT_go_to_algorithms_list_long">Go to algorithms list definition.</ng-container>
-            </hyt-button>
+            </button>
         </div>
 
     </div>

@@ -96,13 +96,9 @@
     </div>
 
     <div class="dialog-footer" hyt-dialog-footer align="center">
-        <hyt-button 
-          [isDisabled]="!hasFinished()" 
-          (clickFn)="output('finish', {});" 
-          [color]="'hyt-base-total-green'"
-        >
+        <button matButton="filled" [disabled]="!hasFinished()" (click)="output('finish', {})">
             <ng-container i18n="@@HYT_finish">Finish</ng-container>
-        </hyt-button>
+        </button>
     </div>
     
 </div>

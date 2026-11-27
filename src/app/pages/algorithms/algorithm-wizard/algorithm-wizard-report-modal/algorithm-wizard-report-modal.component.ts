@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { ComponentsModule, DialogRef } from 'components';
 
@@ -7,7 +8,7 @@ import { ComponentsModule, DialogRef } from 'components';
     templateUrl: './algorithm-wizard-report-modal.component.html',
     styleUrls: ['./algorithm-wizard-report-modal.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    imports: [ComponentsModule]
+    imports: [ComponentsModule, MatButtonModule]
 })
 export class AlgorithmWizardReportModalComponent {
 
